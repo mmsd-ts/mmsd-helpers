@@ -1,5 +1,5 @@
 {
-    "name": "mmsd/mmsd-helpers",
+    "name": "mmsd-ts/mmsd-helpers",
     "description": "CakePHP 3.x Helper classes to use with Bootstrap",
     "type": "library",
     "require": {
