@@ -1,0 +1,25 @@
+{
+    "name": "mmsd/mmsd-helpers",
+    "description": "CakePHP 3.x Helper classes to use with Bootstrap",
+    "type": "library",
+    "require": {
+        "php": "^7.1"
+    },
+    "authors": [
+        {
+            "name": "Chris Burch",
+            "email": "cburch@madison.k12.wi.us"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "MmsdHelpers\\": "plugins/MmsdHelpers/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MmsdHelpers\\Test\\": "plugins/MmsdHelpers/tests/"
+        }
+    }
+}
