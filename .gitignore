@@ -1,1 +1,11 @@
+# CakePHP specific files #
+##########################
 /vendor/
+
+# Tool specific files #
+#######################
+# Eclipse
+.settings/*
+.buildpath
+.project
+

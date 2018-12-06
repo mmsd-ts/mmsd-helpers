@@ -83,39 +83,128 @@ class BsFormHelper extends Helper
      */
     public function input(string $name, array $options = [], array $config = [])
     {
+        $options = $this->initializeOptions($name,$options);
         $config += [
-            'layout' => 'FormGroup',
-            'formControlClass' => 'form-control',
-            'formGroupClass' => null,
+            'layout' => 'Default',
+            'labelColumnWidth' => '6',
+            'widgetColumnWidth' => '6',
+            'outerDivClass' => null,
         ];
+        $config['layout'] = ucfirst($config['layout']);
         $formatter = "input{$config['layout']}";
         
-        $options['class'] = (!empty($options['class'])) ? "{$config['formControlClass']} {$options['class']}" : $config['formControlClass'];
+        $options['class'] = $this->addToClass($options['class'],'form-control');
         
-        if ($config['layout'] == 'FormGroupHorizontal') {
-            if (!empty($options['labelClass'])) {
-                $options['labelClass'] .= ' col-form-label';
-            } else {
-                $options['labelClass'] = 'col-1 col-form-label';
-            }
-            if (empty($options['rowClass'])) {
-                $options['rowClass'] = 'col-5';
-            }
-        }
+        $config['outerDivClass'] = $this->addToClass($config['outerDivClass'],'form-group');
         
-        if (in_array($name, ['password','passwd',])) {
+        if (in_array($name, ['password','passwd','pwd',])) {
             $options['type'] = 'password';
         }
         
-        $options = $this->_convertOptionAliases($options);
+        $options = $this->convertOptionAliases($options);
         
-        if (($this->getConfig('autocomplete')) and (!empty($this->autocompleteMap[strtolower($name)]))) {
-            $options['autocomplete'] = $this->autocompleteMap[strtolower($name)];
+        if ($this->getConfig('autocomplete')) { 
+            if (!empty($this->autocompleteMap[strtolower($name)])) {
+                $options['autocomplete'] = $this->autocompleteMap[strtolower($name)];
+            }
         }
         
-        $widgetInfo = $this->_processOptions($name, $options);
+        $widgetInfo = $this->processOptions($name, $options);
+        
+        $widgetInfo['validityText'] = $this->validityText($widgetInfo);
+        $widgetInfo['afterWidgetText'] = $this->afterWidgetText($widgetInfo);
         
         return $this->$formatter($widgetInfo, $config);
+    }
+    
+    /**
+     * 
+     * @param array $widgetInfo
+     * @param array $config
+     * @return string
+     */
+    public function inputDefault(array $widgetInfo = null, array $config = null)
+    {
+        $returnHtml = '';
+        $returnHtml .= <<<"HTML"
+<div class="{$config['outerDivClass']}">
+\t<label class="{$widgetInfo['labelClass']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
+
+HTML;
+        if ($widgetInfo['type'] == 'select') {
+            $returnHtml .= <<<"HTML"
+\t<select name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>
+\t{$widgetInfo['selectOptionString']}
+\t</select>
+
+HTML;
+        } elseif ($widgetInfo['type'] == 'textarea') {
+            $returnHtml .= <<<"HTML"
+\t<textarea name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>{$widgetInfo['defaultValue']}</textarea>
+
+HTML;
+        } else {
+            $returnHtml .= <<<"HTML"
+\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" value="{$widgetInfo['defaultValue']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>
+
+HTML;
+        }
+        
+        $returnHtml .= <<<"HTML"
+\t{$widgetInfo['validityText']}
+\t{$widgetInfo['afterWidgetText']}
+</div>
+
+HTML;
+        return $returnHtml;
+    }
+    
+    /**
+     * 
+     * @param array $widgetInfo
+     * @param array $config
+     * @return string
+     */
+    public function inputFlat(array $widgetInfo = null, array $config = null)
+    {
+        $widgetInfo['labelClass'] = $this->addToClass($widgetInfo['labelClass'],'col-form-label');
+        $widgetInfo['labelClass'] = $this->addToClass($widgetInfo['labelClass'],"col-md-{$config['labelColumnWidth']}");
+        $config['outerDivClass'] = $this->addToClass($config['outerDivClass'],'row');
+        
+        $returnHtml = '';
+        $returnHtml .= <<<"HTML"
+<div class="{$config['outerDivClass']}">
+\t<label class="{$widgetInfo['labelClass']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
+\t<div class="col-md-{$config['widgetColumnWidth']}">
+
+HTML;
+        if ($widgetInfo['type'] == 'select') {
+            $returnHtml .= <<<"HTML"
+\t<select name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>
+\t{$widgetInfo['selectOptionString']}
+\t</select>
+
+HTML;
+        } elseif ($widgetInfo['type'] == 'textarea') {
+            $returnHtml .= <<<"HTML"
+\t<textarea name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>{$widgetInfo['defaultValue']}</textarea>
+
+HTML;
+        } else {
+            $returnHtml .= <<<"HTML"
+\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" value="{$widgetInfo['defaultValue']}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}>
+
+HTML;
+        }
+        
+        $returnHtml .= <<<"HTML"
+\t{$widgetInfo['validityText']}
+\t{$widgetInfo['afterWidgetText']}
+\t</div>
+</div>
+
+HTML;
+        return $returnHtml;
     }
     
     /**
@@ -127,62 +216,65 @@ class BsFormHelper extends Helper
      */
     public function check(string $name, array $options = [], array $config = [])
     {
+        // override default options if not set in ctp
         $options += [
             'type' => 'checkbox',
             'empty' => true,
         ];
+        $options = $this->initializeOptions($name,$options);
+        
         $config += [
             'formCheckClass' => null,
             'labelFirst' => false,
             'flat' => false,
         ];
-        $options['class'] = (!empty($options['class'])) ? "form-check-input {$options['class']}" : 'form-check-input';
-        $options['labelClass'] = (!empty($options['labelClass'])) ? "form-check-label {$options['labelClass']}" : 'form-check-label';
         
-        $options = $this->_convertOptionAliases($options);
+        $options['class'] = $this->addToClass($options['class'],'form-check-input');
+        $options['labelClass'] = $this->addToClass($options['labelClass'],'form-check-label');
+        
+        $options = $this->convertOptionAliases($options);
         
         $returnHtml = '';
-        $widgetInfo = $this->_processOptions($name, $options);
+        $widgetInfo = $this->processOptions($name, $options);
         $widgetIndex = 0;
         $outputCount = count($widgetInfo['options']);
         if ($widgetInfo['prepend']['contents']) { ++$outputCount; }
         if ($widgetInfo['append']['contents']) { ++$outputCount; }
         $columnsPerOption = floor(12 / $outputCount);
         
-        $formCheckClass = trim("form-check {$config['formCheckClass']}");
+        $config['formCheckClass'] = $this->addToClass($config['formCheckClass'],'form-check');
         
         if ($config['flat']) {
             $returnHtml .= "<div class=\"container\"><div class=\"row\">\n";
         }
         
         if ($widgetInfo['prepend']['contents']) {
-            $prependClass = $this->_makeClassString($widgetInfo['prepend']['class']);
             if ($config['flat']) {
                 $returnHtml .= "<div class=\"col-{$columnsPerOption}\">\n";
             } else {
                 $returnHtml .= "<div>\n";
             }
             $returnHtml .= <<<"PREPEND"
-    <span{$prependClass}>{$widgetInfo['prepend']['contents']}</span>
+    <span class="{$widgetInfo['prepend']['class']}">{$widgetInfo['prepend']['contents']}</span>
 </div>
 
 PREPEND;
         }
         
         foreach ($widgetInfo['options'] as $key => $value) {
-            $thisId = $this->_makeId($name, $key);
+            $thisId = $this->makeId($name, $key);
             
-            $checked = ($this->_valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' checked' : null;
+            $checked = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' checked' : null;
             
             if ($config['flat']) {
-                $returnHtml .= "<div class=\"col-{$columnsPerOption} {$formCheckClass}\">\n";
+                $returnHtml .= "<div class=\"col-{$columnsPerOption} {$config['formCheckClass']}\">\n";
             } else {
-                $returnHtml .= "<div class=\"{$formCheckClass}\">\n";
+                $returnHtml .= "<div class=\"{$config['formCheckClass']}\">\n";
             }
             
             if (($widgetInfo['empty']) and ($widgetIndex == 0)) {
                 $emptyValue = ($widgetInfo['type'] == 'checkbox') ? '0' : '';
-                $emptyId = $this->_makeId("_{$widgetInfo['name']}");
+                $emptyId = $this->makeId("_{$widgetInfo['name']}");
                 $returnHtml .= <<<"HTML"
 \t<input type="hidden" name="{$widgetInfo['name']}" id="{$emptyId}" value="{$emptyValue}">
 
@@ -190,7 +282,7 @@ HTML;
             }
             
             $labelHtml = <<<"HTML"
-\t<label for="{$thisId}"{$widgetInfo['labelClass']}>{$value}</label>
+\t<label for="{$thisId}" class="{$widgetInfo['labelClass']}">{$value}</label>
 
 HTML;
             if ($config['labelFirst']) {
@@ -198,7 +290,7 @@ HTML;
             }
             
             $returnHtml .= <<<"HTML"
-\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$thisId}" value="{$key}"{$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}{$checked}>
+\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$thisId}" value="{$key}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}{$checked}>
 
 HTML;
             
@@ -207,8 +299,8 @@ HTML;
             }
             
             if ($widgetIndex + 1 == count($widgetInfo['options'])) {
-                $returnHtml .= $this->_validityText($widgetInfo);
-                $returnHtml .= $this->_afterWidgetText($widgetInfo);
+                $returnHtml .= $this->validityText($widgetInfo);
+                $returnHtml .= $this->afterWidgetText($widgetInfo);
             }
             
             $returnHtml .= "</div>\n";
@@ -216,14 +308,13 @@ HTML;
         }
         
         if ($widgetInfo['append']['contents']) {
-            $appendClass = $this->_makeClassString($widgetInfo['append']['class']);
             if ($config['flat']) {
                 $returnHtml .= "<div class=\"col-{$columnsPerOption}\">\n";
             } else {
                 $returnHtml .= "<div>\n";
             }
             $returnHtml .= <<<"APPEND"
-    <span{$appendClass}>{$widgetInfo['append']['contents']}</span>
+    <span class="{$widgetInfo['append']['class']}">{$widgetInfo['append']['contents']}</span>
 </div>
 
 APPEND;
@@ -239,266 +330,10 @@ APPEND;
     
     /**
      * 
-     * @param array $widgetInfo
-     * @param array $config
-     * @return NULL|string
-     */
-    public function inputFormGroup(array $widgetInfo = null, array $config = null)
-    {
-        if (empty($widgetInfo)) { return null; }
-        
-        $validityText = $this->_validityText($widgetInfo);
-        
-        $formGroupClass = trim('form-group ' . $config['formGroupClass']);
-        
-        $returnHtml = "<div class=\"{$formGroupClass}\">\n";
-        // label
-        $returnHtml .= <<<"HTML"
-\t<label for="{$widgetInfo['id']}"{$widgetInfo['labelClass']}>{$widgetInfo['label']}</label>
-
-HTML;
-        // control
-        if ($widgetInfo['type'] == 'select') {
-            $returnHtml .= <<<"HTML"
-\t<select name="{$widgetInfo['name']}" id="{$widgetInfo['id']}"{$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>
-\t{$widgetInfo['selectOptionString']}
-\t</select>
-\t{$validityText}
-
-HTML;
-        } elseif ($widgetInfo['type'] == 'textarea') {
-            $returnHtml .= <<<"HTML"
-\t<textarea name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" {$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>{$widgetInfo['defaultValue']}</textarea>
-\t{$validityText}
-
-HTML;
-        } else {
-            
-            if ((!empty($widgetInfo['prepend']['contents'])) or (!empty($widgetInfo['append']['contents']))) {
-                $returnHtml .= <<<"HTML"
-\t<div class="input-group">
-
-HTML;
-            }
-            
-            if (!empty($widgetInfo['prepend']['contents'])) {
-                $prependClass = $this->_makeClassString($widgetInfo['prepend']['class']);
-                $returnHtml .= <<<"HTML"
-\t\t<div class="input-group-prepend">
-\t\t\t<div class="input-group-text">
-\t\t\t\t<span{$prependClass}>{$widgetInfo['prepend']['contents']}</span>
-\t\t\t</div>
-\t\t</div>
-
-HTML;
-            }
-            
-            $returnHtml .= <<<"HTML"
-\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" value="{$widgetInfo['defaultValue']}"{$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>
-
-HTML;
-            
-            if (!empty($widgetInfo['append']['contents'])) {
-                $appendClass = $this->_makeClassString($widgetInfo['append']['class']);
-                $returnHtml .= <<<"HTML"
-\t\t<div class="input-group-append">
-\t\t\t<div class="input-group-text">
-\t\t\t\t<span{$appendClass}>{$widgetInfo['append']['contents']}</span>
-\t\t\t</div>
-\t\t</div>
-
-HTML;
-            }
-                
-            $returnHtml .= $validityText;
-            
-            if ((!empty($widgetInfo['prepend']['contents'])) or (!empty($widgetInfo['append']['contents']))) {
-                $returnHtml .= <<<"HTML"
-\t</div>
-
-HTML;
-            }
-            
-        }
-        
-        $returnHtml .= $this->_afterWidgetText($widgetInfo);
-        
-        $returnHtml .= "</div>\n";
-        return $returnHtml;
-    }
-    
-    /**
-     * 
-     * @param array $widgetInfo
-     * @param array $config
-     * @return NULL|string
-     */
-    public function inputFormGroupHorizontal(array $widgetInfo = null, array $config = null)
-    {
-        if (empty($widgetInfo)) { return null; }
-        
-        $validityText = $this->_validityText($widgetInfo);
-        
-        
-//         if (!empty($widgetInfo['labelClass'])) {
-//             $widgetInfo['labelClass'] = preg_replace('/"$/', ' col-form-label"', $widgetInfo['labelClass']);
-//         } else {
-//             $widgetInfo['labelClass'] = $this->_makeClassString('col-1 col-form-label');
-//         }
-//         if (empty($widgetInfo['rowClass'])) {
-//             $widgetInfo['rowClass'] = $this->_makeClassString('col-5');
-//         }
-        
-        $formGroupClass = trim('form-group ' . $config['formGroupClass']);
-        
-        $returnHtml = "<div class=\"{$formGroupClass}\">\n";
-        // label
-        $returnHtml .= <<<"HTML"
-\t<label for="{$widgetInfo['id']}"{$widgetInfo['labelClass']}>{$widgetInfo['label']}</label>
-\t<div{$widgetInfo['rowClass']}>
-
-HTML;
-        // control
-        if ($widgetInfo['type'] == 'select') {
-            $returnHtml .= <<<"HTML"
-\t<select name="{$widgetInfo['name']}" id="{$widgetInfo['id']}"{$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>
-\t{$widgetInfo['selectOptionString']}
-\t</select>
-\t{$validityText}
-
-HTML;
-        } elseif ($widgetInfo['type'] == 'textarea') {
-            $returnHtml .= <<<"HTML"
-\t<textarea name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" {$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>{$widgetInfo['defaultValue']}</textarea>
-\t{$validityText}
-
-HTML;
-            } else {
-                
-                if ((!empty($widgetInfo['prepend']['contents'])) or (!empty($widgetInfo['append']['contents']))) {
-                    $returnHtml .= <<<"HTML"
-\t<div class="input-group">
-
-HTML;
-                }
-                
-                if (!empty($widgetInfo['prepend']['contents'])) {
-                    $prependClass = $this->_makeClassString($widgetInfo['prepend']['class']);
-                    $returnHtml .= <<<"HTML"
-\t\t<div class="input-group-prepend">
-\t\t\t<div class="input-group-text">
-\t\t\t\t<span{$prependClass}>{$widgetInfo['prepend']['contents']}</span>
-\t\t\t</div>
-\t\t</div>
-
-HTML;
-                }
-                
-                $returnHtml .= <<<"HTML"
-\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$widgetInfo['id']}" value="{$widgetInfo['defaultValue']}"{$widgetInfo['widgetClass']}{$widgetInfo['otherAttrs']}>
-
-HTML;
-                
-                if (!empty($widgetInfo['append']['contents'])) {
-                    $appendClass = $this->_makeClassString($widgetInfo['append']['class']);
-                    $returnHtml .= <<<"HTML"
-\t\t<div class="input-group-append">
-\t\t\t<div class="input-group-text">
-\t\t\t\t<span{$appendClass}>{$widgetInfo['append']['contents']}</span>
-\t\t\t</div>
-\t\t</div>
-
-HTML;
-                }
-                
-                $returnHtml .= $validityText;
-                
-                if ((!empty($widgetInfo['prepend']['contents'])) or (!empty($widgetInfo['append']['contents']))) {
-                    $returnHtml .= <<<"HTML"
-\t</div>
-
-HTML;
-                }
-            }
-            
-            $returnHtml .= "</div>\n";
-            
-            $returnHtml .= $this->_afterWidgetText($widgetInfo);
-            
-            $returnHtml .= "</div>\n";
-            return $returnHtml;
-    }
-    
-    /**
-     * 
-     * @param array $widgetInfo
-     * @return string
-     */
-    private function _validityText(array $widgetInfo)
-    {
-        $returnHtml = '';
-        
-        // valid message
-        if (!empty($widgetInfo['validMessage']['contents'])) {
-            $returnHtml .= <<<"HTML"
-\t<div{$widgetInfo['validMessage']['class']}>
-\t\t{$widgetInfo['validMessage']['contents']}
-\t</div>
-
-HTML;
-        }
-        // invalid message
-        if (!empty($widgetInfo['invalidMessage']['contents'])) {
-            $returnHtml .= <<<"HTML"
-\t<div{$widgetInfo['invalidMessage']['class']}>
-\t\t{$widgetInfo['invalidMessage']['contents']}
-\t</div>
-
-HTML;
-        }
-        
-        return $returnHtml;
-    }
-    
-    /**
-     * 
-     * @param array $widgetInfo
-     * @return string
-     */
-    private function _afterWidgetText(array $widgetInfo)
-    {
-        $returnHtml = '';
-        
-        // helptext
-        if (!empty($widgetInfo['helpText']['contents'])) {
-            $returnHtml .= <<<"HTML"
-\t<{$widgetInfo['helpText']['element']}{$widgetInfo['helpText']['id']}{$widgetInfo['helpText']['class']}>
-\t\t{$widgetInfo['helpText']['contents']}
-\t</{$widgetInfo['helpText']['element']}>
-
-HTML;
-        }
-        
-        // errors
-        if (!empty($widgetInfo['errors'])) {
-            $errorClass = $this->getConfig('error_class');
-            $returnHtml .= <<<"HTML"
-\t<div class="{$errorClass}">
-\t\t{$widgetInfo['errors']}
-\t</div>
-
-HTML;
-        }
-        
-        return $returnHtml;
-    }
-    
-    /**
-     * 
      * @param array $options
      * @return array[]
      */
-    private function _convertOptionAliases(array $options)
+    private function convertOptionAliases(array $options)
     {
         $convertedOptions = [];
         $optionAliases = [
@@ -520,18 +355,105 @@ HTML;
      * 
      * @param string $name
      * @param array $options
-     * @return array|NULL
+     * @return array
      */
-    private function _processOptions(string $name, array $options = [])
+    private function processOptions(string $name, array $options = [])
     {
         $namedOptions = ['type','id','value','class','label','labelClass',
                          'helpText','validMessage','invalidMessage',
                          'options','optionsClass','selectOptionString','empty',
                          'rowClass','prepend','append',
         ];
+        
+        if (!empty($options['required'])) {
+            if ($this->getConfig('required_star')) {
+                $options['label'] .= '*';
+            }
+            if (!empty($this->getConfig('required_class'))) {
+                $options['labelClass'] = $this->classString($options['labelClass'], $this->getConfig('required_class'));
+            }
+        }
+        
+        $widgetInfo = $options;
+        $widgetInfo['name'] = $this->processName($name);
+        
+        $widgetInfo['defaultValue'] = null;
+        $thisEntity = $this->getConfig('entity');
+        if ((!empty($thisEntity)) and (isset($thisEntity->$name))) {
+            $widgetInfo['defaultValue'] = $this->processValue($thisEntity->$name, $options['type']);
+        } else {
+            $widgetInfo['defaultValue'] = $this->processValue($widgetInfo['value'], $options['type']);
+        }
+        
+        if (!empty($this->getConfig('errors')[$name])) {
+            $errorMessages = [];
+            foreach ($this->getConfig('errors')[$name] as $rule => $message) {
+                $errorMessages[] = $message;
+            }
+            $widgetInfo['errors'] = implode('<br>', $errorMessages);
+        }
+        
+        $otherAttrs = [];
+        foreach ($options as $key => $value) {
+            if (!in_array($key, $namedOptions)) {
+                $otherAttrs[$key] = $value;
+            }
+        }
+        $widgetInfo['otherAttrs'] = $this->makeAttrString($otherAttrs);
+        
+        if (!empty($options['helpText']['contents'])) {
+            $helpTextId = "{$options['id']}-helptext";
+            $widgetInfo['otherAttrs'] .= " aria-describedby=\"{$helpTextId}\"";
+            $widgetInfo['helpText']['id'] = "id=\"{$helpTextId}\"";
+        }
+        
+        $widgetInfo['validMessage']['class'] = $this->addToClass($options['validMessage']['class'],'valid-feedback');
+        $widgetInfo['invalidMessage']['class'] = $this->addToClass($options['invalidMessage']['class'],'invalid-feedback');
+        
+        if (!empty($widgetInfo['options'])) {
+            if ($widgetInfo['type'] == 'select') {
+                $selectOptions = [];
+                if ($widgetInfo['empty']) {
+                    $selectOptions[] = "<option value=\"\" class=\"{$widgetInfo['optionsClass']}\"></option>";
+                }
+                foreach ($widgetInfo['options'] as $key => $value) {
+                    $selected = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' selected' : null;
+                    if (is_array($value)) {
+                        $optionAttributes = [];
+                        foreach ($value as $attr => $setting) {
+                            if ($attr == 'value') {
+                                continue;
+                            }
+                            if ($setting === true) {
+                                $optionAttributes[] = "{$attr}=\"{$attr}\"";
+                            } elseif ($setting !== false) {
+                                $optionAttributes[] = "{$attr}=\"{$setting}\"";
+                            }
+                        }
+                        $optionAttributesString = implode(' ', $optionAttributes);
+                        $selectOptions[] = "<option value=\"{$key}\" class=\"{$widgetInfo['optionsClass']}\" {$selected} {$optionAttributesString}>{$value['value']}</option>";
+                    } else {
+                        $selectOptions[] = "<option value=\"{$key}\" class=\"{$widgetInfo['optionsClass']}\" {$selected}>{$value}</option>";
+                    }
+                }
+                $widgetInfo['selectOptionString'] = implode('', $selectOptions);
+            }
+        }
+        
+        return $widgetInfo;
+    }
+    
+    /**
+     * 
+     * @param string $name
+     * @param array $options
+     * @return array
+     */
+    private function initializeOptions(string $name, array $options)
+    {
         $options += [
             'type' => 'text',
-            'id' => $this->_makeId($name),
+            'id' => $this->makeId($name),
             'value' => null,
             'class' => null,
             'label' => Inflector::humanize(Inflector::underscore($name)),
@@ -549,7 +471,7 @@ HTML;
         ];
         $options['helpText'] += [
             'contents' => null,
-            'class' => null,
+            'class' => 'form-text',
             'element' => 'small',
         ];
         $options['validMessage'] += [
@@ -568,88 +490,7 @@ HTML;
             'contents' => null,
             'class' => null,
         ];
-        
-        if (!empty($options['required'])) {
-            if ($this->getConfig('required_star')) {
-                $options['label'] .= '*';
-            }
-            if (!empty($this->getConfig('required_class'))) {
-                $options['labelClass'] .= ' ' . $this->getConfig('required_class');
-            }
-        }
-        
-        $widgetInfo = $options;
-        $widgetInfo['name'] = $this->_processName($name);
-        
-        $widgetInfo['defaultValue'] = null;
-        $thisEntity = $this->getConfig('entity');
-        if ((!empty($thisEntity)) and (isset($thisEntity->$name))) {
-            $widgetInfo['defaultValue'] = $this->_processValue($thisEntity->$name, $options['type']);
-        } else {
-            $widgetInfo['defaultValue'] = $this->_processValue($widgetInfo['value'], $options['type']);
-        }
-        
-        if (!empty($this->getConfig('errors')[$name])) {
-            $errorMessages = [];
-            foreach ($this->getConfig('errors')[$name] as $rule => $message) {
-                $errorMessages[] = $message;
-            }
-            $widgetInfo['errors'] = implode('<br>', $errorMessages);
-        }
-        
-        $otherAttrs = [];
-        foreach ($options as $key => $value) {
-            if (!in_array($key, $namedOptions)) {
-                $otherAttrs[$key] = $value;
-            }
-        }
-        $widgetInfo['otherAttrs'] = $this->_makeAttrString($otherAttrs);
-        
-        if (!empty($options['helpText']['contents'])) {
-            $helpTextId = "{$options['id']}-helptext";
-            $widgetInfo['otherAttrs'] .= " aria-describedby=\"{$helpTextId}\"";
-            $widgetInfo['helpText']['id'] = " id=\"{$helpTextId}\"";
-        }
-        
-        $widgetInfo['widgetClass'] = $this->_makeClassString($options['class']);
-        $widgetInfo['labelClass'] = $this->_makeClassString($options['labelClass']);
-        $widgetInfo['rowClass'] = $this->_makeClassString($options['rowClass']);
-        $widgetInfo['helpText']['class'] = $this->_makeClassString($options['helpText']['class']);
-        $widgetInfo['validMessage']['class'] = $this->_makeClassString("valid-feedback {$options['validMessage']['class']}");
-        $widgetInfo['invalidMessage']['class'] = $this->_makeClassString("invalid-feedback {$options['invalidMessage']['class']}");
-        $widgetInfo['optionsClass'] = $this->_makeClassString($options['optionsClass']);
-        
-        if (!empty($widgetInfo['options'])) {
-            if ($widgetInfo['type'] == 'select') {
-                $selectOptions = [];
-                if ($widgetInfo['empty']) {
-                    $selectOptions[] = "<option value=\"\"{$widgetInfo['optionsClass']}></option>";
-                }
-                foreach ($widgetInfo['options'] as $key => $value) {
-                    $selected = ($this->_valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' selected' : null;
-                    if (is_array($value)) {
-                        $optionAttributes = [];
-                        foreach ($value as $attr => $setting) {
-                            if ($attr == 'value') {
-                                continue;
-                            }
-                            if ($setting === true) {
-                                $optionAttributes[] = "{$attr}=\"{$attr}\"";
-                            } elseif ($setting !== false) {
-                                $optionAttributes[] = "{$attr}=\"{$setting}\"";
-                            }
-                        }
-                        $optionAttributesString = implode(' ', $optionAttributes);
-                        $selectOptions[] = "<option value=\"{$key}\"{$widgetInfo['optionsClass']}{$selected} {$optionAttributesString}>{$value['value']}</option>";
-                    } else {
-                        $selectOptions[] = "<option value=\"{$key}\"{$widgetInfo['optionsClass']}{$selected}>{$value}</option>";
-                    }
-                }
-                $widgetInfo['selectOptionString'] = implode('', $selectOptions);
-            }
-        }
-        
-        return $widgetInfo;
+        return $options;
     }
     
     /**
@@ -658,7 +499,7 @@ HTML;
      * @param string $value
      * @return string
      */
-    private function _makeId(string $name, string $value = null)
+    private function makeId(string $name, string $value = null)
     {
         return $this->_domId("{$name}{$value}");
     }
@@ -668,8 +509,9 @@ HTML;
      * @param string $name
      * @return string|mixed
      */
-    private function _processName(string $name)
+    private function processName(string $name)
     {
+        $processedName = '';
         $nameArray = explode('.', $name);
         $processedName = array_shift($nameArray);
         if (count($nameArray)) {
@@ -680,24 +522,74 @@ HTML;
     
     /**
      * 
-     * @param string $passedClasses
-     * @return string|NULL
+     * @param string $originalClassString
+     * @param string $targetClass
+     * @return string
      */
-    private function _makeClassString(string $passedClasses = null)
+    private function addToClass(string $originalClassString = null, string $targetClass)
     {
-        if (!empty($passedClasses)) {
-            $passedClasses = trim($passedClasses);
-            return " class=\"{$passedClasses}\"";
+        return $this->editClassString($originalClassString, $targetClass, 'add');
+    }
+    
+    /**
+     * 
+     * @param string $originalClassString
+     * @param string $targetClass
+     * @return string
+     */
+    private function removeFromClass(string $originalClassString = null, string $targetClass)
+    {
+        return $this->editClassString($originalClassString, $targetClass, 'delete');
+    }
+    
+    /**
+     * 
+     * @param string $originalClassString
+     * @param string $searchClass
+     * @param string $replaceClass
+     * @return string
+     */
+    private function replaceClass(string $originalClassString = null, string $searchClass, string $replaceClass)
+    {
+        $classString = $this->editClassString($originalClassString, $searchClass, 'delete');
+        if ($classString != $originalClassString) {
+            return $this->editClassString($classString, $replaceClass, 'add');
+        } else {
+            return $originalClassString;
         }
-        return null;
+    }
+    
+    /**
+     * 
+     * @param string $originalClassString
+     * @param string $targetClass
+     * @param string $action
+     * @return string
+     */
+    private function editClassString(string $originalClassString = null, string $targetClass, string $action = 'add')
+    {
+        $newClassString = '';
+        $classArray = (!empty($originalClassString)) ? explode(' ',$originalClassString) : [];
+        if ($action == 'add') {
+            $classArray[] = $targetClass;
+        }
+        if ($action == 'delete') {
+            for ($i = 0; $i < count($classArray); ++$i) {
+                if ($classArray[$i] == $targetClass) {
+                    unset($classArray[$i]);
+                }
+            }
+        }
+        $newClassString = implode(' ', $classArray);
+        return $newClassString;
     }
     
     /**
      * 
      * @param array $attrs
-     * @return string|NULL
+     * @return string
      */
-    private function _makeAttrString(array $attrs)
+    private function makeAttrString(array $attrs)
     {
         $stringArray = [];
         foreach ($attrs as $key => $value) {
@@ -713,7 +605,7 @@ HTML;
                 }
             }
         }
-        return (!empty($stringArray)) ? ' ' . implode(' ', $stringArray) : null;
+        return (!empty($stringArray)) ? ' ' . implode(' ', $stringArray) : '';
     }
     
     /**
@@ -722,25 +614,36 @@ HTML;
      * @param string $valueChoice
      * @return boolean
      */
-    private function _valueIsSelected(string $valueStored = null, string $valueChoice = null) {
+    private function valueIsSelected(string $valueStored = null, string $valueChoice = null) {
         return ((string)$valueStored === ((string)$valueChoice));
     }
     
-    private function _processValue($value,$type = null) {
+    /**
+     * 
+     * @param mixed $value
+     * @param string $type
+     * @return string
+     */
+    private function processValue($value,string $type = null) {
         if ($value === true) {
             return '1';
         } elseif ($value === false) {
             return '0';
         } elseif ($type == 'date') {
-            return $this->_formatDate($value);
+            return $this->formatDate($value);
         } elseif ($type == 'time') {
-            return $this->_formatTime($value);
+            return $this->formatTime($value);
         } else {
             return $value;
         }
     }
     
-    private function _formatDate($value) {
+    /**
+     * 
+     * @param mixed $value
+     * @return string
+     */
+    private function formatDate($value) {
         if (
             ($value instanceof \DateTime)
             or
@@ -756,7 +659,12 @@ HTML;
         }
     }
     
-    private function _formatTime($value) {
+    /**
+     * 
+     * @param mixed $value
+     * @return string
+     */
+    private function formatTime($value) {
         if (
             ($value instanceof \DateTime)
             or
@@ -770,6 +678,70 @@ HTML;
         } else {
             return $value;
         }
+    }
+    
+    /**
+     * 
+     * @param array $widgetInfo
+     * @return string
+     */
+    private function validityText(array $widgetInfo)
+    {
+        $returnHtml = '';
+        
+        // valid message
+        if (!empty($widgetInfo['validMessage']['contents'])) {
+            $returnHtml .= <<<"HTML"
+\t<div class="{$widgetInfo['validMessage']['class']}">
+\t\t{$widgetInfo['validMessage']['contents']}
+\t</div>
+
+HTML;
+        }
+        // invalid message
+        if (!empty($widgetInfo['invalidMessage']['contents'])) {
+            $returnHtml .= <<<"HTML"
+\t<div class="{$widgetInfo['invalidMessage']['class']}">
+\t\t{$widgetInfo['invalidMessage']['contents']}
+\t</div>
+
+HTML;
+        }
+        
+        return $returnHtml;
+    }
+    
+    /**
+     * 
+     * @param array $widgetInfo
+     * @return string
+     */
+    private function afterWidgetText(array $widgetInfo)
+    {
+        $returnHtml = '';
+        
+        // helptext
+        if (!empty($widgetInfo['helpText']['contents'])) {
+            $returnHtml .= <<<"HTML"
+\t<{$widgetInfo['helpText']['element']} {$widgetInfo['helpText']['id']} class="{$widgetInfo['helpText']['class']}">
+\t\t{$widgetInfo['helpText']['contents']}
+\t</{$widgetInfo['helpText']['element']}>
+
+HTML;
+        }
+        
+        // errors
+        if (!empty($widgetInfo['errors'])) {
+            $errorClass = $this->getConfig('error_class');
+            $returnHtml .= <<<"HTML"
+\t<div class="{$errorClass}">
+\t\t{$widgetInfo['errors']}
+\t</div>
+
+HTML;
+        }
+        
+        return $returnHtml;
     }
     
 }
