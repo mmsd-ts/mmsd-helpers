@@ -55,6 +55,8 @@ class BsFormHelper extends Helper
             'autocomplete' => true,
             'errors' => false,
             'error_class' => 'text-danger',
+            'label_append' => false,
+            'label_append_char' => ':',
         ]);
         
     }
@@ -362,8 +364,22 @@ APPEND;
         $namedOptions = ['type','id','value','class','label','labelClass',
                          'helpText','validMessage','invalidMessage',
                          'options','optionsClass','selectOptionString','empty',
-                         'rowClass','prepend','append',
+                         'rowClass','prepend','append','labelAppend',
         ];
+        
+        if ($options['labelAppend'] !== false) {
+            $appendCharacter = '';
+            if ($options['labelAppend'] === true) {
+                $appendCharacter = $this->getConfig('label_append_char');
+            } elseif (!empty($options['labelAppend'])) {
+                $appendCharacter = $options['labelAppend'];
+            } elseif ($this->getConfig('label_append')) {
+                $appendCharacter = $this->getConfig('label_append_char');
+            }
+            if (strlen($appendCharacter)) {
+                $options['label'] .= $appendCharacter;
+            }
+        }
         
         if (!empty($options['required'])) {
             if ($this->getConfig('required_star')) {
@@ -468,6 +484,7 @@ APPEND;
             'rowClass' => null,
             'prepend' => [],
             'append' => [],
+            'labelAppend' => null,
         ];
         $options['helpText'] += [
             'contents' => null,
