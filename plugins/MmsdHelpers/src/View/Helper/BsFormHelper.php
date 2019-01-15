@@ -386,7 +386,7 @@ APPEND;
                 $options['label'] .= '*';
             }
             if (!empty($this->getConfig('required_class'))) {
-                $options['labelClass'] = $this->classString($options['labelClass'], $this->getConfig('required_class'));
+                $options['labelClass'] = $this->addToClass($options['labelClass'], $this->getConfig('required_class'));
             }
         }
         
