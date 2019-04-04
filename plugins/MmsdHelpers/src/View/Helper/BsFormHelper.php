@@ -439,7 +439,8 @@ APPEND;
             if ($widgetInfo['type'] == 'select') {
                 $selectOptions = [];
                 if ($widgetInfo['empty']) {
-                    $selectOptions[] = "<option value=\"\" class=\"{$widgetInfo['optionsClass']}\"></option>";
+                    $emptyLabel = (is_string($widgetInfo['empty'])) ? $widgetInfo['empty'] : null;
+                    $selectOptions[] = "<option value=\"\" class=\"{$widgetInfo['optionsClass']}\">{$emptyLabel}</option>";
                 }
                 foreach ($widgetInfo['options'] as $key => $value) {
                     $selected = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' selected' : null;
