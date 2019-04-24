@@ -53,7 +53,6 @@ class BsFormHelper extends Helper
             'errors' => false,
             'defaults' => [
                 'requiredChar' => null,
-                'useRequiredClass' => false,
                 'requiredClass' => 'text-danger',
                 'labelAppendChar' => null,
                 'errorClass' => 'text-danger',
@@ -390,7 +389,7 @@ APPEND;
                          'helpText','validMessage','invalidMessage',
                          'options','optionsClass','selectOptionString','empty',
                          'rowClass','prepend','append','labelAppend','labelAppendChar',
-                         'requiredChar','useRequiredClass','requiredClass',
+                         'requiredChar','requiredClass',
                          'errorClass',
         ];
         
@@ -423,11 +422,11 @@ APPEND;
                     $options['label'] .= $options['requiredChar'] ?? $this->getConfig('defaults.requiredChar');
                 }
             }
-            // bc for Bill
-            if (!empty($this->getConfig('required_class'))) {
-                $options['labelClass'] = $this->addToClass($options['labelClass'], $this->getConfig('required_class'));
-            } else {
-                if (($options['useRequiredClass'] !== false) and ($this->getConfig('defaults.useRequiredClass') !== false)) {
+            if ($options['requiredClass'] !== false) {
+                // bc for Bill
+                if (!empty($this->getConfig('required_class'))) {
+                    $options['labelClass'] = $this->addToClass($options['labelClass'], $this->getConfig('required_class'));
+                } else {
                     $requiredClass = $options['requiredClass'] ?? $this->getConfig('defaults.requiredClass');
                     if (!empty($requiredClass)) {
                         $options['labelClass'] = $this->addToClass($options['labelClass'], $requiredClass);
@@ -543,7 +542,6 @@ APPEND;
             'labelAppend' => null,
             'labelAppendChar' => null,
             'requiredChar' => null,
-            'useRequiredClass' => null,
             'requiredClass' => null,
             'errorClass' => null,
         ];
