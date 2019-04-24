@@ -51,12 +51,6 @@ class BsFormHelper extends Helper
         $this->setConfig([
             'entity' => null,
             'errors' => false,
-            'required_star' => false,
-            'required_class' => null,
-            'autocomplete' => true,
-            'error_class' => 'text-danger',
-            'label_append' => false,
-            'label_append_char' => ':',
             'defaults' => [
                 'requiredChar' => null,
                 'useRequiredClass' => false,
@@ -64,8 +58,15 @@ class BsFormHelper extends Helper
                 'labelAppendChar' => null,
                 'errorClass' => 'text-danger',
                 'useBrowswerAutocomplete' => true,
-                'inputFormat' => 'Default',
+                'inputLayout' => 'Default',
             ],
+            // Legacy only kept for backwards compatibility so Bill doesn't freak out
+            'required_star' => false,
+            'required_class' => null,
+            'autocomplete' => true,
+            'error_class' => 'text-danger',
+            'label_append' => false,
+            'label_append_char' => ':',
         ]);
         
     }
@@ -92,8 +93,7 @@ class BsFormHelper extends Helper
     public function setDefaults(array $newDefaults = [])
     {
         $setDefaults = $this->getConfig('defaults');
-        return $setDefaults;
-        //return $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
+        return $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
     }
     
     /**
@@ -107,7 +107,7 @@ class BsFormHelper extends Helper
     {
         $options = $this->initializeOptions($name,$options);
         $config += [
-            'layout' => $this->getConfig('defaults.inputFormat'), //'Default',
+            'layout' => $this->getConfig('defaults.inputLayout'),
             'labelColumnWidth' => '6',
             'widgetColumnWidth' => '6',
             'outerDivClass' => null,
@@ -124,8 +124,8 @@ class BsFormHelper extends Helper
         }
         
         $options = $this->convertOptionAliases($options);
-        
-        if ($this->getConfig('autocomplete')) { 
+                                                                      // bc for Bill
+        if (($this->getConfig('defaults.useBrowswerAutocomplete')) or ($this->getConfig('autocomplete'))) { 
             if (!empty($this->autocompleteMap[strtolower($name)])) {
                 $options['autocomplete'] = $this->autocompleteMap[strtolower($name)];
             }
@@ -249,7 +249,11 @@ HTML;
             'formCheckClass' => null,
             'labelFirst' => false,
             'flat' => false,
+            'layout' => null,
         ];
+        if ($config['layout'] == 'Flat') {
+            $config['flat'] = true;
+        }
         
         $options['class'] = $this->addToClass($options['class'],'form-check-input');
         $options['labelClass'] = $this->addToClass($options['labelClass'],'form-check-label');
@@ -381,32 +385,54 @@ APPEND;
      */
     private function processOptions(string $name, array $options = [])
     {
+        // Named options do not pass through
         $namedOptions = ['type','id','value','class','label','labelClass',
                          'helpText','validMessage','invalidMessage',
                          'options','optionsClass','selectOptionString','empty',
-                         'rowClass','prepend','append','labelAppend',
+                         'rowClass','prepend','append','labelAppend','labelAppendChar',
+                         'requiredChar','useRequiredClass','requiredClass',
+                         'errorClass',
         ];
         
-        if ($options['labelAppend'] !== false) {
-            $appendCharacter = '';
-            if ($options['labelAppend'] === true) {
-                $appendCharacter = $this->getConfig('label_append_char');
-            } elseif (!empty($options['labelAppend'])) {
-                $appendCharacter = $options['labelAppend'];
-            } elseif ($this->getConfig('label_append')) {
-                $appendCharacter = $this->getConfig('label_append_char');
+        // bc for Bill
+        if (!empty($this->getConfig('label_append'))) {
+            if ($options['labelAppend'] !== false) {
+                $appendCharacter = '';
+                if ($options['labelAppend'] === true) {
+                    $appendCharacter = $this->getConfig('label_append_char');
+                } elseif (!empty($options['labelAppend'])) {
+                    $appendCharacter = $options['labelAppend'];
+                } elseif ($this->getConfig('label_append')) {
+                    $appendCharacter = $this->getConfig('label_append_char');
+                }
+                if (strlen($appendCharacter)) {
+                    $options['label'] .= $appendCharacter;
+                }
             }
-            if (strlen($appendCharacter)) {
-                $options['label'] .= $appendCharacter;
-            }
+        }
+        if ($options['labelAppendChar'] !== false) {
+            $options['label'] .= $options['labelAppendChar'] ?? $this->getConfig('defaults.labelAppendChar');
         }
         
         if (!empty($options['required'])) {
-            if ($this->getConfig('required_star')) {
-                $options['label'] .= '*';
+            if ($options['requiredChar'] !== false) {
+                // bc for Bill
+                if ($this->getConfig('required_star')) {
+                    $options['label'] .= '*';
+                } else {
+                    $options['label'] .= $options['requiredChar'] ?? $this->getConfig('defaults.requiredChar');
+                }
             }
+            // bc for Bill
             if (!empty($this->getConfig('required_class'))) {
                 $options['labelClass'] = $this->addToClass($options['labelClass'], $this->getConfig('required_class'));
+            } else {
+                if (($options['useRequiredClass'] !== false) and ($this->getConfig('defaults.useRequiredClass') !== false)) {
+                    $requiredClass = $options['requiredClass'] ?? $this->getConfig('defaults.requiredClass');
+                    if (!empty($requiredClass)) {
+                        $options['labelClass'] = $this->addToClass($options['labelClass'], $requiredClass);
+                    }
+                }
             }
         }
         
@@ -515,6 +541,11 @@ APPEND;
             'prepend' => [],
             'append' => [],
             'labelAppend' => null,
+            'labelAppendChar' => null,
+            'requiredChar' => null,
+            'useRequiredClass' => null,
+            'requiredClass' => null,
+            'errorClass' => null,
         ];
         $options['helpText'] += [
             'contents' => null,
@@ -779,7 +810,11 @@ HTML;
         
         // errors
         if (!empty($widgetInfo['errors'])) {
-            $errorClass = $this->getConfig('error_class');
+            $errorClass = null;
+            if ($widgetInfo['errorClass'] !== false) {
+                                                           // bc for Bill
+                $errorClass = $widgetInfo['errorClass'] ?? $this->getConfig('error_class') ?? $this->getConfig('defaults.errorClass');
+            }
             $returnHtml .= <<<"HTML"
 \t<div class="{$errorClass}">
 \t\t{$widgetInfo['errors']}
