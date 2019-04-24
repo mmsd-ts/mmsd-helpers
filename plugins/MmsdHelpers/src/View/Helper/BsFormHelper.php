@@ -50,13 +50,22 @@ class BsFormHelper extends Helper
         
         $this->setConfig([
             'entity' => null,
+            'errors' => false,
             'required_star' => false,
             'required_class' => null,
             'autocomplete' => true,
-            'errors' => false,
             'error_class' => 'text-danger',
             'label_append' => false,
             'label_append_char' => ':',
+            'defaults' => [
+                'requiredChar' => null,
+                'useRequiredClass' => false,
+                'requiredClass' => 'text-danger',
+                'labelAppendChar' => null,
+                'errorClass' => 'text-danger',
+                'useBrowswerAutocomplete' => true,
+                'inputFormat' => 'Default',
+            ],
         ]);
         
     }
@@ -77,6 +86,17 @@ class BsFormHelper extends Helper
     }
     
     /**
+     *
+     * @param array $newDefaults
+     */
+    public function setDefaults(array $newDefaults = [])
+    {
+        $setDefaults = $this->getConfig('defaults');
+        return $setDefaults;
+        //return $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
+    }
+    
+    /**
      * 
      * @param string $name
      * @param array $options
@@ -87,7 +107,7 @@ class BsFormHelper extends Helper
     {
         $options = $this->initializeOptions($name,$options);
         $config += [
-            'layout' => 'Default',
+            'layout' => $this->getConfig('defaults.inputFormat'), //'Default',
             'labelColumnWidth' => '6',
             'widgetColumnWidth' => '6',
             'outerDivClass' => null,
