@@ -37,6 +37,7 @@ class BsFormHelper extends Helper
         'workphone' => 'work tel',
         'cellphone' => 'mobile tel',
         'email' => 'email',
+        'phone' => 'tel',
     ];
     
     /**
