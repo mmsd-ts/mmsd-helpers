@@ -53,6 +53,7 @@ class BsFormHelper extends Helper
             'entity' => null,
             'errors' => false,
             'defaults' => [
+                'labelClass' => null,
                 'requiredChar' => null,
                 'requiredClass' => null,
                 'labelAppendChar' => null,
@@ -393,6 +394,10 @@ APPEND;
                          'requiredChar','requiredClass',
                          'errorClass',
         ];
+        
+        if (($options['labelClass'] !== false) and (!empty($this->getConfig('defaults.labelClass')))) {
+            $options['labelClass'] = $this->addToClass($options['labelClass'],$this->getConfig('defaults.labelClass'));
+        }
         
         // bc for Bill
         if (!empty($this->getConfig('label_append'))) {
