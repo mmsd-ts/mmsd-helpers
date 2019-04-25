@@ -53,7 +53,7 @@ class BsFormHelper extends Helper
             'errors' => false,
             'defaults' => [
                 'requiredChar' => null,
-                'requiredClass' => 'text-danger',
+                'requiredClass' => null,
                 'labelAppendChar' => null,
                 'errorClass' => 'text-danger',
                 'useBrowswerAutocomplete' => true,
