@@ -3,12 +3,16 @@ namespace MmsdHelpers\View\Helper;
 
 use Cake\View\Helper;
 use Cake\Utility\Inflector;
+use Authentication\IdentityInterface;
+use RuntimeException;
 
 class BsNavbarHelper extends Helper
 {
-    public $links = [];
-    public $linkMap = [];
-    public $helpers = ['Html','Url'];
+    protected $links = [];
+    protected $linkMap = [];
+    protected $params = [];
+    protected $identity;
+    protected $helpers = ['Html','Url'];
     
     /**
      * 
@@ -19,31 +23,43 @@ class BsNavbarHelper extends Helper
     {
         $this->links = $config['links'];
         $this->linkMap = $config['linkMap'];
+        $this->params = $this->getView()->getRequest()->getAttribute('params');
+        $this->identity = $this->getView()->getRequest()->getAttribute('identity');
+        
+        if ((empty($this->identity)) or (empty($this->params))) {
+            return;
+        }
+        
+        if (!$this->identity instanceof IdentityInterface) {
+            throw new RuntimeException(sprintf('Identity found in request does not implement %s', IdentityInterface::class));
+        }
     }
     
     /**
+     * 
+     * Parameters are only kept for backwards compatibility
      * 
      * @param array $requestAttributes
      * @param int $authLevel
      * @return NULL|string
      */
-    public function navbarLinks(array $requestAttributes, int $authLevel = 0)
+    public function navbarLinks(array $requestAttributes = [], int $authLevel = 0)
     {
-        $requestParams = $requestAttributes['params'];
         
         $navbarLinks = null;
         
         $currentKey = null;
-        if (empty($requestParams['prefix'])) {
-            $requestParams['prefix'] = false;
+        if (empty($this->params['prefix'])) {
+            $this->params['prefix'] = false;
         }
         $currentUrlParams = [
-            'prefix' => $requestParams['prefix'],
-            'controller' => $requestParams['controller'],
-            'action' => $requestParams['action'],
+            'prefix' => $this->params['prefix'],
+            'controller' => $this->params['controller'],
+            'action' => $this->params['action'],
+            '_ext' => $this->params['_ext'],
             '_base' => false,
         ];
-        foreach ($requestParams['pass'] as $pass) {
+        foreach ($this->params['pass'] as $pass) {
             $currentUrlParams[] = $pass;
         }
         $currentUrl = $this->Url->build($currentUrlParams);
@@ -64,11 +80,30 @@ class BsNavbarHelper extends Helper
                 'prefix' => false,
                 'controller' => 'Users',
                 'action' => 'index',
+                'roles' => [],
                 'params' => [],
                 'children' => [],
             ];
             
             if ($authLevel < $link['authLevel']) { continue; }
+            
+            if (!empty($link['roles'])) {
+                $identityHasRole = false;
+                foreach ($link['roles'] as $role) {
+                    $isRole = "is{$role}";
+                    if (
+                        (!empty($this->identity->$role))
+                        or
+                        (!empty($this->identity->$isRole))
+                    ){
+                        $identityHasRole = true;
+                        break;
+                    }
+                }
+                if (!$identityHasRole) {
+                    continue;
+                }
+            }
             
             $navbarLink = null;
             

@@ -3,7 +3,8 @@
     "description": "CakePHP 3.x Helper classes to use with Bootstrap",
     "type": "library",
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "cakephp/authentication": "^1.1"
     },
     "authors": [
         {
