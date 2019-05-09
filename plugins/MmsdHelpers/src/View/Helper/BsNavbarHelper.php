@@ -26,11 +26,11 @@ class BsNavbarHelper extends Helper
         $this->params = $this->getView()->getRequest()->getAttribute('params');
         $this->identity = $this->getView()->getRequest()->getAttribute('identity');
         
-        if ((empty($this->identity)) or (empty($this->params))) {
+        if (empty($this->params)) {
             return;
         }
         
-        if (!$this->identity instanceof IdentityInterface) {
+        if ((!empty($this->identity)) and (!$this->identity instanceof IdentityInterface)) {
             throw new RuntimeException(sprintf('Identity found in request does not implement %s', IdentityInterface::class));
         }
     }
@@ -87,21 +87,23 @@ class BsNavbarHelper extends Helper
             
             if ($authLevel < $link['authLevel']) { continue; }
             
-            if (!empty($link['roles'])) {
-                $identityHasRole = false;
-                foreach ($link['roles'] as $role) {
-                    $isRole = "is{$role}";
-                    if (
-                        (!empty($this->identity->$role))
-                        or
-                        (!empty($this->identity->$isRole))
-                    ){
-                        $identityHasRole = true;
-                        break;
+            if (!empty($this->identity)) {
+                if (!empty($link['roles'])) {
+                    $identityHasRole = false;
+                    foreach ($link['roles'] as $role) {
+                        $isRole = "is{$role}";
+                        if (
+                            (!empty($this->identity->$role))
+                            or
+                            (!empty($this->identity->$isRole))
+                        ){
+                            $identityHasRole = true;
+                            break;
+                        }
                     }
-                }
-                if (!$identityHasRole) {
-                    continue;
+                    if (!$identityHasRole) {
+                        continue;
+                    }
                 }
             }
             
