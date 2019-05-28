@@ -256,13 +256,14 @@ HTML;
             $config['flat'] = true;
         }
         
-        $options['class'] = $this->addToClass($options['class'],'form-check-input');
-        $options['labelClass'] = $this->addToClass($options['labelClass'],'form-check-label');
-        
         $options = $this->convertOptionAliases($options);
         
         $returnHtml = '';
         $widgetInfo = $this->processOptions($name, $options);
+        
+        $widgetInfo['class'] = $this->addToClass($widgetInfo['class'],'form-check-input');
+        $widgetInfo['labelClass'] = $this->addToClass($widgetInfo['labelClass'],'form-check-label');
+        
         $widgetIndex = 0;
         $outputCount = count($widgetInfo['options']);
         if ($widgetInfo['prepend']['contents']) { ++$outputCount; }
