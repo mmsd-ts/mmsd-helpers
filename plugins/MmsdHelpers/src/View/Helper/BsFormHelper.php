@@ -393,7 +393,7 @@ APPEND;
                          'options','optionsClass','selectOptionString','empty',
                          'rowClass','prepend','append','labelAppend','labelAppendChar',
                          'requiredChar','requiredClass',
-                         'errorClass',
+                         'errorClass','selected',
         ];
         
         if (($options['labelClass'] !== false) and (!empty($this->getConfig('defaults.labelClass')))) {
@@ -495,7 +495,20 @@ APPEND;
                     $selectOptions[] = "<option value=\"\" class=\"{$widgetInfo['optionsClass']}\">{$emptyLabel}</option>";
                 }
                 foreach ($widgetInfo['options'] as $key => $value) {
-                    $selected = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' selected' : null;
+                    $selected = null;;
+                    if (is_array($widgetInfo['selected'])) {
+                        if (in_array($key,$widgetInfo['selected'])) {
+                            $selected = ' selected';
+                        }
+                    } else {
+                        if (!empty($widgetInfo['selected'])) {
+                            if ($widgetInfo['selected'] == $key) {
+                                $selected = ' selected';
+                            }
+                        } elseif ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) {
+                            $selected = ' selected';
+                        }
+                    }
                     if (is_array($value)) {
                         $optionAttributes = [];
                         foreach ($value as $attr => $setting) {
@@ -551,6 +564,7 @@ APPEND;
             'requiredChar' => null,
             'requiredClass' => null,
             'errorClass' => null,
+            'selected' => null,
         ];
         $options['helpText'] += [
             'contents' => null,
