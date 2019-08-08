@@ -450,9 +450,13 @@ APPEND;
         $widgetInfo['defaultValue'] = null;
         $thisEntity = $this->getConfig('entity');
         $useEntityValue = true;
-        $alwaysUseEntityValueTypes = ['check','radio','select'];
+        $alwaysUseEntityValueTypes = ['check','radio','select','number'];
         if ((!empty($thisEntity)) and (isset($thisEntity->$name))) {
-            if ((!in_array($options['type'],$alwaysUseEntityValueTypes)) and (empty($thisEntity->$name))) {
+            if (
+                (!in_array($options['type'],$alwaysUseEntityValueTypes))
+                and
+                (empty($thisEntity->$name))
+            ) {
                 $useEntityValue = false;
             }
         } else {
