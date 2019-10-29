@@ -395,11 +395,14 @@ APPEND;
                          'options','optionsClass','selectOptionString','empty',
                          'rowClass','prepend','append','labelAppend','labelAppendChar',
                          'requiredChar','requiredClass',
-                         'errorClass','selected',
+                         'errorClass','selected','labelClassOverride',
         ];
         
         if (($options['labelClass'] !== false) and (!empty($this->getConfig('defaults.labelClass')))) {
             $options['labelClass'] = $this->addToClass($options['labelClass'],$this->getConfig('defaults.labelClass'));
+        }
+        if (!empty($options['labelClassOverride'])) {
+            $options['labelClass'] = $options['labelClassOverride'];
         }
         
         // bc for Bill
