@@ -58,7 +58,7 @@ class BsFormHelper extends Helper
                 'requiredClass' => null,
                 'labelAppendChar' => null,
                 'errorClass' => 'text-danger',
-                'useBrowswerAutocomplete' => true,
+                'useBrowserAutocomplete' => true,
                 'inputLayout' => 'Default',
             ],
             // Legacy only kept for backwards compatibility so Bill doesn't freak out
@@ -126,7 +126,7 @@ class BsFormHelper extends Helper
         
         $options = $this->convertOptionAliases($options);
                                                                       // bc for Bill
-        if (($this->getConfig('defaults.useBrowswerAutocomplete')) or ($this->getConfig('autocomplete'))) { 
+        if (($this->getConfig('defaults.useBrowserAutocomplete')) or ($this->getConfig('autocomplete'))) { 
             if (!empty($this->autocompleteMap[strtolower($name)])) {
                 $options['autocomplete'] = $this->autocompleteMap[strtolower($name)];
             }
@@ -504,7 +504,7 @@ APPEND;
                     $selectOptions[] = "<option value=\"\" class=\"{$widgetInfo['optionsClass']}\">{$emptyLabel}</option>";
                 }
                 foreach ($widgetInfo['options'] as $key => $value) {
-                    $selected = null;;
+                    $selected = null;
                     if (is_array($widgetInfo['selected'])) {
                         if (in_array($key,$widgetInfo['selected'])) {
                             $selected = ' selected';
