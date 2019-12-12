@@ -290,9 +290,8 @@ PREPEND;
         }
         
         foreach ($widgetInfo['options'] as $key => $value) {
-            $thisId = (strtolower($widgetInfo['id']) == strtolower($name)) ?
-                $this->makeId($name, $key) : $widgetInfo['id']
-            ;
+            
+            $thisId = $this->makeId($widgetInfo['id'],"-{$key}");
             
             $checked = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' checked' : null;
             
