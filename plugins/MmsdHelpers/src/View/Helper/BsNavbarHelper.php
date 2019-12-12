@@ -83,6 +83,8 @@ class BsNavbarHelper extends Helper
                 'roles' => [],
                 'params' => [],
                 'children' => [],
+                'link_id' => null,
+                'item_id' => null,
             ];
             
             if ($authLevel < $link['authLevel']) { continue; }
@@ -112,6 +114,7 @@ class BsNavbarHelper extends Helper
             $active = ($key == $currentKey);
             $itemActiveCssClass = ($active) ? 'active' : null;
             $activeSrMarker = ($active) ? '<span class="sr-only">(' . __('current page') . ')</span>' : null;
+            $itemID = (!empty($link['item_id'])) ? $link['item_id'] : "navbar-{$key}-item";
             
             $itemDropdownCssClass = (!empty($link['children'])) ? 'dropdown' : null;
             
@@ -127,6 +130,7 @@ class BsNavbarHelper extends Helper
             }
             $parentOptionsParams = [
                 'class' => 'nav-link',
+                'id' => (!empty($link['link_id'])) ? $link['link_id'] : "navbar-{$key}-link",
             ];
             
             if (!empty($link['children'])) {
@@ -142,7 +146,7 @@ class BsNavbarHelper extends Helper
             $parentLink = $this->Html->link(__($link['linkText']),$parentUrlParams,$parentOptionsParams);
             
             $navbarLink = <<<LI
-<li class="nav-item $itemActiveCssClass $itemDropdownCssClass">$parentLink $activeSrMarker
+<li class="nav-item $itemActiveCssClass $itemDropdownCssClass" id="$itemID">$parentLink $activeSrMarker
 LI;
             if (!empty($link['children'])) {
                 $navbarLink .= <<<DIV
