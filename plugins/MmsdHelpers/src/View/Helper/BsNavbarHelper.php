@@ -114,7 +114,7 @@ class BsNavbarHelper extends Helper
             $active = ($key == $currentKey);
             $itemActiveCssClass = ($active) ? 'active' : null;
             $activeSrMarker = ($active) ? '<span class="sr-only">(' . __('current page') . ')</span>' : null;
-            $itemID = (!empty($link['item_id'])) ? $link['item_id'] : "navbar-{$key}-item";
+            $itemID = (!empty($link['item_id'])) ? $link['item_id'] : "navbar-item-{$key}";
             
             $itemDropdownCssClass = (!empty($link['children'])) ? 'dropdown' : null;
             
@@ -130,7 +130,7 @@ class BsNavbarHelper extends Helper
             }
             $parentOptionsParams = [
                 'class' => 'nav-link',
-                'id' => (!empty($link['link_id'])) ? $link['link_id'] : "navbar-{$key}-link",
+                'id' => (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}",
             ];
             
             if (!empty($link['children'])) {
