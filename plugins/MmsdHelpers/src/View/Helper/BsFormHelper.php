@@ -72,8 +72,7 @@ class BsFormHelper extends Helper
         ]);
 
         if (!empty($config['defaults'])) {
-            $setDefaults = $this->getConfig('defaults');
-            $this->setConfig('defaults', array_merge($setDefaults, $config['defaults']));
+            $this->setDefaults($config['defaults']);
         }
         
     }
