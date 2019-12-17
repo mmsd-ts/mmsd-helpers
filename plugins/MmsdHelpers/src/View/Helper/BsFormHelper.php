@@ -60,6 +60,7 @@ class BsFormHelper extends Helper
                 'errorClass' => 'text-danger',
                 'useBrowserAutocomplete' => true,
                 'inputLayout' => 'Default',
+                'checkIdHasHyphen' => false,
             ],
             // Legacy only kept for backwards compatibility so Bill doesn't freak out
             'required_star' => false,
@@ -69,6 +70,11 @@ class BsFormHelper extends Helper
             'label_append' => false,
             'label_append_char' => ':',
         ]);
+
+        if (!empty($config['defaults'])) {
+            $setDefaults = $this->getConfig('defaults');
+            $this->setConfig('defaults', array_merge($setDefaults, $config['defaults']));
+        }
         
     }
     
@@ -291,7 +297,11 @@ PREPEND;
         
         foreach ($widgetInfo['options'] as $key => $value) {
             
-            $thisId = $this->makeId($widgetInfo['id'],"-{$key}");
+            $checkIdHyphen = '';
+            if ($this->getConfig('defaults.checkIdHasHyphen')) {
+                $checkIdHyphen = '-';
+            }
+            $thisId = $this->makeId($widgetInfo['id'],"{$checkIdHyphen}{$key}");
             
             $checked = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' checked' : null;
             
