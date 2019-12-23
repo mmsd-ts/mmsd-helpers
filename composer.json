@@ -1,10 +1,10 @@
 {
     "name": "mmsd-ts/mmsd-helpers",
-    "description": "CakePHP 3.x Helper classes to use with Bootstrap",
+    "description": "CakePHP 4.x Helper classes to use with Bootstrap",
     "type": "library",
     "require": {
-        "php": "^7.1",
-        "cakephp/authentication": "^1.1"
+        "php": "^7.2",
+        "cakephp/authentication": "^2.0"
     },
     "authors": [
         {
