@@ -45,7 +45,7 @@ class BsFormHelper extends Helper
      * {@inheritDoc}
      * @see \Cake\View\Helper::initialize()
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
         

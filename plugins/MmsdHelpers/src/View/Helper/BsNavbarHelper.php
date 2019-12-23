@@ -19,8 +19,10 @@ class BsNavbarHelper extends Helper
      * {@inheritDoc}
      * @see \Cake\View\Helper::initialize()
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
+        parent::initialize($config);
+
         $this->links = $config['links'];
         $this->linkMap = $config['linkMap'];
         $this->params = $this->getView()->getRequest()->getAttribute('params');
