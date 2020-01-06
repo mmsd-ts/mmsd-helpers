@@ -15,6 +15,7 @@ class SpecialFormatComponent extends Component
 
     public function telephoneNumber(string $oldNumber)
     {
+        /*
         $this->$result['originalString'] = $oldNumber;
         if (substr($originalPhoneNumber,0,1) == '+') {
             //$this->setInvalid(__('International phone numbers are not supported'));
@@ -38,6 +39,8 @@ class SpecialFormatComponent extends Component
         }
         $this->setValid(true);
         return $this->result;
+        */
+        return $oldNumber;
     }
 
     private function setValid(bool $valid)
