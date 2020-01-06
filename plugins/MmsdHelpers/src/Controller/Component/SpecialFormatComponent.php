@@ -17,7 +17,7 @@ class SpecialFormatComponent extends Component
     {
         $this->$result['originalString'] = $oldNumber;
         if (substr($originalPhoneNumber,0,1) == '+') {
-            $this->setInvalid(__'International phone numbers are not supported');
+            $this->setInvalid(__('International phone numbers are not supported'));
             return $this->result;
         }
         
