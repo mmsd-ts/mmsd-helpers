@@ -17,7 +17,9 @@ class SpecialFormatComponent extends Component
     {
         $this->$result['originalString'] = $oldNumber;
         if (substr($originalPhoneNumber,0,1) == '+') {
-            $this->setInvalid(__('International phone numbers are not supported'));
+            //$this->setInvalid(__('International phone numbers are not supported'));
+            $this->setMessage('International phone numbers are not supported');
+            $this->setValid(false);
             return $this->result;
         }
         
@@ -29,17 +31,30 @@ class SpecialFormatComponent extends Component
         if (!empty($numberArray[3])) {
             $newNumber .= "x{$numberArray[3]}";
         }
-        $this->result['formattedString'] = $newNumber;
+        $this->setFormattedString($newNumber);
         if ($oldNumber != $newNumber) {
-            $this->result['message'] = sprintf(__('The phone number %1$s was changed to %2$s. Please make sure it is correct.'),$oldNumber,$newNumber);
+            //$this->result['message'] = sprintf(__('The phone number %1$s was changed to %2$s. Please make sure it is correct.'),$oldNumber,$newNumber);
+            $this->setMessage(sprintf('The phone number %1$s was changed to %2$s. Please make sure it is correct.',$oldNumber,$newNumber));
         }
+        $this->setValid(true);
         return $this->result;
     }
 
-    private function setInvalid(string $message) {
-        $this->result['valid'] = false;
+    private function setValid(bool $valid)
+    {
+        $this->result['valid'] = $valid;
+    }
+
+    private function setMessage(string $message) {
         $this->result['message'] = $message;
-        return true;
+    }
+
+    private function setOriginalString(string $str) {
+        $this->result['originalString'] = $str;
+    }
+
+    private function setFormattedString(string $str) {
+        $this->result['formattedString'] = $str;
     }
 
 }
