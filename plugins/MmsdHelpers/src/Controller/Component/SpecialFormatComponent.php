@@ -43,6 +43,7 @@ class SpecialFormatComponent extends Component
         return $oldNumber;
     }
 
+    /*
     private function setValid(bool $valid)
     {
         $this->result['valid'] = $valid;
@@ -59,5 +60,6 @@ class SpecialFormatComponent extends Component
     private function setFormattedString(string $str) {
         $this->result['formattedString'] = $str;
     }
-
+    */
+    
 }
