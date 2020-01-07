@@ -15,12 +15,12 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "MmsdHelpers\\": "src/"
+            "MmsdHelpers\\": "plugins/MmsdHelpers/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MmsdHelpers\\Test\\": "tests/"
+            "MmsdHelpers\\Test\\": "plugins/MmsdHelpers/tests/"
         }
     }
 }
