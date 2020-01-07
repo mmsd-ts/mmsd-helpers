@@ -15,7 +15,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "MmsdHelpers\\": ["plugins/MmsdHelpers/src/","plugins/MmsdHelpers/resources/"]
+            "MmsdHelpers\\": "plugins/MmsdHelpers/src/"
         }
     },
     "autoload-dev": {
