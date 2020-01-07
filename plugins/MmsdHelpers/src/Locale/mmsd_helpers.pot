@@ -22,3 +22,14 @@ msgstr ""
 msgid "The phone number %1$s was changed to %2$s. Please make sure it is correct."
 msgstr ""
 
+#: 
+msgid "Phone number invalid"
+msgstr ""
+
+#: 
+msgid "Phone number format not recognized"
+msgstr ""
+
+#: 
+msgid "Name was changed"
+msgstr ""
