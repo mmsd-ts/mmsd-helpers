@@ -30,6 +30,7 @@ class CheckRoleComponent extends Component
                     $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
                         ->withValue('1')
                         ->withPath('/')
+                        ->withExpiry(new \DateTime('+8 hour'))
                     ;
                     $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
                     return true;
@@ -46,12 +47,14 @@ class CheckRoleComponent extends Component
             $ssoCookie = (new Cookie($this->cookiePrefix))
                 ->withValue($username)
                 ->withPath('/')
+                ->withExpiry(new \DateTime('+8 hour'))
             ;
             $this->getController()->setResponse($this->getController()->getResponse()->withCookie($ssoCookie));
         }
         $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
             ->withValue('1')
             ->withPath('/')
+            ->withExpiry(new \DateTime('+8 hour'))
         ;
         $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
     }
@@ -61,6 +64,7 @@ class CheckRoleComponent extends Component
         $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
             ->withValue('0')
             ->withPath('/')
+            ->withExpiry(new \DateTime('+3 second'))
         ;
         $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
     }
