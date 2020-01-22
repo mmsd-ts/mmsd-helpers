@@ -60,7 +60,7 @@ class CheckRoleComponent extends Component
         $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
     }
 
-    public function ssoRemove(string $appName): void
+    public function ssoRemove(string $appName, bool $forceOut = false): void
     {
         $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
             ->withValue('0')
@@ -68,6 +68,12 @@ class CheckRoleComponent extends Component
             ->withExpiry(new \DateTime('+3 second'))
         ;
         $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
+        if ($forceOut) {
+            $ssoCookie = (new Cookie($this->cookiePrefix))
+                ->withPath('/')
+            ;
+            $this->getController()->setResponse($this->getController()->getResponse()->withExpiredCookie($ssoCookie));
+        }
     }
 
     public function check(array $roles = []): bool
