@@ -366,6 +366,43 @@ APPEND;
         
     }
     
+    // START EXPERIMENTAL
+
+    public function checkGroup(array $fullList, array $data, string $modelName, string $foreignKey, string $bitField, array $options = [], array $config = [], string $primaryKey = 'id')
+    {
+        $fullHtmlGroup = '';
+        $newItemId = 0;
+        foreach ($fullList as $fullListValue => $fullListLabel) {
+            $itemId = '';
+            $fieldOptions = [];
+            $fieldName = "{$modelName}.{$fullListValue}.";
+            $matched = false;
+            foreach ($data as $item) {
+                if ($item->$foreignKey == $fullListValue) {
+                    $itemId = "Exisiting.{$item->$primaryKey}";
+                    if (!empty($item->$bitField)) {
+                        $fieldOptions['checked'] = true;
+                    }
+                    $matched = true;
+                    break;
+                }
+            }
+            if (!$matched) {
+                $itemId = "New.{$newItemId}";
+                ++$newItemId;
+            }
+            $fieldName .= $itemId;
+            $fieldOptions['options'] = [
+                '1' => $fullListLabel,
+            ];
+            $fieldOptions = $fieldOptions + $options;
+            $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
+        }
+        return $fullHtmlGroup;
+    }
+    
+    // END EXPERIMENTAL
+    
     /**
      * 
      * @param array $options
