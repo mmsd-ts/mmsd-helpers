@@ -26,4 +26,20 @@ class CheckAccessComponent extends Component
         }
         return false;
     }
+
+    public function addItem(string $sessionKey, string $value): void
+    {
+        if ($this->getController()->getRequest()->getSession()->check($sessionKey)) {
+            $values = $this->getController()->getRequest()->getSession()->read($sessionKey);
+            $values[] = $value;
+            $this->getController()->getRequest()->getSession()->write($sessionKey,$values);
+        } else {
+            $this->writeArray($sessionKey, [$value]);
+        }
+    }
+
+    public function writeArray(string $sessionKey, array $values): void
+    {
+        $this->getController()->getRequest()->getSession()->write($sessionKey,$values);
+    }
 }
