@@ -31,7 +31,9 @@ class CheckAccessComponent extends Component
     {
         if ($this->getController()->getRequest()->getSession()->check($sessionKey)) {
             $values = $this->getController()->getRequest()->getSession()->read($sessionKey);
-            $values[] = $value;
+            if (!in_array($value,$values)) {
+                $values[] = $value;
+            }
             $this->getController()->getRequest()->getSession()->write($sessionKey,$values);
         } else {
             $this->writeArray($sessionKey, [$value]);
