@@ -21,6 +21,7 @@ class SpecialFormatComponent extends Component
             $this->setMessage(__('International phone numbers are not supported'));
             return $this->result;
         }
+        $newNumber = '';
         if (count($numberArray) > 2) {
             $badAreaCodes = ['555','800','833','844','855','866','877','880','881','882','888',
                             '211','311','411','511','611','711','811','900','911'];
