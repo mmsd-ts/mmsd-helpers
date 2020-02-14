@@ -21,19 +21,21 @@ class SpecialFormatComponent extends Component
             $this->setMessage(__('International phone numbers are not supported'));
             return $this->result;
         }
-        $badAreaCodes = ['555','800','833','844','855','866','877','880','881','882','888',
-                         '211','311','411','511','611','711','811','900','911'];
-        $badExchanges = ['555','211','311','411','511','611','711','811','911'];
-        if ((in_array($numberArray[0],$badAreaCodes)) or (in_array($numberArray[1],$badExchanges))) {
-            $this->setMessage(__('Phone number invalid'));
-            return $this->result;
-        }
+        if (count($numberArray) > 2) {
+            $badAreaCodes = ['555','800','833','844','855','866','877','880','881','882','888',
+                            '211','311','411','511','611','711','811','900','911'];
+            $badExchanges = ['555','211','311','411','511','611','711','811','911'];
+            if ((in_array($numberArray[0],$badAreaCodes)) or (in_array($numberArray[1],$badExchanges))) {
+                $this->setMessage(__('Phone number invalid'));
+                return $this->result;
+            }
 
-        $newNumber = "({$numberArray[0]}){$numberArray[1]}-{$numberArray[2]}";
-        if (!empty($numberArray[3])) {
-            $newNumber .= "x{$numberArray[3]}";
+            $newNumber = "({$numberArray[0]}){$numberArray[1]}-{$numberArray[2]}";
+            if (!empty($numberArray[3])) {
+                $newNumber .= "x{$numberArray[3]}";
+            }
+            $this->setFormattedString($newNumber);
         }
-        $this->setFormattedString($newNumber);
 
         $phonePattern = '/^\([2-9]\d{2}\)[2-9]\d{2}-\d{4}(x\d+)*$/';
         if (preg_match($phonePattern,$newNumber) !== 1) {
