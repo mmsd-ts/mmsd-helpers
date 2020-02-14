@@ -379,7 +379,7 @@ APPEND;
             $matched = false;
             foreach ($data as $item) {
                 if ($item->$foreignKey == $fullListValue) {
-                    $itemId = "Exisiting.{$item->$primaryKey}";
+                    $itemId = "Existing.{$item->$primaryKey}";
                     if (!empty($item->$bitField)) {
                         $fieldOptions['checked'] = true;
                     }
