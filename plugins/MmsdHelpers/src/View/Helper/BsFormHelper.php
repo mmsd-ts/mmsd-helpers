@@ -45,7 +45,7 @@ class BsFormHelper extends Helper
      * {@inheritDoc}
      * @see \Cake\View\Helper::initialize()
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
         
@@ -62,19 +62,27 @@ class BsFormHelper extends Helper
                 'inputLayout' => 'Default',
                 'checkIdHasHyphen' => false,
             ],
-            // Legacy only kept for backwards compatibility so Bill doesn't freak out
-            'required_star' => false,
-            'required_class' => null,
-            'autocomplete' => true,
-            'error_class' => 'text-danger',
-            'label_append' => false,
-            'label_append_char' => ':',
         ]);
+        $this->setOldConfig();
 
         if (!empty($config['defaults'])) {
             $this->setDefaults($config['defaults']);
         }
         
+    }
+    /**
+     *  Legacy only kept for backwards compatibility so Bill doesn't freak out
+     */ 
+    public function setOldConfig(): void
+    {
+        $this->setConfig([
+            'required_star' => (!empty($this->getConfig('defaults.requiredChar'))),
+            'required_class' => $this->getConfig('defaults.requiredClass'),
+            'autocomplete' => (!empty($this->getConfig('defaults.useBrowserAutocomplete'))),
+            'error_class' => $this->getConfig('defaults.errorClass'),
+            'label_append' => (!empty($this->getConfig('defaults.labelAppendChar'))),
+            'label_append_char' => $this->getConfig('defaults.labelAppendChar'),
+        ]);
     }
     
     /**
@@ -96,12 +104,13 @@ class BsFormHelper extends Helper
      *
      * @param array $newDefaults
      */
-    public function setDefaults(array $newDefaults = [])
+    public function setDefaults(array $newDefaults = []): void
     {
         $setDefaults = $this->getConfig('defaults');
-        return $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
+        $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
+        $this->setOldConfig();
     }
-    
+        
     /**
      * 
      * @param string $name
