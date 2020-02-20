@@ -377,7 +377,7 @@ APPEND;
     
     // START EXPERIMENTAL
 
-    public function checkGroup(array $fullList, array $data, string $modelName, string $foreignKey, string $bitField, array $options = [], array $config = [], string $primaryKey = 'id')
+    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], array $config = [], string $primaryKey = 'id')
     {
         $fullHtmlGroup = '';
         $newItemId = 0;
