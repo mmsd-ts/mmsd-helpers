@@ -377,14 +377,16 @@ APPEND;
             $fieldOptions = [];
             $fieldName = "{$modelName}.{$fullListValue}.";
             $matched = false;
-            foreach ($data as $item) {
-                if ($item->$foreignKey == $fullListValue) {
-                    $itemId = "Existing.{$item->$primaryKey}";
-                    if (!empty($item->$bitField)) {
-                        $fieldOptions['checked'] = true;
+            if (!empty($data)) {
+                foreach ($data as $item) {
+                    if ($item->$foreignKey == $fullListValue) {
+                        $itemId = "Existing.{$item->$primaryKey}";
+                        if (!empty($item->$bitField)) {
+                            $fieldOptions['checked'] = true;
+                        }
+                        $matched = true;
+                        break;
                     }
-                    $matched = true;
-                    break;
                 }
             }
             if (!$matched) {
