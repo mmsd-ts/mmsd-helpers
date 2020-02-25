@@ -70,19 +70,22 @@ class BsFormHelper extends Helper
         }
         
     }
+        
     /**
-     *  Legacy only kept for backwards compatibility so Bill doesn't freak out
-     */ 
-    public function setOldConfig(): void
+     *
+     * @param array $newDefaults
+     */
+    public function setDefaults(array $newDefaults = []): void
     {
-        $this->setConfig([
-            'required_star' => (!empty($this->getConfig('defaults.requiredChar'))),
-            'required_class' => $this->getConfig('defaults.requiredClass'),
-            'autocomplete' => (!empty($this->getConfig('defaults.useBrowserAutocomplete'))),
-            'error_class' => $this->getConfig('defaults.errorClass'),
-            'label_append' => (!empty($this->getConfig('defaults.labelAppendChar'))),
-            'label_append_char' => $this->getConfig('defaults.labelAppendChar'),
-        ]);
+        // process old default values if present
+        if (!empty($newDefaults['required_star'])) { $newDefaults['requiredChar'] = '*'; unset($newDefaults['required_star']); }
+        if (!empty($newDefaults['required_class'])) { $newDefaults['requiredClass'] = $newDefaults['required_class']; unset($newDefaults['required_class']); }
+        if (!empty($newDefaults['autocomplete'])) { $newDefaults['useBrowserAutocomplete'] = $newDefaults['autocomplete']; unset($newDefaults['autocomplete']); }
+        if (!empty($newDefaults['error_class'])) { $newDefaults['errorClass'] = $newDefaults['error_class']; unset($newDefaults['error_class']); }
+        if (!empty($newDefaults['label_append'])) { $newDefaults['labelAppendChar'] = ':'; unset($newDefaults['label_append']); }
+        if (!empty($newDefaults['label_append_char'])) { $newDefaults['labelAppendChar'] = $newDefaults['label_append_char']; unset($newDefaults['label_append_char']); }
+        $setDefaults = $this->getConfig('defaults');
+        $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
     }
     
     /**
@@ -100,17 +103,6 @@ class BsFormHelper extends Helper
         return $this->getConfig('entity');
     }
     
-    /**
-     *
-     * @param array $newDefaults
-     */
-    public function setDefaults(array $newDefaults = []): void
-    {
-        $setDefaults = $this->getConfig('defaults');
-        $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
-        $this->setOldConfig();
-    }
-        
     /**
      * 
      * @param string $name
