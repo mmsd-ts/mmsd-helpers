@@ -63,8 +63,7 @@ class BsFormHelper extends Helper
                 'checkIdHasHyphen' => false,
             ],
         ]);
-        $this->setOldConfig();
-
+        
         if (!empty($config['defaults'])) {
             $this->setDefaults($config['defaults']);
         }
