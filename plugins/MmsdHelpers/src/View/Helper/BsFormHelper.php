@@ -314,7 +314,7 @@ PREPEND;
                 $emptyValue = ($widgetInfo['type'] == 'checkbox') ? '0' : '';
                 $emptyId = $this->makeId("_{$widgetInfo['name']}");
                 $returnHtml .= <<<"HTML"
-\t<input type="hidden" name="{$widgetInfo['name']}" id="{$emptyId}" value="{$emptyValue}">
+\t<input type="hidden" name="{$widgetInfo['name']}" id="{$emptyId}" value="{$emptyValue}" class="{$widgetInfo['class']}">
 
 HTML;
             }
