@@ -266,6 +266,7 @@ HTML;
         $returnHtml = '';
         $widgetInfo = $this->processOptions($name, $options);
         
+        $widgetInfo['hiddenClass'] = $widgetInfo['class'];
         $widgetInfo['class'] = $this->addToClass($widgetInfo['class'],'form-check-input');
         $widgetInfo['labelClass'] = $this->addToClass($widgetInfo['labelClass'],'form-check-label');
         
@@ -314,7 +315,7 @@ PREPEND;
                 $emptyValue = ($widgetInfo['type'] == 'checkbox') ? '0' : '';
                 $emptyId = $this->makeId("_{$widgetInfo['name']}");
                 $returnHtml .= <<<"HTML"
-\t<input type="hidden" name="{$widgetInfo['name']}" id="{$emptyId}" value="{$emptyValue}" class="{$widgetInfo['class']}">
+\t<input type="hidden" name="{$widgetInfo['name']}" id="{$emptyId}" value="{$emptyValue}" class="{$widgetInfo['hiddenClass']}">
 
 HTML;
             }
