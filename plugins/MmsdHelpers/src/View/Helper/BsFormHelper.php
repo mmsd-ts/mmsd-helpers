@@ -88,23 +88,6 @@ class BsFormHelper extends Helper
     }
     
     /**
-     *
-     * @param array $newDefaults
-     */
-    public function setDefaults(array $newDefaults = []): void
-    {
-        // process old default values if present
-        if (!empty($newDefaults['required_star'])) { $newDefaults['requiredChar'] = '*'; unset($newDefaults['required_star']); }
-        if (!empty($newDefaults['required_class'])) { $newDefaults['requiredClass'] = $newDefaults['required_class']; unset($newDefaults['required_class']); }
-        if (!empty($newDefaults['autocomplete'])) { $newDefaults['useBrowserAutocomplete'] = $newDefaults['autocomplete']; unset($newDefaults['autocomplete']); }
-        if (!empty($newDefaults['error_class'])) { $newDefaults['errorClass'] = $newDefaults['error_class']; unset($newDefaults['error_class']); }
-        if (!empty($newDefaults['label_append'])) { $newDefaults['labelAppendChar'] = ':'; unset($newDefaults['label_append']); }
-        if (!empty($newDefaults['label_append_char'])) { $newDefaults['labelAppendChar'] = $newDefaults['label_append_char']; unset($newDefaults['label_append_char']); }
-        $setDefaults = $this->getConfig('defaults');
-        $this->setConfig('defaults', array_merge($setDefaults, $newDefaults));
-    }
-    
-    /**
      * 
      * @param \Cake\ORM\Entity $formEntity
      */
