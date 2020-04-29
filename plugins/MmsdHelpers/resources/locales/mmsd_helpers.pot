@@ -33,3 +33,67 @@ msgstr ""
 #: 
 msgid "Name was changed"
 msgstr ""
+
+#: 
+msgid "Address Finder"
+msgstr ""
+
+#: 
+msgid "It is very important to use accurate addresses."
+msgstr ""
+
+#: 
+msgid "Number"
+msgstr ""
+
+#: 
+msgid "Direction"
+msgstr ""
+
+#: 
+msgid "Street"
+msgstr ""
+
+#: 
+msgid "Type"
+msgstr ""
+
+#: 
+msgid "Apt"
+msgstr ""
+
+#: 
+msgid "City"
+msgstr ""
+
+#: 
+msgid "State"
+msgstr ""
+
+#: 
+msgid "Zip code"
+msgstr ""
+
+#: 
+msgid "Find Address"
+msgstr ""
+
+#: 
+msgid "We are unable to find that address. Use it anyway?"
+msgstr ""
+
+#: 
+msgid "Use my address as entered"
+msgstr ""
+
+#: 
+msgid "That is not a valid address"
+msgstr ""
+
+#: 
+msgid "Close"
+msgstr ""
+
+#: 
+msgid "Required field"
+msgstr ""

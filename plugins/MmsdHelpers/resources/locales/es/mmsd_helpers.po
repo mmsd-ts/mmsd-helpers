@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2020-01-06 11:47-0600\n"
-"PO-Revision-Date: 2020-01-07 09:47-0600\n"
+"PO-Revision-Date: 2020-04-29 13:23-0500\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 
 msgid "International phone numbers are not supported"
 msgstr "No se admiten números de teléfono internacionales"
@@ -32,3 +32,51 @@ msgstr "No se reconoce el formato del número de teléfono"
 
 msgid "Name was changed"
 msgstr "El nombre fue cambiado"
+
+msgid "Address Finder"
+msgstr "Buscador de direcciones"
+
+msgid "It is very important to use accurate addresses."
+msgstr "Es muy importante utilizar direcciones precisas."
+
+msgid "Number"
+msgstr "Número"
+
+msgid "Direction"
+msgstr "Dirección"
+
+msgid "Street"
+msgstr "Nombre de la calle"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Apt"
+msgstr "Dpto"
+
+msgid "City"
+msgstr "Ciudad"
+
+msgid "State"
+msgstr "Estado"
+
+msgid "Zip code"
+msgstr "Código postal"
+
+msgid "Find Address"
+msgstr "Busque una dirección"
+
+msgid "We are unable to find that address. Use it anyway?"
+msgstr "No podemos encontrar esa dirección. ¿Usarlo de todos modos?"
+
+msgid "Use my address as entered"
+msgstr "Usar mi dirección tal y como fue introducida"
+
+msgid "That is not a valid address"
+msgstr "Esa no es una dirección válida"
+
+msgid "Close"
+msgstr "Cierre"
+
+msgid "Required field"
+msgstr "Campo requerido"
