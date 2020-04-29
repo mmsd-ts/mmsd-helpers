@@ -18,7 +18,7 @@ class SpecialFormatComponent extends Component
         }
 
         if ((substr($originalNumber,0,1) == '+') or (count($numberArray) > 4)) {
-            $this->setMessage(__('International phone numbers are not supported'));
+            $this->setMessage(__d('mmsd_helpers','International phone numbers are not supported'));
             return $this->result;
         }
         $newNumber = '';
@@ -27,7 +27,7 @@ class SpecialFormatComponent extends Component
                             '211','311','411','511','611','711','811','900','911'];
             $badExchanges = ['555','211','311','411','511','611','711','811','911'];
             if ((in_array($numberArray[0],$badAreaCodes)) or (in_array($numberArray[1],$badExchanges))) {
-                $this->setMessage(__('Phone number invalid'));
+                $this->setMessage(__d('mmsd_helpers','Phone number invalid'));
                 return $this->result;
             }
 
@@ -40,12 +40,12 @@ class SpecialFormatComponent extends Component
 
         $phonePattern = '/^\([2-9]\d{2}\)[2-9]\d{2}-\d{4}(x\d+)*$/';
         if (preg_match($phonePattern,$newNumber) !== 1) {
-            $this->setMessage(__('Phone number format not recognized'));
+            $this->setMessage(__d('mmsd_helpers','Phone number format not recognized'));
             return $this->result;
         }
 
         if ($oldNumbers != $this->reduceToNumbers($newNumber)) {
-            $this->result['message'] = sprintf(__('The phone number %1$s was changed to %2$s. Please make sure it is correct.'),$originalNumber,$newNumber);
+            $this->result['message'] = sprintf(__d('mmsd_helpers','The phone number %1$s was changed to %2$s. Please make sure it is correct.'),$originalNumber,$newNumber);
         }
         $this->setValid(true);
         return $this->result;
@@ -84,7 +84,7 @@ class SpecialFormatComponent extends Component
         }
         
         if ($originalName != $newName) {
-            $this->result['message'] = __('Name was changed');
+            $this->result['message'] = __d('mmsd_helpers','Name was changed');
         }
         $this->setFormattedString($newName);
         $this->setValid(true);
