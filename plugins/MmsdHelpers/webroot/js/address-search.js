@@ -69,10 +69,10 @@ MMSD.thisApp = {
 					MMSD.addressSearchVars.resultDiv.children().detach();
 					let resultUL = $('<ul>');
 					$.each(data.addresses, function(idx, address){
-						let resultClass = 'oi-circle-check text-success';
+						let resultClass = 'fa-check-circle text-success';
 						let resultTitle = 'In MMSD';
 						if (address.districtID != '200') {
-							resultClass = 'oi-warning text-danger';
+							resultClass = 'fa-exclamation-triangle text-danger';
 							resultTitle = 'Out of MMSD';
 						}
 						$('<li>')
@@ -93,7 +93,7 @@ MMSD.thisApp = {
 							)
 						.append(
 								$('<span>',{
-									'class':'oi ' + resultClass,
+									'class':'fas ' + resultClass,
 									'aria-hidden':'true',
 									'title':resultTitle
 								})
@@ -180,6 +180,57 @@ MMSD.thisApp = {
 		}
 		$(MMSD.addressSearchVars.fieldDisplay).val(address.fullAddress);
 		$(MMSD.addressSearchVars.fieldID).val(address.id);
+		if (address.kfour) {
+			if (address.kfour.k4SchoolCode) {
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'k4-school-codes').val(JSON.stringify([address.kfour.k4SchoolCode]));
+			}
+			if (address.kfour.k4SchoolName) {
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'k4-school-names').val(JSON.stringify([address.kfour.k4SchoolName]));
+			}
+			if (address.kfour.k4SchoolID) {
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'k4-school-ids').val(JSON.stringify([address.kfour.k4SchoolID]));
+			}
+		}
+		let esInfo = {
+			codes: [],
+			names: [],
+			IDs: []
+		};
+		$.each(address.elementary_boundaries, function(idx, es){
+			esInfo.codes.push(es.school.SchoolCode);
+			esInfo.names.push(es.school.name);
+			esInfo.IDs.push(es.school.schoolID);
+		});
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-codes').val(JSON.stringify(esInfo.codes));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-names').val(JSON.stringify(esInfo.names));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-ids').val(JSON.stringify(esInfo.IDs));
+		let msInfo = {
+			codes: [],
+			names: [],
+			IDs: []
+		};
+		$.each(address.middle_boundaries, function(idx, ms){
+			msInfo.codes.push(ms.school.SchoolCode);
+			msInfo.names.push(ms.school.name);
+			msInfo.IDs.push(ms.school.schoolID);
+		});
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-codes').val(JSON.stringify(msInfo.codes));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-names').val(JSON.stringify(msInfo.names));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-ids').val(JSON.stringify(msInfo.IDs));
+		let hsInfo = {
+			codes: [],
+			names: [],
+			IDs: []
+		};
+		$.each(address.high_boundaries, function(idx, hs){
+			hsInfo.codes.push(hs.school.SchoolCode);
+			hsInfo.names.push(hs.school.name);
+			hsInfo.IDs.push(hs.school.schoolID);
+		});
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-codes').val(JSON.stringify(hsInfo.codes));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-names').val(JSON.stringify(hsInfo.names));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-ids').val(JSON.stringify(hsInfo.IDs));
+
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val('');
         $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val('');
 		$('#residency-info').show();
@@ -202,7 +253,16 @@ MMSD.thisApp = {
 		MMSD.addresses.uspsAddressSearch(enteredAddress)
         .done(function(status, data) {
             if (status) {
-                // Do address found stuff
+				// Do address found stuff
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-codes').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-codes').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-codes').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-names').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-names').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-names').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-ids').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-ids').val('');
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-ids').val('');
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val(data.line1);
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val(data.line2);
 				let enteredText = data.line1 + ' ' + data.line2;

@@ -75,8 +75,11 @@ class CheckRoleComponent extends Component
         }
     }
 
-    public function check(array $roles = []): bool
+    public function check($roles = ''): bool
     {
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
         $identityHasRole = false;
         if (!empty($roles)) {
             foreach ($roles as $role) {
