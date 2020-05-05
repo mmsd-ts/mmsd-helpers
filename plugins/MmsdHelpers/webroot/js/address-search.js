@@ -191,6 +191,11 @@ MMSD.thisApp = {
 				$('#'+MMSD.addressSearchVars.fieldsPrefix+'k4-school-ids').val(JSON.stringify([address.kfour.k4SchoolID]));
 			}
 		}
+		let schoolInfo = {
+			codes: [],
+			names: [],
+			IDs: []
+		};
 		let esInfo = {
 			codes: [],
 			names: [],
@@ -200,6 +205,9 @@ MMSD.thisApp = {
 			esInfo.codes.push(es.school.SchoolCode);
 			esInfo.names.push(es.school.name);
 			esInfo.IDs.push(es.school.schoolID);
+			schoolInfo.codes.push(es.school.SchoolCode);
+			schoolInfo.names.push(es.school.name);
+			schoolInfo.IDs.push(es.school.schoolID);
 		});
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-codes').val(JSON.stringify(esInfo.codes));
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-names').val(JSON.stringify(esInfo.names));
@@ -213,6 +221,9 @@ MMSD.thisApp = {
 			msInfo.codes.push(ms.school.SchoolCode);
 			msInfo.names.push(ms.school.name);
 			msInfo.IDs.push(ms.school.schoolID);
+			schoolInfo.codes.push(ms.school.SchoolCode);
+			schoolInfo.names.push(ms.school.name);
+			schoolInfo.IDs.push(ms.school.schoolID);
 		});
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-codes').val(JSON.stringify(msInfo.codes));
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-names').val(JSON.stringify(msInfo.names));
@@ -226,14 +237,22 @@ MMSD.thisApp = {
 			hsInfo.codes.push(hs.school.SchoolCode);
 			hsInfo.names.push(hs.school.name);
 			hsInfo.IDs.push(hs.school.schoolID);
+			schoolInfo.codes.push(hs.school.SchoolCode);
+			schoolInfo.names.push(hs.school.name);
+			schoolInfo.IDs.push(hs.school.schoolID);
 		});
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-codes').val(JSON.stringify(hsInfo.codes));
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-names').val(JSON.stringify(hsInfo.names));
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-ids').val(JSON.stringify(hsInfo.IDs));
 
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'all-school-codes').val(JSON.stringify(schoolInfo.codes));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'all-school-names').val(JSON.stringify(schoolInfo.names));
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'all-school-ids').val(JSON.stringify(schoolInfo.IDs));
+
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val('');
         $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val('');
 		$('#residency-info').show();
+		$(MMSD.addressSearchVars.fieldDisplay).trigger('address:ic');
 		return true;
 	},
 	useUnfoundAddress: function() {
@@ -254,21 +273,18 @@ MMSD.thisApp = {
         .done(function(status, data) {
             if (status) {
 				// Do address found stuff
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-codes').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-codes').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-codes').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-names').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-names').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-names').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'es-school-ids').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'ms-school-ids').val('');
-				$('#'+MMSD.addressSearchVars.fieldsPrefix+'hs-school-ids').val('');
+				$.each(['es','ms','hs','all'],function(ixl, lvl){
+					$.each(['codes','names','ids'],function(ixf, field){
+						$('#'+MMSD.addressSearchVars.fieldsPrefix+lvl+'-school-' + field).val('');
+					});
+				});
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val(data.line1);
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val(data.line2);
 				let enteredText = data.line1 + ' ' + data.line2;
                 $(MMSD.addressSearchVars.fieldDisplay).val(enteredText);
 				$('#residency-info').show();
 				MMSD.addressSearchVars.modal.modal('hide');
+				$(MMSD.addressSearchVars.fieldDisplay).trigger('address:usps');
             } else {
                 // Do error and/or no address stuff
 				MMSD.addressSearchVars.failureDiv.hide();
