@@ -369,8 +369,10 @@ APPEND;
     
     // START EXPERIMENTAL
 
-    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], array $config = [], string $primaryKey = 'id')
+    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], bool $forPrint = null, array $config = [], string $primaryKey = null)
     {
+        $primaryKey = (is_null($primaryKey)) ? 'id' : $primaryKey;
+        
         $fullHtmlGroup = '';
         $newItemId = 0;
         foreach ($fullList as $fullListValue => $fullListLabel) {
@@ -399,7 +401,13 @@ APPEND;
                 '1' => $fullListLabel,
             ];
             $fieldOptions = $fieldOptions + $options;
-            $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
+            
+            // For print, only display checked accommodations
+            if (($forPrint == true && isset($fieldOptions['checked']) && $fieldOptions['checked'] == true) || ($forPrint != true)) { 
+                    $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
+            } 
+
+            
         }
         return $fullHtmlGroup;
     }
