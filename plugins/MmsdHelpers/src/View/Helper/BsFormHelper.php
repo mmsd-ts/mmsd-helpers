@@ -369,7 +369,7 @@ APPEND;
     
     // START EXPERIMENTAL
 
-    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], bool $forPrint = null, array $config = [], string $primaryKey = 'id')
+    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], bool $forPrint = false, array $config = [], string $primaryKey = 'id')
     {
         $fullHtmlGroup = '';
         $newItemId = 0;
@@ -401,7 +401,7 @@ APPEND;
             $fieldOptions = $fieldOptions + $options;
             
             // For print, only display checked accommodations
-            if (($forPrint == true && isset($fieldOptions['checked']) && $fieldOptions['checked'] == true) || ($forPrint != true)) { 
+            if (($forPrint == true && isset($fieldOptions['checked']) && $fieldOptions['checked'] == true) || (!$forPrint)) { 
                     $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
             } 
         }
