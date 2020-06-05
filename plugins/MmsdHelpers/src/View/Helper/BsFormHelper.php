@@ -244,7 +244,7 @@ HTML;
      */
     public function check(string $name, array $options = [], array $config = [])
     {
-        // override default options if not set in ctp
+        // override default options if not set in template file
         $options += [
             'type' => 'checkbox',
             'empty' => true,
@@ -369,7 +369,7 @@ APPEND;
     
     // START EXPERIMENTAL
 
-    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], array $config = [], string $primaryKey = 'id')
+    public function checkGroup(array $fullList, array $data = null, string $modelName, string $foreignKey, string $bitField, array $options = [], bool $forPrint = false, array $config = [], string $primaryKey = 'id')
     {
         $fullHtmlGroup = '';
         $newItemId = 0;
@@ -399,7 +399,11 @@ APPEND;
                 '1' => $fullListLabel,
             ];
             $fieldOptions = $fieldOptions + $options;
-            $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
+            
+            // For print, only display checked accommodations
+            if (($forPrint == true && isset($fieldOptions['checked']) && $fieldOptions['checked'] == true) || (!$forPrint)) { 
+                    $fullHtmlGroup .= $this->check($fieldName, $fieldOptions, $config);
+            } 
         }
         return $fullHtmlGroup;
     }
@@ -438,12 +442,13 @@ APPEND;
     private function processOptions(string $name, array $options = [])
     {
         // Named options do not pass through
-        $namedOptions = ['type','id','value','class','label','labelClass',
-                         'helpText','validMessage','invalidMessage',
-                         'options','optionsClass','selectOptionString','empty',
-                         'rowClass','prepend','append','labelAppend','labelAppendChar',
-                         'requiredChar','requiredClass',
-                         'errorClass','selected','labelClassOverride',
+        $namedOptions = [
+            'type','id','value','class','label','labelClass',
+            'helpText','validMessage','invalidMessage',
+            'options','optionsClass','selectOptionString','empty',
+            'rowClass','prepend','append','labelAppend','labelAppendChar',
+            'requiredChar','requiredClass',
+            'errorClass','selected','labelClassOverride',
         ];
         
         if (($options['labelClass'] !== false) and (!empty($this->getConfig('defaults.labelClass')))) {
