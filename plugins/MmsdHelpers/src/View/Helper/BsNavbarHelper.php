@@ -93,19 +93,7 @@ class BsNavbarHelper extends Helper
             
             if (!empty($this->identity)) {
                 if (!empty($link['roles'])) {
-                    $identityHasRole = false;
-                    foreach ($link['roles'] as $role) {
-                        $isRole = "is{$role}";
-                        if (
-                            (!empty($this->identity->$role))
-                            or
-                            (!empty($this->identity->$isRole))
-                        ){
-                            $identityHasRole = true;
-                            break;
-                        }
-                    }
-                    if (!$identityHasRole) {
+                    if (!$this->checkRole($link['roles'])) {
                         continue;
                     }
                 }
@@ -162,7 +150,15 @@ DIV;
                         'controller' => 'Users',
                         'action' => 'index',
                         'params' => [],
+                        'roles' => [],
                     ];
+                    if (!empty($this->identity)) {
+                        if (!empty($childLink['roles'])) {
+                            if (!$this->checkRole($childLink['roles'])) {
+                                continue;
+                            }
+                        }
+                    }
                     
                     $childUrlParams = [
                         'prefix' => $childLink['prefix'],
@@ -188,13 +184,34 @@ DIV;
         return $navbarLinks;
     }
     
-    private function _patternize($rawPattern) {
+    private function _patternize($rawPattern) : string
+    {
         $pattern = $rawPattern;
         
         $pattern = str_replace('/', '\\/', $pattern);
         $pattern = "/^{$pattern}/";
         
         return $pattern;
+    }
+
+    private function checkRole($roles = '') : bool
+    {
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+        $identityHasRole = false;
+        foreach ($roles as $role) {
+            $isRole = "is{$role}";
+            if (
+                (!empty($this->identity->$role))
+                or
+                (!empty($this->identity->$isRole))
+            ){
+                $identityHasRole = true;
+                break;
+            }
+        }
+        return $identityHasRole;
     }
     
 }
