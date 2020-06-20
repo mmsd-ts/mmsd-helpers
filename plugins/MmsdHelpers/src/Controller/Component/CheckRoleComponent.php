@@ -9,6 +9,21 @@ class CheckRoleComponent extends Component
 
     // Do not ever change this. (See Application->middleware()->$cookies)
     private $cookiePrefix = 'SSO_MMSD';
+    private $allAccessRoles = ['Administrator'];
+
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
+        if (isset($config['allAccessRoles'])) {
+            if ($config['allAccessRoles'] === false) {
+                $this->allAccessRoles = [];
+            } elseif (is_array($config['allAccessRoles'])) {
+                $this->allAccessRoles = $config['allAccessRoles'];
+            } else {
+                $this->allAccessRoles = [$config['allAccessRoles']];
+            }
+        }
+    }
 
     public function ssoCheck(string $appName): bool
     {
@@ -79,6 +94,9 @@ class CheckRoleComponent extends Component
     {
         if (!is_array($roles)) {
             $roles = [$roles];
+        }
+        if (!empty($this->allAccessRoles)) {
+            $roles = array_merge($roles,$this->allAccessRoles);
         }
         $identityHasRole = false;
         if (!empty($roles)) {
