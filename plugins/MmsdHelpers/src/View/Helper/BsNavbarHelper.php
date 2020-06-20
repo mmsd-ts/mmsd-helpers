@@ -93,7 +93,7 @@ class BsNavbarHelper extends Helper
                 'prefix' => false,
                 'controller' => 'Users',
                 'action' => 'index',
-                'roles' => $this->allAccessRoles,
+                'roles' => [],
                 'params' => [],
                 'children' => [],
                 'link_id' => null,
@@ -161,7 +161,7 @@ DIV;
                         'controller' => 'Users',
                         'action' => 'index',
                         'params' => [],
-                        'roles' => $this->allAccessRoles,
+                        'roles' => [],
                     ];
                     if (!empty($this->identity)) {
                         if (!empty($childLink['roles'])) {
