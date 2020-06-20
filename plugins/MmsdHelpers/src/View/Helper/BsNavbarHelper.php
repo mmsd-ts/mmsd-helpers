@@ -13,6 +13,7 @@ class BsNavbarHelper extends Helper
     protected $params = [];
     protected $identity;
     protected $helpers = ['Html','Url'];
+    private $allAccessRoles = ['Administrator'];
     
     /**
      * 
@@ -34,6 +35,16 @@ class BsNavbarHelper extends Helper
         
         if ((!empty($this->identity)) and (!$this->identity instanceof IdentityInterface)) {
             throw new RuntimeException(sprintf('Identity found in request does not implement %s', IdentityInterface::class));
+        }
+
+        if (isset($config['allAccessRoles'])) {
+            if ($config['allAccessRoles'] === false) {
+                $this->allAccessRoles = [];
+            } elseif (is_array($config['allAccessRoles'])) {
+                $this->allAccessRoles = $config['allAccessRoles'];
+            } else {
+                $this->allAccessRoles = [$config['allAccessRoles']];
+            }
         }
     }
     
@@ -82,7 +93,7 @@ class BsNavbarHelper extends Helper
                 'prefix' => false,
                 'controller' => 'Users',
                 'action' => 'index',
-                'roles' => [],
+                'roles' => $this->allAccessRoles,
                 'params' => [],
                 'children' => [],
                 'link_id' => null,
@@ -150,7 +161,7 @@ DIV;
                         'controller' => 'Users',
                         'action' => 'index',
                         'params' => [],
-                        'roles' => [],
+                        'roles' => $this->allAccessRoles,
                     ];
                     if (!empty($this->identity)) {
                         if (!empty($childLink['roles'])) {
@@ -198,6 +209,9 @@ DIV;
     {
         if (!is_array($roles)) {
             $roles = [$roles];
+        }
+        if (!empty($this->allAccessRoles)) {
+            $roles = array_merge($roles,$this->allAccessRoles);
         }
         $identityHasRole = false;
         foreach ($roles as $role) {
