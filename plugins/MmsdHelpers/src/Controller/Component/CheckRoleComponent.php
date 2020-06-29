@@ -4,6 +4,7 @@ namespace MmsdHelpers\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Http\Cookie\Cookie;
+
 class CheckRoleComponent extends Component
 {
 
@@ -103,9 +104,9 @@ class CheckRoleComponent extends Component
             foreach ($roles as $role) {
                 $isRole = "is{$role}";
                 if (
-                    (!empty($this->getController()->getRequest()->getAttribute('identity')->$role))
+                    (!empty($this->getController()->Authentication->getIdentityData($role)))
                     or
-                    (!empty($this->getController()->getRequest()->getAttribute('identity')->$isRole))
+                    (!empty($this->getController()->Authentication->getIdentityData($isRole)))
                 ){
                     $identityHasRole = true;
                     break;
