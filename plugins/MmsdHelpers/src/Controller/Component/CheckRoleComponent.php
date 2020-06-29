@@ -4,7 +4,6 @@ namespace MmsdHelpers\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Http\Cookie\Cookie;
-use Cake\Log\Log;
 
 class CheckRoleComponent extends Component
 {
