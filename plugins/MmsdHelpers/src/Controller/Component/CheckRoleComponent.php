@@ -4,6 +4,7 @@ namespace MmsdHelpers\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Http\Cookie\Cookie;
+use Cake\Log\Log;
 
 class CheckRoleComponent extends Component
 {
@@ -114,6 +115,30 @@ class CheckRoleComponent extends Component
             }
         }
         return $identityHasRole;
+    }
+
+    public function isOnly($roles = ''): bool
+    {
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+        $allRoles = [];
+        foreach ($roles as $role) {
+            $allRoles[] = $role;
+            $allRoles[] = "is{$role}";
+        }
+        $noOthers = true;
+        $identity = $this->getController()->Authentication->getIdentity()->getOriginalData()->toArray();
+        foreach ($identity as $key => $value) {
+            if (is_array($value)) { continue; }
+            if (strpos($key,'is') !== 0) { continue; }
+            if (in_array($key,$allRoles)) { continue; }
+            if (!empty($value)) {
+                $noOthers = false;
+                break;
+            }
+        }
+        return $noOthers;
     }
 
 }
