@@ -4,6 +4,7 @@ namespace MmsdHelpers\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Http\Cookie\Cookie;
+use RuntimeException;
 
 class CheckRoleComponent extends Component
 {
@@ -93,9 +94,6 @@ class CheckRoleComponent extends Component
 
     public function check($roles = ''): bool
     {
-        if (!$this->getController()->Authentication->getResult()->isValid()) {
-            return false;
-        }
         if (!is_array($roles)) {
             $roles = [$roles];
         }
@@ -105,6 +103,11 @@ class CheckRoleComponent extends Component
         $identityHasRole = false;
         if (!empty($roles)) {
             foreach ($roles as $role) {
+                try {
+                    $this->getController()->Authentication->getIdentityData($role);
+                } catch (RuntimeException $e) {
+                    break;
+                }
                 $isRole = "is{$role}";
                 if (
                     (!empty($this->getController()->Authentication->getIdentityData($role)))
