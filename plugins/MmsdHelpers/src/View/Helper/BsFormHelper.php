@@ -296,13 +296,35 @@ PREPEND;
         }
         
         foreach ($widgetInfo['options'] as $key => $value) {
-            
             $checkIdHyphen = '';
             if ($this->getConfig('defaults.checkIdHasHyphen')) {
                 $checkIdHyphen = '-';
             }
             $thisId = $this->makeId($widgetInfo['id'],"{$checkIdHyphen}{$key}");
-            
+            $displayText = $thisId;
+            $thisClass = $widgetInfo['class'];
+            $thisAttrs = $widgetInfo['otherAttrs'];
+            $customAttrs = [];
+
+            if (is_array($value)) {
+                foreach ($value as $customKey => $customValue) {
+                    if (($customKey == 'text') and (!empty($customValue))) {
+                        $displayText = $customValue;
+                    } elseif (($customKey == 'id') and (!empty($customValue))) {
+                        $thisId = $customValue;
+                    } elseif (($customKey == 'class') and (!empty($customValue))) {
+                        $thisClass = $this->addToClass($thisClass,$customValue);
+                    } else {
+                        $customAttrs[$customKey] = $customValue;
+                    }
+                }
+            } else {
+                $displayText = $value;
+            }
+            if (!empty($customAttrs)) {
+                $thisAttrs = $widgetInfo['otherAttrs'] . ' ' . $this->makeAttrString($customAttrs);
+            }
+
             $checked = ($this->valueIsSelected($widgetInfo['defaultValue'],$key)) ? ' checked' : null;
             
             if ($config['flat']) {
@@ -321,7 +343,7 @@ HTML;
             }
             
             $labelHtml = <<<"HTML"
-\t<label for="{$thisId}" class="{$widgetInfo['labelClass']}">{$value}</label>
+\t<label for="{$thisId}" class="{$widgetInfo['labelClass']}">{$displayText}</label>
 
 HTML;
             if ($config['labelFirst']) {
@@ -329,7 +351,7 @@ HTML;
             }
             
             $returnHtml .= <<<"HTML"
-\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$thisId}" value="{$key}" class="{$widgetInfo['class']}"{$widgetInfo['otherAttrs']}{$checked}>
+\t<input type="{$widgetInfo['type']}" name="{$widgetInfo['name']}" id="{$thisId}" value="{$key}" class="{$thisClass}"{$thisAttrs}{$checked}>
 
 HTML;
             
