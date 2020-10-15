@@ -303,6 +303,7 @@ PREPEND;
             $thisId = $this->makeId($widgetInfo['id'],"{$checkIdHyphen}{$key}");
             $displayText = $thisId;
             $thisClass = $widgetInfo['class'];
+            $thisLabelClass = $widgetInfo['labelClass'];
             $thisAttrs = $widgetInfo['otherAttrs'];
             $customAttrs = [];
 
@@ -314,6 +315,8 @@ PREPEND;
                         $thisId = $customValue;
                     } elseif (($customKey == 'class') and (!empty($customValue))) {
                         $thisClass = $this->addToClass($thisClass,$customValue);
+                    } elseif (($customKey == 'labelClass') and (!empty($customValue))) {
+                        $thisLabelClass = $this->addToClass($thisLabelClass,$customValue);
                     } else {
                         $customAttrs[$customKey] = $customValue;
                     }
@@ -343,7 +346,7 @@ HTML;
             }
             
             $labelHtml = <<<"HTML"
-\t<label for="{$thisId}" class="{$widgetInfo['labelClass']}">{$displayText}</label>
+\t<label for="{$thisId}" class="{$thisLabelClass}">{$displayText}</label>
 
 HTML;
             if ($config['labelFirst']) {
