@@ -830,19 +830,19 @@ APPEND;
      * @return string
      */
     private function formatDatetime($value) {
-        if (
-            ($value instanceof \DateTime)
-            or
-            ($value instanceof \Cake\I18n\FrozenDate)
-            or
-            ($value instanceof \Cake\I18n\FrozenTime)
-            or
-            ($value instanceof \Cake\I18n\Time)
-        ){
-            return $value->format('Y-m-d\TH:i:s');
-        } else {
+        // if (
+        //     ($value instanceof \DateTime)
+        //     or
+        //     ($value instanceof \Cake\I18n\FrozenDate)
+        //     or
+        //     ($value instanceof \Cake\I18n\FrozenTime)
+        //     or
+        //     ($value instanceof \Cake\I18n\Time)
+        // ){
+        //     return $value->format('Y-m-d\TH:i:s');
+        // } else {
             return $value;
-        }
+        // }
     }
     
     /**
