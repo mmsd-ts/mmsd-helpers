@@ -817,6 +817,29 @@ APPEND;
             return $this->formatDate($value);
         } elseif ($type == 'time') {
             return $this->formatTime($value);
+        } elseif ($type == 'datetime-local') {
+            return $this->formatDatetime($value);
+        } else {
+            return $value;
+        }
+    }
+    
+    /**
+     * 
+     * @param mixed $value
+     * @return string
+     */
+    private function formatDatetime($value) {
+        if (
+            ($value instanceof \DateTime)
+            or
+            ($value instanceof \Cake\I18n\FrozenDate)
+            or
+            ($value instanceof \Cake\I18n\FrozenTime)
+            or
+            ($value instanceof \Cake\I18n\Time)
+        ){
+            return $value->format('Y-m-d\TH:i:s');
         } else {
             return $value;
         }
