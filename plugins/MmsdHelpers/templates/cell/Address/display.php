@@ -115,7 +115,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal"><?= __d('mmsd_helpers','Close'); ?></button>
+                <button type="button" class="btn btn-danger" id="address-search-cancel"><?= __d('mmsd_helpers','Cancel'); ?></button>
             </div>
         </div>
     </div>

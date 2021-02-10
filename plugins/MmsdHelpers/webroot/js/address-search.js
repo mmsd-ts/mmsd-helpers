@@ -20,7 +20,9 @@ $(document).ready(function(){
 	$('.address-search-use-anyway').on('click',function(){
 		MMSD.thisApp.useUnfoundAddress();
 	});
-
+	$('#address-search-cancel').on('click',function(){
+		MMSD.thisApp.addressSearchCancel();
+	});
 });
 
 MMSD.thisApp = {
@@ -273,7 +275,7 @@ MMSD.thisApp = {
         .done(function(status, data) {
             if (status) {
 				// Do address found stuff
-				$.each(['es','ms','hs','all'],function(ixl, lvl){
+				$.each(['k4','es','ms','hs','all'],function(ixl, lvl){
 					$.each(['codes','names','ids'],function(ixf, field){
 						$('#'+MMSD.addressSearchVars.fieldsPrefix+lvl+'-school-' + field).val('');
 					});
@@ -297,6 +299,19 @@ MMSD.thisApp = {
         ;
 		return true;
 	},
+	addressSearchCancel: function() {
+		$.each(['k4','es','ms','hs','all'],function(ixl, lvl){
+			$.each(['codes','names','ids'],function(ixf, field){
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+lvl+'-school-'+field).val('');
+			});
+		});
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val('');
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val('');
+		$(MMSD.addressSearchVars.fieldID).val('');
+		$(MMSD.addressSearchVars.fieldDisplay).val('');
+		MMSD.addressSearchVars.modal.modal('hide');
+		$(MMSD.addressSearchVars.fieldDisplay).trigger('address:cancel');
+	},
 	setDefaultValues: function() {
 		MMSD.addressSearchVars = {
 			'modal': $('#modal-address-search'),
@@ -318,7 +333,7 @@ MMSD.thisApp = {
 			'zip': $('#addresssearch-zip')
 		};
 	},
-	hideDivs: function(keepResults = false){
+	hideDivs: function(keepResults = false) {
 		MMSD.addressSearchVars.failureDiv.hide();
 		MMSD.addressSearchVars.ignoreDiv.hide();
 		MMSD.addressSearchVars.invalidDiv.hide();

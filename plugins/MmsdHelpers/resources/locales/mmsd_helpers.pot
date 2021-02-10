@@ -97,3 +97,8 @@ msgstr ""
 #: 
 msgid "Required field"
 msgstr ""
+
+#: 
+msgid "Cancel"
+msgstr ""
+
