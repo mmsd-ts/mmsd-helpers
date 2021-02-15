@@ -84,7 +84,7 @@
 		<div class="col-sm-3">
 <button type="button" class="btn btn-primary" id="address-search-button">
 	<?= __d('mmsd_helpers','Find Address'); ?>
-	<span class="oi oi-magnifying-glass" title="" aria-hidden="true"></span>
+	<span class="fas fa-search" title="" aria-hidden="true"></span>
 </button>
 		</div>
 	</div>
