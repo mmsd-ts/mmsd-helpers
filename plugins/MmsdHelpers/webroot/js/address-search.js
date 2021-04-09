@@ -251,8 +251,9 @@ MMSD.thisApp = {
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'all-school-names').val(JSON.stringify(schoolInfo.names));
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'all-school-ids').val(JSON.stringify(schoolInfo.IDs));
 
-		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val('');
-        $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val('');
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val(address.line1);
+        $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val(address.line2);
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'fullAddress').val(address.fullAddress);
 		$('#residency-info').show();
 		$(MMSD.addressSearchVars.fieldDisplay).trigger('address:ic');
 		return true;
@@ -283,6 +284,7 @@ MMSD.thisApp = {
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val(data.line1);
                 $('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val(data.line2);
 				let enteredText = data.line1 + ' ' + data.line2;
+				$('#'+MMSD.addressSearchVars.fieldsPrefix+'fullAddress').val(enteredText);
                 $(MMSD.addressSearchVars.fieldDisplay).val(enteredText);
 				$('#residency-info').show();
 				MMSD.addressSearchVars.modal.modal('hide');
@@ -307,6 +309,7 @@ MMSD.thisApp = {
 		});
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line1').val('');
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'line2').val('');
+		$('#'+MMSD.addressSearchVars.fieldsPrefix+'fullAddress').val('');
 		$(MMSD.addressSearchVars.fieldID).val('');
 		$(MMSD.addressSearchVars.fieldDisplay).val('');
 		MMSD.addressSearchVars.modal.modal('hide');
