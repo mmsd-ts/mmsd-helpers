@@ -1,3 +1,5 @@
+// DON'T FORGET TO MINIFY
+
 var MMSD = MMSD || {};
 
 MMSD.addressSearchVars = {};
