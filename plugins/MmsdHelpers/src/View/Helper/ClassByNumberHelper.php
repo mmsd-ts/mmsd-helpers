@@ -3,7 +3,7 @@ namespace MmsdHelpers\View\Helper;
 
 use Cake\View\Helper;
 
-class BsFormHelper extends Helper
+class ClassByNumberHelper extends Helper
 {
     
     /**
