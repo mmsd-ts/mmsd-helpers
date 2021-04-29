@@ -5,7 +5,7 @@ use Cake\View\Helper;
 
 class ClassByNumberHelper extends Helper
 {
-    
+    private $rules = [];
     /**
      * 
      * {@inheritDoc}
@@ -15,25 +15,25 @@ class ClassByNumberHelper extends Helper
     {
         parent::initialize($config);
         
-        $this->setConfig([
-            'rules' => $config['rules'],
-        ]);
-        
+        $this->rules = $config['rules'];
     }
-
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
     public function getClass(string $number): ?string
     {
-        $rules = $this->getConfig('rules');
-        foreach ($rules as $ruleNumber => $ruleClass) {
+        foreach ($this->rules as $ruleNumber => $ruleClass) {
             if (preg_match('/^\d/',$ruleNumber)) {
                 if ($number <= $ruleNumber) {
                     return $ruleClass;
                 }
             }
         }
-        if (!empty($rules['default'])) {
-            return $rules['default'];
+        if (!empty($this->rules['default'])) {
+            return $this->rules['default'];
         }
         return null;
     }
+    
 }
