@@ -205,7 +205,7 @@ DIV;
         return $pattern;
     }
 
-    private function checkRole($roles = '') : bool
+    public function checkRole($roles = '') : bool
     {
         if (!is_array($roles)) {
             $roles = [$roles];
