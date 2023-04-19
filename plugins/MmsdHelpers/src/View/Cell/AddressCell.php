@@ -7,8 +7,8 @@ class AddressCell extends Cell
 {
     public function display()
     {
-        $addressesTable = $this->loadModel('MmsdHelpers.Addresses');
-        $usStatesTable = $this->loadModel('MmsdHelpers.UsStates');
+        $addressesTable = $this->fetchTable('MmsdHelpers.Addresses');
+        $usStatesTable = $this->fetchTable('MmsdHelpers.UsStates');
         $this->set('tagList',$addressesTable->tagList());
         $this->set('stateList',$usStatesTable->stateList());
     }

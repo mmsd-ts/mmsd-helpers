@@ -38,7 +38,7 @@ class CheckRoleComponent extends Component
                 }
             }
             if ($appCookie == '1') {
-                $usersTable = $this->getController()->loadModel('Users');
+                $usersTable = $this->getController()->fetchTable('Users');
                 $username = $ssoCookie;
                 $user = $usersTable->find('byUsername',['username' => $username])->first();
                 if (!empty($user)) {
