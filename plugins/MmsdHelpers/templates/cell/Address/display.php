@@ -92,21 +92,27 @@
 <div id="address-search-results-div" style="display: none;"></div>
 
 <div id="address-search-failure-div" style="display: none;">
-
 <p><b><span class="mock-link address-search-use-anyway"><?= __d('mmsd_helpers','We are unable to find that address. Use it anyway?'); ?></span></b></p>
-
 </div>
 
-<div id="address-search-ignore-div" style="display: none;">
-
-<p><b><span class="mock-link address-search-use-anyway"><?= __d('mmsd_helpers','Use my address as entered'); ?></span></b></p>
-
+<div id="address-search-notfound-div" style="display: none;">
+<p><b>
+<?php if ($allowEnteredAddress): ?>
+    <span class="mock-link address-search-use-anyway">
+<?php endif; ?>
+    <?php if (!empty($notFoundMessage)): ?>
+        <?= $notFoundMessage ?>
+    <?php else: ?>
+        <?= __d('mmsd_helpers','Use my address as entered'); ?>
+    <?php endif; ?>
+<?php if ($allowEnteredAddress): ?>
+    </span>
+<?php endif; ?>
+</b></p>
 </div>
 
 <div id="address-search-invalid-div" style="display: none;">
-
 <p><b class="text-danger"><?= __d('mmsd_helpers','That is not a valid address'); ?></b></p>
-
 </div>
 
 </div>
