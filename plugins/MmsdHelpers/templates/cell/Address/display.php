@@ -92,7 +92,23 @@
 <div id="address-search-results-div" style="display: none;"></div>
 
 <div id="address-search-failure-div" style="display: none;">
-<p><b><span class="mock-link address-search-use-anyway"><?= __d('mmsd_helpers','We are unable to find that address. Use it anyway?'); ?></span></b></p>
+<p><b>
+<?php if ($allowEnteredAddress): ?>
+    <span class="mock-link address-search-use-anyway">
+<?php endif; ?>
+<?php if (!empty($notFoundMessage)): ?>
+    <?= $notFoundMessage ?>
+<?php else: ?>
+    <?php if ($allowEnteredAddress): ?>
+        <?= __d('mmsd_helpers','We are unable to find that address. Use it anyway?'); ?>
+    <?php else: ?>
+        <?= __d('mmsd_helpers','We are unable to find that address.'); ?>
+    <?php endif; ?>
+<?php endif; ?>
+<?php if ($allowEnteredAddress): ?>
+    </span>
+<?php endif; ?>
+</b></p>
 </div>
 
 <div id="address-search-notfound-div" style="display: none;">
@@ -100,11 +116,15 @@
 <?php if ($allowEnteredAddress): ?>
     <span class="mock-link address-search-use-anyway">
 <?php endif; ?>
-    <?php if (!empty($notFoundMessage)): ?>
-        <?= $notFoundMessage ?>
-    <?php else: ?>
+<?php if (!empty($notFoundMessage)): ?>
+    <?= $notFoundMessage ?>
+<?php else: ?>
+    <?php if ($allowEnteredAddress): ?>
         <?= __d('mmsd_helpers','Use my address as entered'); ?>
+    <?php else: ?>
+        <?= __d('mmsd_helpers','We are unable to find that address.'); ?>
     <?php endif; ?>
+<?php endif; ?>
 <?php if ($allowEnteredAddress): ?>
     </span>
 <?php endif; ?>
