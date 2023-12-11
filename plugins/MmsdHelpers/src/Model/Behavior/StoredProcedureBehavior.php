@@ -5,6 +5,16 @@ use Cake\ORM\Behavior;
 
 class StoredProcedureBehavior extends Behavior
 {
+    public function __construct(array $config = [])
+    {
+        $config += [
+            'resultField' => 'result',
+            'msgField' => 'msg',
+            'resultValueSuccess' => 'success',
+            'resultValueFailure' => 'error',
+        ];
+        $this->setConfig($config);
+    }
     public function executeProcedure(string $procedureName, array $parameters = []): StatementInterface
     {
         $dbConnection = $this->table()->getConnection();
@@ -33,5 +43,21 @@ class StoredProcedureBehavior extends Behavior
             ,$assignedValues
             ,$parameterTypes
         );
+    }
+    public function runStoredProcedure(string $procedureName, array $paramters = []): array
+    {
+        $result = [
+            'success' => true,
+            'error' => null,
+        ];
+        $procedureResult = $this->executeProcedure($procedureName,$paramters)->fetch('assoc');
+        if (
+            (empty($procedureResult[$this->getConfig('resultField')]))
+            or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
+        ) {
+            $result['success'] = false;
+            $result['error'] = $procedureResult[$this->getConfig('msgField')] ?? null;
+        }
+        return $result;
     }
 }
