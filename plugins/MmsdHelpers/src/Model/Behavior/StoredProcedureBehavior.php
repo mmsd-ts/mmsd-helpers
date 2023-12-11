@@ -2,10 +2,11 @@
 namespace MmsdHelpers\Model\Behavior;
 use Cake\Database\StatementInterface;
 use Cake\ORM\Behavior;
+use Cake\ORM\Table;
 
 class StoredProcedureBehavior extends Behavior
 {
-    public function __construct(array $config = [])
+    public function __construct(Table $table, array $config = [])
     {
         $config += [
             'resultField' => 'result',
@@ -13,7 +14,7 @@ class StoredProcedureBehavior extends Behavior
             'resultValueSuccess' => 'success',
             'resultValueFailure' => 'error',
         ];
-        $this->setConfig($config);
+        parent::__construct($table, $config);
     }
     public function executeProcedure(string $procedureName, array $parameters = []): StatementInterface
     {
