@@ -16,6 +16,16 @@ class StoredProcedureBehavior extends Behavior
         ];
         parent::__construct($table, $config);
     }
+    
+    /**
+     * Executes a stored procedure with the given name and parameters.
+     *
+     * @param string $procedureName The name of the stored procedure to execute.
+     * @param array $parameters An optional array of parameters to pass to the stored procedure.
+     * Each parameter should be an associative array with a key 'value' representing the value of the parameter,
+     * and an optional key 'type' representing the data type of the parameter.
+     * @return StatementInterface The executed statement.
+     */
     public function executeProcedure(string $procedureName, array $parameters = []): StatementInterface
     {
         $dbConnection = $this->table()->getConnection();
@@ -45,13 +55,21 @@ class StoredProcedureBehavior extends Behavior
             ,$parameterTypes
         );
     }
-    public function runStoredProcedure(string $procedureName, array $paramters = []): array
+    
+    /**
+     * Runs a stored procedure with the given name and parameters.
+     *
+     * @param string $procedureName The name of the stored procedure to run.
+     * @param array $parameters An optional array of parameters to pass to the stored procedure.
+     * @return array The result of the stored procedure execution.
+     */
+    public function runStoredProcedure(string $procedureName, array $parameters = []): array
     {
         $result = [
             'success' => true,
             'error' => null,
         ];
-        $procedureResult = $this->executeProcedure($procedureName,$paramters)->fetch('assoc');
+        $procedureResult = $this->executeProcedure($procedureName,$parameters)->fetch('assoc');
         if (
             (empty($procedureResult[$this->getConfig('resultField')]))
             or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
