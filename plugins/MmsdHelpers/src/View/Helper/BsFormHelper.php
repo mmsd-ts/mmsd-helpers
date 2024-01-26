@@ -156,7 +156,7 @@ class BsFormHelper extends Helper
         $returnHtml = '';
         $returnHtml .= <<<"HTML"
 <div class="{$config['outerDivClass']}">
-\t<label class="{$widgetInfo['labelClass']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
+\t<label class="{$widgetInfo['labelClass']}" id="label-{$widgetInfo['id']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
 
 HTML;
         if ($widgetInfo['type'] == 'select') {
@@ -202,7 +202,7 @@ HTML;
         $returnHtml = '';
         $returnHtml .= <<<"HTML"
 <div class="{$config['outerDivClass']}">
-\t<label class="{$widgetInfo['labelClass']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
+\t<label class="{$widgetInfo['labelClass']}" id="label-{$widgetInfo['id']}" for="{$widgetInfo['id']}">{$widgetInfo['label']}</label>
 \t<div class="col-md-{$config['widgetColumnWidth']}">
 
 HTML;
@@ -346,7 +346,7 @@ HTML;
             }
             
             $labelHtml = <<<"HTML"
-\t<label for="{$thisId}" class="{$thisLabelClass}">{$displayText}</label>
+\t<label for="{$thisId}" class="{$thisLabelClass}" id="label-{$thisId}">{$displayText}</label>
 
 HTML;
             if ($config['labelFirst']) {
