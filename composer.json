@@ -3,7 +3,6 @@
     "description": "CakePHP 3/4 Utility Helper and Component Classes for MMSD",
     "type": "library",
     "require": {
-        "php": "^7.2",
         "cakephp/authentication": "^2.0"
     },
     "authors": [
