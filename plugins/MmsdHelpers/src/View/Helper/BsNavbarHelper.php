@@ -8,12 +8,12 @@ use RuntimeException;
 
 class BsNavbarHelper extends Helper
 {
-    protected $links = [];
-    protected $linkMap = [];
-    protected $params = [];
-    protected $identity;
-    protected $helpers = ['Html','Url'];
-    private $allAccessRoles = ['Administrator'];
+    protected array $links = [];
+    protected array $linkMap = [];
+    protected array $params = [];
+    protected IdentityInterface $identity;
+    protected array $helpers = ['Html','Url'];
+    private array $allAccessRoles = ['Administrator'];
     
     public function initialize(array $config): void
     {
