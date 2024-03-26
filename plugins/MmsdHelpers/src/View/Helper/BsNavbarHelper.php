@@ -18,7 +18,6 @@ class BsNavbarHelper extends Helper
     public function initialize(array $config): void
     {
         parent::initialize($config);
-
         $this->links = $config['links'];
         $this->linkMap = $config['linkMap'];
         $this->params = $this->getView()->getRequest()->getAttribute('params');
@@ -56,23 +55,13 @@ class BsNavbarHelper extends Helper
         }
         foreach ($this->links as $key => $link) {
             $link = $this->initItemArray($link, $key);
-            // Check role
             if (!$this->userCanAccessLink($link['roles'])) {
                 continue;
             }
-            $classes = [
-                'li' => ['nav-item',],
-                'a' => ['nav-link',],
-            ];
-            $attributes = [
-                'li' => [
-                    'id' => (!empty($link['item_id'])) ?  $link['item_id'] : "navbar-item-{$key}",
-                ],
-                'a' => [
-                    'id' => (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}",
-                ],
-            ];
-            $childrenUl = '';
+            $classes['li'] = ['nav-item',];
+            $classes['a'] = ['nav-link',];
+            $attributes['li']['id'] = (!empty($link['item_id'])) ?  $link['item_id'] : "navbar-item-{$key}";
+            $attributes['a']['id'] = (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}";
             if ($key == $currentKey) {
                 $classes['a'][] = 'active';
                 $attributes['a']['aria-current'] = 'page';
@@ -84,17 +73,15 @@ class BsNavbarHelper extends Helper
                 $attributes['a']['role'] = 'button';
                 $attributes['a']['data-bs-toggle'] = 'dropdown';
                 $attributes['a']['aria-expanded'] = 'false';
-                $childrenUl = $this->childrenUl($link['children'], $key);
             }
             $attributes['li']['class'] = implode(' ',$classes['li']);
             $attributes['a']['class'] = implode(' ',$classes['a']);
             $navbarListItem = "<li {$this->keyedArrayToString($attributes['li'])}>";
             $navbarListItem .= $this->Html->link($link['linkText'], $this->createUrlArray($link), $attributes['a']);
-            $navbarListItem .= $childrenUl;
+            $navbarListItem .= (!empty($link['children'])) ? $this->childrenUl($link['children'], $key) : '';
             $navbarListItem .= '</li>';
             $navbarListItems .= $navbarListItem;
         }
-        
         return $navbarListItems;
     }
     public function checkRole($roles = []) : bool
