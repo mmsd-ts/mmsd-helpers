@@ -46,7 +46,7 @@ class BsNavbarHelper extends Helper
     {
         $navbarListItems = '';
         $currentKey = '';
-        $currentUrl = $this->Url->build($this->createUrlArray($this->params));
+        $currentUrl = $this->Url->build($this->createUrlArray($this->params, false));
         Log::debug('$currentUrl:');
         Log::debug(print_r($currentUrl,true));
         // Find current key from pattern matching current URL
@@ -151,19 +151,21 @@ class BsNavbarHelper extends Helper
         }
         return true;
     }
-    private function createUrlArray(array $item): array
+    private function createUrlArray(array $item, bool $base = true): array
     {
         $urlArray = [
             'prefix' => (!empty($item['prefix'])) ? $item['prefix'] : false,
             'controller' => $item['controller'],
             'action' => $item['action'],
             '_ext' => (!empty($item['_ext'])) ? $item['_ext'] : null,
-            '_base' => false,
         ];
         if (!empty($item['params'])) {
             foreach ($item['params'] as $param) {
                 $urlArray[] = $param;
             }
+        }
+        if ($base === false) {
+            $urlArray['_base'] = false;
         }
         return $urlArray;
     }
