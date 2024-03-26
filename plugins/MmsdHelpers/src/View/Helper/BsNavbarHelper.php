@@ -154,7 +154,7 @@ class BsNavbarHelper extends Helper
     private function createUrlArray(array $item): array
     {
         $urlArray = [
-            'prefix' => (!emtpy($item['prefix'])) ? $item['prefix'] : false,
+            'prefix' => (!empty($item['prefix'])) ? $item['prefix'] : false,
             'controller' => $item['controller'],
             'action' => $item['action'],
             '_ext' => (!empty($item['_ext'])) ? $item['_ext'] : null,
