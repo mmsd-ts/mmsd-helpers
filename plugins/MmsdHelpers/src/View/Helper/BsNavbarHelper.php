@@ -88,10 +88,8 @@ class BsNavbarHelper extends Helper
             }
             $attributes['li']['class'] = implode(' ',$classes['li']);
             $attributes['a']['class'] = implode(' ',$classes['a']);
-            $liAttr = $this->keyedArrayToString($attributes['li']);
-            $navbarListItem = "<li {$liAttr}>";
-            $linkUrlArray = $this->createUrlArray($link);
-            $navbarListItem .= $this->Html->link($link['linkText'], $linkUrlArray, $attributes['a']);
+            $navbarListItem = "<li {$this->keyedArrayToString($attributes['li'])}>";
+            $navbarListItem .= $this->Html->link($link['linkText'], $this->createUrlArray($link), $attributes['a']);
             $navbarListItem .= $childrenUl;
             $navbarListItem .= '</li>';
             $navbarListItems .= $navbarListItem;
