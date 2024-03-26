@@ -5,6 +5,7 @@ use Cake\View\Helper;
 use Cake\Utility\Inflector;
 use Authentication\IdentityInterface;
 use RuntimeException;
+use Cake\Log\Log;
 
 class BsNavbarHelper extends Helper
 {
@@ -49,6 +50,8 @@ class BsNavbarHelper extends Helper
             $this->params['prefix'] = false;
         }
         $currentUrl = $this->Url->build($this->createUrlArray($this->params));
+        Log::debug('$currentUrl:');
+        Log::debug(print_r($currentUrl,true));
         // Find current key from pattern matching current URL
         foreach ($this->linkMap as $rawPattern => $key) {
             $pattern = $this->patternize($rawPattern);
@@ -94,6 +97,8 @@ class BsNavbarHelper extends Helper
             $liAttr = $this->keyedArrayToString($attributes['li']);
             $navbarListItem = "<li {$liAttr}>";
             $linkUrlArray = $this->createUrlArray($link);
+            Log::debug('$linkUrlArray:');
+            Log::debug(print_r($linkUrlArray,true));
             $navbarListItem .= $this->Html->link($link['linkText'], $linkUrlArray, $attributes['a']);
             $navbarListItem .= $childrenUl;
             $navbarListItem .= '</li>';
@@ -174,6 +179,8 @@ class BsNavbarHelper extends Helper
                 continue;
             }
             $urlArray = $this->createUrlArray($child);
+            Log::debug('$urlArray:');
+            Log::debug(print_r($urlArray,true));
             $item_id = (!empty($child['item_id'])) ? $child['item_id'] : "navbar-item-{$parentKey}-{$childKey}";
             $link_id = (!empty($child['link_id'])) ? $child['link_id'] : "navbar-link-{$parentKey}-{$childKey}";
             $ul .= "<li class='dropdown-item' id='{$item_id}'>";
