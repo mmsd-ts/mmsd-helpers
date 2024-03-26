@@ -22,7 +22,9 @@ class BsNavbarHelper extends Helper
         $this->links = $config['links'];
         $this->linkMap = $config['linkMap'];
         $this->params = $this->getView()->getRequest()->getAttribute('params');
-        $this->identity = $this->getView()->getRequest()->getAttribute('identity');
+        if (!empty($this->getView()->getRequest()->getAttribute('identity'))) {
+            $this->identity = $this->getView()->getRequest()->getAttribute('identity');
+        }
         if (empty($this->params)) {
             return;
         }
@@ -110,10 +112,12 @@ class BsNavbarHelper extends Helper
         }
         foreach ($roles as $role) {
             $isRole = "is{$role}";
-            if (
-                (!empty($this->identity->$role))
-                or
-                (!empty($this->identity->$isRole))
+            if ((!empty($this->identity))
+                and (
+                    (!empty($this->identity->$role))
+                    or
+                    (!empty($this->identity->$isRole))
+                )
             ){
                 return true;
             }
