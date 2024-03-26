@@ -46,9 +46,6 @@ class BsNavbarHelper extends Helper
     {
         $navbarListItems = '';
         $currentKey = '';
-        if (empty($this->params['prefix'])) {
-            $this->params['prefix'] = false;
-        }
         $currentUrl = $this->Url->build($this->createUrlArray($this->params));
         Log::debug('$currentUrl:');
         Log::debug(print_r($currentUrl,true));
@@ -157,10 +154,10 @@ class BsNavbarHelper extends Helper
     private function createUrlArray(array $item): array
     {
         $urlArray = [
-            'prefix' => $item['prefix'],
+            'prefix' => (!emtpy($item['prefix'])) ? $item['prefix'] : false,
             'controller' => $item['controller'],
             'action' => $item['action'],
-            '_ext' => $item['_ext'],
+            '_ext' => (!empty($item['_ext'])) ? $item['_ext'] : null,
             '_base' => false,
         ];
         if (!empty($item['params'])) {
