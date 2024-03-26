@@ -186,8 +186,10 @@ class BsNavbarHelper extends Helper
     }
     private function keyedArrayToString(array $items): string
     {
-        $callback = function(string $k, string $v): string { return "{$k}='{$v}'"; };
-        return implode(' ', array_map($callback, array_keys($items), array_values($items)));
+        return implode(' ', array_map(
+            function(string $k, string $v): string { return "{$k}='{$v}'"; },
+            array_keys($items), array_values($items))
+        );
     }
     private function patternize($rawPattern) : string
     {
