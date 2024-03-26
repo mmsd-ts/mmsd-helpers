@@ -1,9 +1,9 @@
 {
     "name": "mmsd-ts/mmsd-helpers",
-    "description": "CakePHP 3/4 Utility Helper and Component Classes for MMSD",
+    "description": "CakePHP 5.x Utility Helper and Component Classes for MMSD",
     "type": "library",
     "require": {
-        "cakephp/authentication": "^2.0"
+        "cakephp/authentication": "^3.0"
     },
     "authors": [
         {

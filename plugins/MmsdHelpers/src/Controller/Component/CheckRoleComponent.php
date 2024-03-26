@@ -91,8 +91,7 @@ class CheckRoleComponent extends Component
             $this->getController()->setResponse($this->getController()->getResponse()->withExpiredCookie($ssoCookie));
         }
     }
-
-    public function check($roles = ''): bool
+    public function check($roles = []): bool
     {
         if (!is_array($roles)) {
             $roles = [$roles];
@@ -100,7 +99,6 @@ class CheckRoleComponent extends Component
         if (!empty($this->allAccessRoles)) {
             $roles = array_merge($roles,$this->allAccessRoles);
         }
-        $identityHasRole = false;
         if (!empty($roles)) {
             foreach ($roles as $role) {
                 try {
@@ -114,15 +112,13 @@ class CheckRoleComponent extends Component
                     or
                     (!empty($this->getController()->Authentication->getIdentityData($isRole)))
                 ){
-                    $identityHasRole = true;
-                    break;
+                    return true;
                 }
             }
         }
-        return $identityHasRole;
+        return false;
     }
-
-    public function isOnly($roles = ''): bool
+    public function isOnly($roles = []): bool
     {
         if (!is_array($roles)) {
             $roles = [$roles];
@@ -132,18 +128,15 @@ class CheckRoleComponent extends Component
             $allRoles[] = $role;
             $allRoles[] = "is{$role}";
         }
-        $noOthers = true;
         $identity = $this->getController()->Authentication->getIdentity()->getOriginalData()->toArray();
         foreach ($identity as $key => $value) {
             if (is_array($value)) { continue; }
             if (strpos($key,'is') !== 0) { continue; }
             if (in_array($key,$allRoles)) { continue; }
             if (!empty($value)) {
-                $noOthers = false;
-                break;
+                return false;
             }
         }
-        return $noOthers;
+        return true;
     }
-
 }
