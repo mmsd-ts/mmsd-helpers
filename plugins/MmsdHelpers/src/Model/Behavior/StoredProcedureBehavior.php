@@ -3,6 +3,7 @@ namespace MmsdHelpers\Model\Behavior;
 use Cake\Database\StatementInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
+use Cake\Log\Log;
 
 class StoredProcedureBehavior extends Behavior
 {
@@ -68,6 +69,7 @@ class StoredProcedureBehavior extends Behavior
             'error' => null,
         ];
         $procedureResult = $this->executeProcedure($procedureName,$parameters)->fetch('assoc');
+        Log::debug(print_r($procedureResult,true));
         if (
             (empty($procedureResult[$this->getConfig('resultField')]))
             or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
