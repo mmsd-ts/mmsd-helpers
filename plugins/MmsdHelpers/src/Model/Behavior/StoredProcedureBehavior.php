@@ -73,7 +73,10 @@ class StoredProcedureBehavior extends Behavior
             or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
         ) {
             $result['success'] = false;
-            $result['error'] = $procedureResult[$this->getConfig('msgField')] ?? null;
+            $result['error'] = (!empty($procedureResult[$this->getConfig('msgField')]))
+                ? $procedureResult[$this->getConfig('msgField')]
+                : null
+            ;
         }
         return $result;
     }
