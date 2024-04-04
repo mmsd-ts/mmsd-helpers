@@ -9,6 +9,6 @@ class BsFormHelper extends Helper
 {
     public function initialize(array $config): void
     {
-        throw new \RuntimeException("This helper has been discontinued by the mean programmers club.");
+        throw new \RuntimeException("This helper has been discontinued by the Mean Programmers Club™.");
     }
 }
