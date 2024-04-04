@@ -16,7 +16,6 @@ class StoredProcedureBehavior extends Behavior
         ];
         parent::__construct($table, $config);
     }
-    
     /**
      * Executes a stored procedure with the given name and parameters.
      *
@@ -55,7 +54,6 @@ class StoredProcedureBehavior extends Behavior
             ,$parameterTypes
         );
     }
-    
     /**
      * Runs a stored procedure with the given name and parameters.
      *
