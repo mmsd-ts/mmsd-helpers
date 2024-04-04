@@ -69,7 +69,7 @@ class StoredProcedureBehavior extends Behavior
             'error' => null,
         ];
         $procedureResult = $this->executeProcedure($procedureName,$parameters)->fetch('assoc');
-        Log::debug(print_r($procedureResult,true));
+        Log::debug(print_r($this->getConfig('resultField'),true));
         if (
             (empty($procedureResult[$this->getConfig('resultField')]))
             or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
