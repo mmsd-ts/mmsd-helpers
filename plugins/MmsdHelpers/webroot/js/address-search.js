@@ -1,4 +1,5 @@
 // DON'T FORGET TO MINIFY
+// resources/js-mini.bat
 
 var MMSD = MMSD || {};
 
