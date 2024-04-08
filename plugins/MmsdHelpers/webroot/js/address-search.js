@@ -12,7 +12,7 @@ $(document).ready(function(){
 		MMSD.helperAddressSearch.addressSearchIfy($(this));
 	});
 	MMSD.addressSearchVars.modalTarget.on('shown.bs.modal',function(){
-		$('#addresssearch-number').trigger('focus');
+		$('#address-search-number').trigger('focus');
 	});
 	MMSD.addressSearchVars.modalTarget.on('hidden.bs.modal',function(){
 		MMSD.helperAddressSearch.clearAddressSearch();
@@ -329,14 +329,14 @@ MMSD.helperAddressSearch = {
 			'failureDiv': $('#address-search-failure-div'),
 			'notFoundDiv': $('#address-search-notfound-div'),
 			'invalidDiv': $('#address-search-invalid-div'),
-			'number': $('#addresssearch-number'),
-			'prefix': $('#addresssearch-prefix'),
-			'street': $('#addresssearch-street'),
-			'tag': $('#addresssearch-tag'),
-			'apt': $('#addresssearch-apt'),
-			'city': $('#addresssearch-city'),
-			'state': $('#addresssearch-state'),
-			'zip': $('#addresssearch-zip')
+			'number': $('#address-search-number'),
+			'prefix': $('#address-search-prefix'),
+			'street': $('#address-search-street'),
+			'tag': $('#address-search-tag'),
+			'apt': $('#address-search-apt'),
+			'city': $('#address-search-city'),
+			'state': $('#address-search-state'),
+			'zip': $('#address-search-zip')
 		};
 		MMSD.addressSearchVars.modalObject = new bootstrap.Modal(document.getElementById('modal-address-search'));
 	},
