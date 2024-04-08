@@ -96,7 +96,7 @@
             <?= $this->Form->select('AddressSearch.state',$stateList,[
                 'id' => 'address-search-state',
                 'class' => 'form-select',
-                'selected' => 'WI',
+                'value' => 'WI',
                 'empty' => true,
             ]); ?>
 		</div>
