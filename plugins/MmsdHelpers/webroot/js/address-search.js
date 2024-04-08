@@ -11,10 +11,10 @@ $(document).ready(function(){
     $('.address-search-ify').on('focus',function(){
 		MMSD.helperAddressSearch.addressSearchIfy($(this));
 	});
-	MMSD.addressSearchVars.modal.on('shown.bs.modal',function(){
+	MMSD.addressSearchVars.modalTarget.on('shown.bs.modal',function(){
 		$('#addresssearch-number').trigger('focus');
 	});
-	MMSD.addressSearchVars.modal.on('hidden.bs.modal',function(){
+	MMSD.addressSearchVars.modalTarget.on('hidden.bs.modal',function(){
 		MMSD.helperAddressSearch.clearAddressSearch();
 	});
 	$('#address-search-button').on('click',function(){
@@ -32,7 +32,7 @@ MMSD.helperAddressSearch = {
     addressSearchIfy: function(ele) {
 		MMSD.helperAddressSearch.setDefaultValues();
 		MMSD.helperAddressSearch.hideDivs();
-        MMSD.addressSearchVars.modal.modal();
+        MMSD.addressSearchVars.modalObject.show();
         if (ele.data('address_search_field_display') != undefined) { MMSD.addressSearchVars.fieldDisplay = ele.data('address_search_field_display'); }
 		if (ele.data('address_search_field_id') != undefined) { MMSD.addressSearchVars.fieldID = ele.data('address_search_field_id'); }
 		if (ele.data('address_search_in_district') != undefined) { MMSD.addressSearchVars.inDistrict = ele.data('address_search_in_district'); }
@@ -65,7 +65,7 @@ MMSD.helperAddressSearch = {
 		);
 		MMSD.addressSearchVars.resultDiv.show();
 		MMSD.helperAddressSearch.hideDivs(true);
-        MMSD.addressSearchVars.modal.modal('handleUpdate');
+        MMSD.addressSearchVars.modalObject.handleUpdate();
 		$.when(MMSD.addresses.cleanAddressSearch(enteredAddress))
         .done(
             function(status, data) {
@@ -90,7 +90,7 @@ MMSD.helperAddressSearch = {
 								.on('click',function(){
 									let usedAddress = MMSD.helperAddressSearch.useFoundAddress(address);
 									if (usedAddress) {
-										MMSD.addressSearchVars.modal.modal('hide');
+										MMSD.addressSearchVars.modalObject.hide();
 									} else {
 										alert('Address must be in the MMSD');
 									}
@@ -118,7 +118,7 @@ MMSD.helperAddressSearch = {
 					MMSD.addressSearchVars.resultDiv.show();
 					MMSD.addressSearchVars.notFoundDiv.show();
 					MMSD.addressSearchVars.invalidDiv.hide();
-					MMSD.addressSearchVars.modal.modal('handleUpdate');
+					MMSD.addressSearchVars.modalObject.handleUpdate();
 				} else {
 					MMSD.helperAddressSearch.hideDivs();
 					if (data == undefined) {
@@ -134,7 +134,7 @@ MMSD.helperAddressSearch = {
             function(textStatus, errorThrown) {
 				MMSD.main.errorAlert(textStatus,errorThrown);
 				MMSD.helperAddressSearch.hideDivs();
-                MMSD.addressSearchVars.modal.modal('handleUpdate');
+                MMSD.addressSearchVars.modalObject.handleUpdate();
 			}
         )
         ;
@@ -290,7 +290,7 @@ MMSD.helperAddressSearch = {
 				$('#'+MMSD.addressSearchVars.fieldsPrefix+'fullAddress').val(enteredText);
                 $(MMSD.addressSearchVars.fieldDisplay).val(enteredText);
 				$('#residency-info').show();
-				MMSD.addressSearchVars.modal.modal('hide');
+				MMSD.addressSearchVars.modalObject.hide();
 				$(MMSD.addressSearchVars.fieldDisplay).trigger('address:usps');
             } else {
                 // Do error and/or no address stuff
@@ -315,12 +315,12 @@ MMSD.helperAddressSearch = {
 		$('#'+MMSD.addressSearchVars.fieldsPrefix+'fullAddress').val('');
 		$(MMSD.addressSearchVars.fieldID).val('');
 		$(MMSD.addressSearchVars.fieldDisplay).val('');
-		MMSD.addressSearchVars.modal.modal('hide');
+		MMSD.addressSearchVars.modalObject.hide();
 		$(MMSD.addressSearchVars.fieldDisplay).trigger('address:cancel');
 	},
 	setDefaultValues: function() {
 		MMSD.addressSearchVars = {
-			'modal': $('#modal-address-search'),
+			'modalTarget': $('#modal-address-search'),
 			'fieldDisplay': '#address-textfield',
 			'fieldID': '#addressID',
 			'inDistrict': false,
@@ -338,6 +338,7 @@ MMSD.helperAddressSearch = {
 			'state': $('#addresssearch-state'),
 			'zip': $('#addresssearch-zip')
 		};
+		MMSD.addressSearchVars.modalObject = new bootstrap.Modal(document.getElementById('modal-address-search'));
 	},
 	hideDivs: function(keepResults = false) {
 		MMSD.addressSearchVars.failureDiv.hide();
