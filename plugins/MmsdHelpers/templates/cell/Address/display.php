@@ -76,7 +76,7 @@
             ]); ?>
 		</div>
 	</div>
-	<div class="row align-items-center">
+	<div class="row align-items-center mb-3">
 		<div class="col-4">
             <?= $this->Form->label('address-search-city',__d('mmsd_helpers','City'),[
                 'id' => 'label-address-search-city',
@@ -112,7 +112,7 @@
             ]); ?>
             <div class="invalid-feedback"><?= __d('mmsd_helpers','Required field') ?></div>
 		</div>
-		<div class="col-sm-3">
+		<div class="col-sm-3 align-self-end">
 <button type="button" class="btn btn-primary" id="address-search-button">
 	<?= __d('mmsd_helpers','Find Address'); ?>
 	<span class="fas fa-search" title="" aria-hidden="true"></span>
