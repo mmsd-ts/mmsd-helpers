@@ -5,9 +5,9 @@ use Cake\View\Cell;
 
 class AddressCell extends Cell
 {
-    protected $_validCellOptions = ['allowEnteredAddress','notFoundMessage',];
-    protected $allowEnteredAddress = true;
-    protected $notFoundMessage = '';
+    protected array $_validCellOptions = ['allowEnteredAddress','notFoundMessage',];
+    protected bool $allowEnteredAddress = true;
+    protected string $notFoundMessage = '';
     public function display()
     {
         $addressesTable = $this->fetchTable('MmsdHelpers.Addresses');
