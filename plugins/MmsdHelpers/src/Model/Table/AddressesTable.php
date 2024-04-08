@@ -31,10 +31,8 @@ class AddressesTable extends Table
                 'tag' => 'asc',
             ])
         ;
-        if (!$rows->isEmpty()) {
-            foreach ($rows as $row) {
-                $list[$row->tag] = $row->tag;
-            }
+        foreach ($rows as $row) {
+            $list[$row->tag] = $row->tag;
         }
         return $list;
     }
