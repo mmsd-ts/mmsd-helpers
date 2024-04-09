@@ -63,7 +63,7 @@ class BsNavbarHelper extends Helper
             $attributes['li']['id'] = (!empty($link['item_id'])) ?  $link['item_id'] : "navbar-item-{$key}";
             $attributes['a']['id'] = (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}";
             if ($key == $currentKey) {
-                $classes['a'][] = 'active';
+                $classes['a'][] = 'active rounded';
                 $attributes['a']['aria-current'] = 'page';
             }
             if (!empty($link['children'])) {
@@ -97,8 +97,7 @@ class BsNavbarHelper extends Helper
             if ((!empty($this->identity))
                 and (
                     (!empty($this->identity->$role))
-                    or
-                    (!empty($this->identity->$isRole))
+                    or (!empty($this->identity->$isRole))
                 )
             ){
                 return true;
