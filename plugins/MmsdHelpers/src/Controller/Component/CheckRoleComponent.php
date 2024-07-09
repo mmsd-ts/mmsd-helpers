@@ -38,20 +38,9 @@ class CheckRoleComponent extends Component
         throw new \RuntimeException("CheckRole::ssoRegister() has been discontinued by the Mean Programmers Club™.");
     }
 
-    public function ssoRemove(string $appName, bool $forceOut = false): void
+    public function ssoRemove(string $appName, bool $forceOut = false)
     {
-        $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
-            ->withValue('0')
-            ->withPath('/')
-            ->withExpiry(new \DateTime('+3 second'))
-        ;
-        $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
-        if ($forceOut) {
-            $ssoCookie = (new Cookie($this->cookiePrefix))
-                ->withPath('/')
-            ;
-            $this->getController()->setResponse($this->getController()->getResponse()->withExpiredCookie($ssoCookie));
-        }
+        throw new \RuntimeException("CheckRole::ssoRemove() has been discontinued by the Mean Programmers Club™.");
     }
     public function check($roles = []): bool
     {
@@ -64,15 +53,14 @@ class CheckRoleComponent extends Component
         if (!empty($roles)) {
             foreach ($roles as $role) {
                 try {
-                    $this->getController()->Authentication->getIdentityData($role);
+                    $this->getController()->Authentication->getIdentityData('username');
                 } catch (RuntimeException $e) {
                     break;
                 }
                 $isRole = "is{$role}";
                 if (
                     (!empty($this->getController()->Authentication->getIdentityData($role)))
-                    or
-                    (!empty($this->getController()->Authentication->getIdentityData($isRole)))
+                    or (!empty($this->getController()->Authentication->getIdentityData($isRole)))
                 ){
                     return true;
                 }
@@ -82,6 +70,11 @@ class CheckRoleComponent extends Component
     }
     public function isOnly($roles = []): bool
     {
+        try {
+            $this->getController()->Authentication->getIdentityData('username');
+        } catch (RuntimeException $e) {
+            return false;
+        }
         if (!is_array($roles)) {
             $roles = [$roles];
         }

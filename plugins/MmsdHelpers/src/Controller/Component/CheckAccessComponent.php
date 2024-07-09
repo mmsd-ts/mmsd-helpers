@@ -6,8 +6,8 @@ use Cake\Controller\Component;
 
 class CheckAccessComponent extends Component
 {
-    public $components = ['MmsdHelpers.CheckRole'];
-    protected $roles = [];
+    public array $components = ['MmsdHelpers.CheckRole'];
+    protected array $roles = [];
 
     public function initialize(array $config): void
     {
