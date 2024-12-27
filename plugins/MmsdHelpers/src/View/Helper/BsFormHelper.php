@@ -96,30 +96,30 @@ class BsFormHelper extends Helper
         $parts = [];
         $options += [
             'type' => 'text',
+            'id' => Inflector::dasherize($name),
             'label' => Inflector::humanize(Inflector::underscore($name)),
         ];
         $config += [
             'layout' => 'default',
         ];
-        $controlId = (!empty($options['id'])) ? $options['id'] : Inflector::dasherize($name);
         $controlClassArray = [];
         $controlClassArray[] = ($options['type'] === 'select') ? 'form-select' : 'form-control';
         $labelClassArray = ['form-label'];
         $parts['control'] =  $this->Form->{$options['type']}($name,[
-            'id' => $controlId,
+            'id' => $options['id'],
             'class' => implode(' ', $controlClassArray),
         ]);
-        $parts['label'] = $this->Form->label($controlId,$options['label'],[
-            'id' => "label-{$controlId}",
+        $parts['label'] = $this->Form->label($options['id'],$options['label'],[
+            'id' => "label-{$options['id']}",
             'class' => implode(' ', $labelClassArray),
         ]);
         if (strtolower($config['layout']) === 'flat') {
-            return $this->wrapPartsFlat($parts);
+            return $this->wrapInputPartsFlat($parts);
         } else {
-            return $this->wrapPartsDefault($parts);
+            return $this->wrapInputPartsDefault($parts);
         }
     }
-    public function wrapPartsDefault(array $parts): string
+    public function wrapInputPartsDefault(array $parts): string
     {
         return <<<"HTML"
 <div class="row">
@@ -132,7 +132,7 @@ class BsFormHelper extends Helper
 HTML;
     
     }
-    public function wrapPartsFlat(array $parts): string
+    public function wrapInputPartsFlat(array $parts): string
     {
         return <<<"HTML"
 <div class="row g-3 align-items-center">
