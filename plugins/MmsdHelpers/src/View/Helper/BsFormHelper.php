@@ -207,7 +207,7 @@ HTML;
         $options['class'] .= ($type === 'select') ? ' form-select' : ' form-control';
         $cleanOptions = [];
         foreach ($options as $key => $value) {
-            if (!in_array(strtolower($key), $this->nonControlOptions)) {
+            if (!in_array($key, $this->nonControlOptions)) {
                 $cleanOptions[$key] = $value;
             }
         }
