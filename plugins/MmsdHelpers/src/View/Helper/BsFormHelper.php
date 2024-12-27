@@ -99,7 +99,7 @@ class BsFormHelper extends Helper
             'label' => Inflector::humanize(Inflector::underscore($name)),
         ];
         $config += [
-            'layout' => 'flat',
+            'layout' => 'default',
         ];
         $controlId = (!empty($options['id'])) ? $options['id'] : Inflector::dasherize($name);
         $controlClassArray = [];
