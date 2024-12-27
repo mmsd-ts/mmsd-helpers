@@ -122,7 +122,7 @@ class BsFormHelper extends Helper
         $parts = [];
         $parts['control'] = $this->makeControl($type, $name, $options);
         if ($type !== 'radio') {
-            $parts['label'] = $this->makeLabel($type, $name, $options);
+            $parts['label'] = $this->makeLabel($type, $options, $inline);
         }
         if ($type === 'checkbox') {
             return $this->checkboxDefault($parts);
