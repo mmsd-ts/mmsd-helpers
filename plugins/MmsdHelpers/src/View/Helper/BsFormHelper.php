@@ -18,7 +18,6 @@ class BsFormHelper extends Helper
         'rowClass','labelAppend','labelAppendChar',
         'requiredChar','requiredClass',
         'errorClass','labelClassOverride',
-        'options',
     ];
     /**
      * See https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute
@@ -212,17 +211,20 @@ HTML;
                 $cleanOptions[$key] = $value;
             }
         }
-        if ((in_array($type, ['checkbox', 'radio', 'switch', 'select']))
-            and (!empty($options['options']))
-        ) {
-            $cleanOptions['options'] = $options['options'];
-        }
         if ($type === 'radio') {
             $labelClass = $this->getValue($options, 'labelClass');
             $labelClass .= ' form-check-label';
             $cleanOptions['label'] = [
                 'class' => $labelClass,
             ];
+        }
+        if (in_array($type, ['radio', 'select'])) {
+            if (empty($options['options'])) {
+                $options['options'] = [
+                    0 => 'No options found',
+                ];
+            }
+            return $this->Form->$type($name, $options['options'], $cleanOptions);
         }
         return $this->Form->$type($name,$cleanOptions);
     }
