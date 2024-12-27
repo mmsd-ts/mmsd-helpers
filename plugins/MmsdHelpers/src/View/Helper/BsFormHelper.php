@@ -245,6 +245,9 @@ HTML;
     }
     public function getValue(array $options, string $key): string
     {
+        if ($options[$key] === false) {
+            return '';
+        }
         if (!empty($options[$key])) {
             return $options[$key];
         }
