@@ -81,6 +81,8 @@ class BsNavbarHelper extends Helper
             $navbarListItem .= (!empty($link['children'])) ? $this->childrenUl($link['children'], $key) : '';
             $navbarListItem .= '</li>';
             $navbarListItems .= $navbarListItem;
+            unset($classes);
+            unset($attributes);
         }
         return $navbarListItems;
     }
