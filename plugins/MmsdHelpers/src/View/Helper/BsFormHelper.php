@@ -195,16 +195,16 @@ HTML;
     }
     public function makeControl(string $type, string $name, array $options): string
     {
-        $controlClass = 'form-control';
+        $class = 'form-control';
         if ($type === 'select') {
-            $controlClass = 'form-select';
+            $class = 'form-select';
         } elseif (in_array($type, ['checkbox', 'radio', 'switch'])) {
-            $controlClass = 'form-check-input';
+            $class = 'form-check-input';
             if ($type === 'switch') {
                 $options['role'] = 'switch';
             }
         }
-        $options['class'] .= ($type === 'select') ? ' form-select' : ' form-control';
+        $options['class'] = $class . ' ' . $this->getValue($options, 'class');
         $cleanOptions = [];
         foreach ($options as $key => $value) {
             if (!in_array($key, $this->nonControlOptions)) {
@@ -229,7 +229,7 @@ HTML;
         if (in_array($type, ['checkbox', 'switch'])) {
             $class = 'form-check-label';
         }
-        $class .= ' ' . $this->getvalue($options, 'labelClass');
+        $class .= ' ' . $this->getValue($options, 'labelClass');
         return $this->Form->label($options['id'], $options['label'],[
             'id' => "label-{$options['id']}",
             'class' => $class,
