@@ -30,17 +30,17 @@ class CheckRoleComponent extends Component
 
     public function ssoCheck(string $appName)
     {
-        throw new \RuntimeException("CheckRole::ssoCheck() has been discontinued by the Mean Programmers Club™.");
+        throw new \RuntimeException("CheckRole::ssoCheck() has been discontinued. Use DbSso instead.");
     }
 
     public function ssoRegister(string $username, string $appName)
     {
-        throw new \RuntimeException("CheckRole::ssoRegister() has been discontinued by the Mean Programmers Club™.");
+        throw new \RuntimeException("CheckRole::ssoRegister() has been discontinued. Use DbSso instead.");
     }
 
     public function ssoRemove(string $appName, bool $forceOut = false)
     {
-        throw new \RuntimeException("CheckRole::ssoRemove() has been discontinued by the Mean Programmers Club™.");
+        throw new \RuntimeException("CheckRole::ssoRemove() has been discontinued. Use DbSso instead.");
     }
     public function check($roles = []): bool
     {
