@@ -11,6 +11,14 @@ class BsFormHelper extends Helper
 {
     use IdGeneratorTrait;
     protected array $helpers = ['Form'];
+    private $nonControlOptions = [
+        'label','labelClass',
+        'helpText','validMessage','invalidMessage',
+        'optionsClass','selectOptionString',
+        'rowClass','labelAppend','labelAppendChar',
+        'requiredChar','requiredClass',
+        'errorClass','labelClassOverride',
+    ];
     /**
      * See https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute
      *
@@ -65,7 +73,6 @@ class BsFormHelper extends Helper
         if (!empty($config['defaults'])) {
             $this->setDefaults($config['defaults']);
         }
-        
     }
     
     /**
@@ -91,48 +98,57 @@ class BsFormHelper extends Helper
         }
         return $this->getConfig('entity');
     }
-    public function input(string $name, array $options = [], array $config = []): ?string
+    public function control(string $name, array $options = [], array $config = []): ?string
     {
-        $parts = [];
+        $type = 'text';
+        $inline = false;
+        if (!empty($options['type'])) {
+            $type = strtolower($options['type']);
+            unset($options['type']);
+            $inline_pos = stripos($type, '-inline');
+            if ($inline_pos !== false) {
+                $type = substr($type, 0, $inline_pos);
+                // these types are always inline-ish
+                if (!in_array($type, ['checkbox', 'radio', 'switch'])) {
+                    $inline = true;
+                }
+            }
+        }
         $options += [
-            'type' => 'text',
             'id' => Inflector::dasherize($name),
+            'class' => '',
             'label' => Inflector::humanize(Inflector::underscore($name)),
         ];
-        $config += [
-            'layout' => 'default',
-        ];
-        $controlClassArray = [];
-        $controlClassArray[] = ($options['type'] === 'select') ? 'form-select' : 'form-control';
-        $labelClassArray = ['form-label'];
-        $parts['control'] =  $this->Form->{$options['type']}($name,[
-            'id' => $options['id'],
-            'class' => implode(' ', $controlClassArray),
-        ]);
-        $parts['label'] = $this->Form->label($options['id'],$options['label'],[
-            'id' => "label-{$options['id']}",
-            'class' => implode(' ', $labelClassArray),
-        ]);
-        if (strtolower($config['layout']) === 'flat') {
-            return $this->wrapInputPartsFlat($parts);
+        $parts = [];
+        $parts['control'] = $this->makeControl($type, $name, $options);
+        if ($type !== 'radio') {
+            $parts['label'] = $this->makeLabel($type, $name, $options);
+        }
+        if ($type === 'checkbox') {
+            return $this->checkboxDefault($parts);
+        }
+        elseif ($type === 'switch') {
+            return $this->switchDefault($parts);
+        }
+        elseif ($type === 'radio') {
+            return $this->radioDefault($parts);
+        }
+        elseif ($inline) {
+            return $this->inputInline($parts);
         } else {
-            return $this->wrapInputPartsDefault($parts);
+            return $this->inputDefault($parts);
         }
     }
-    public function wrapInputPartsDefault(array $parts): string
+    public function inputDefault(array $parts): string
     {
         return <<<"HTML"
-<div class="row">
-    <div class="col-auto">
         {$parts['label']}
         {$parts['control']}
-    </div>
-</div>
 
 HTML;
     
     }
-    public function wrapInputPartsFlat(array $parts): string
+    public function inputInline(array $parts): string
     {
         return <<<"HTML"
 <div class="row g-3 align-items-center">
@@ -146,6 +162,88 @@ HTML;
 
 HTML;
     
+    }
+    public function checkboxDefault(array $parts): string
+    {
+        return <<<"HTML"
+<div class="form-check">
+    {$parts['control']}
+    {$parts['label']}
+</div>
+
+HTML;
+
+    }
+    public function radioDefault(array $parts): string
+    {
+        return <<<"HTML"
+{$parts['control']}
+
+HTML;
+
+    }
+    public function switchDefault(array $parts): string
+    {
+        return <<<"HTML"
+<div class="form-check form-switch">
+    {$parts['control']}
+    {$parts['label']}
+</div>
+
+HTML;
+
+    }
+    public function makeControl(string $type, string $name, array $options): string
+    {
+        $controlClass = 'form-control';
+        if ($type === 'select') {
+            $controlClass = 'form-select';
+        } elseif (in_array($type, ['checkbox', 'radio', 'switch'])) {
+            $controlClass = 'form-check-input';
+            if ($type === 'switch') {
+                $options['role'] = 'switch';
+            }
+        }
+        $options['class'] .= ($type === 'select') ? ' form-select' : ' form-control';
+        $cleanOptions = [];
+        foreach ($options as $key => $value) {
+            if (!in_array(strtolower($key), $this->nonControlOptions)) {
+                $cleanOptions[$key] = $value;
+            }
+        }
+        if ($type === 'radio') {
+            $labelClass = $this->getValue($options, 'labelClass');
+            $labelClass .= ' form-check-label';
+            $cleanOptions['label'] = [
+                'class' => $labelClass,
+            ];
+        }
+        return $this->Form->$type($name,$cleanOptions);
+    }
+    public function makeLabel(string $type, array $options, bool $inline): string
+    {
+        $class = 'form-label';
+        if ($inline) {
+            $class = 'col-form-label';
+        }
+        if (in_array($type, ['checkbox', 'switch'])) {
+            $class = 'form-check-label';
+        }
+        $class .= ' ' . $this->getvalue($options, 'labelClass');
+        return $this->Form->label($options['id'], $options['label'],[
+            'id' => "label-{$options['id']}",
+            'class' => $class,
+        ]);
+    }
+    public function getValue(array $options, string $key): string
+    {
+        if (!empty($options[$key])) {
+            return $options[$key];
+        }
+        if (!empty($this->getConfig("defaults.{$key}"))) {
+            return $this->getConfig("defaults.{$key}");
+        }
+        return '';
     }
     /**
      *
@@ -196,7 +294,7 @@ HTML;
      * @param array $config
      * @return string
      */
-    public function inputDefault(array $widgetInfo = null, array $config = null)
+    public function inputDefault_orig(array $widgetInfo = null, array $config = null)
     {
         $returnHtml = '';
         $returnHtml .= <<<"HTML"
