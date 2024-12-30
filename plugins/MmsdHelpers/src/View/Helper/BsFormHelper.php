@@ -116,6 +116,7 @@ class BsFormHelper extends Helper
     {
         $type = 'text';
         $inline = false;
+        $reverse = false;
         if (!empty($options['type'])) {
             $type = strtolower($options['type']);
             unset($options['type']);
@@ -125,6 +126,14 @@ class BsFormHelper extends Helper
                 // these types are always inline-ish
                 if (!in_array($type, ['checkbox', 'radio', 'switch'])) {
                     $inline = true;
+                }
+            }
+            $reverse_pos = stripos($type, '-reverse');
+            if ($reverse_pos !== false) {
+                $type = substr($type, 0, $reverse_pos);
+                // reverse only works on these types:
+                if (in_array($type, ['checkbox', 'switch'])) {
+                    $reverse = true;
                 }
             }
         }
@@ -153,9 +162,17 @@ class BsFormHelper extends Helper
         }
         // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
-            return $this->checkboxDefault($parts);
+            $checkOptions = [
+                'isSwitch' => false,
+                'isReverse' => $reverse,
+            ];
+            return $this->checkboxDefault($parts, $checkOptions);
         } elseif ($type === 'switch') {
-            return $this->checkboxDefault($parts, true);
+            $checkOptions = [
+                'isSwitch' => true,
+                'isReverse' => $reverse,
+            ];
+            return $this->checkboxDefault($parts, $checkOptions);
         } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
         } elseif ($inline) {
@@ -205,11 +222,17 @@ HELP;
 HTML;
     
     }
-    public function checkboxDefault(array $parts, bool $isSwitch = false): string
+    public function checkboxDefault(array $parts, array $checkOptions = []): string
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
-        $divClass = 'form-check' . ($isSwitch ? ' form-switch' : '');
+        $divClass = 'form-check';
+        if (!empty($checkOptions['isSwitch'])) {
+            $divClass .= ' ' . 'form-switch';
+        }
+        if (!empty($checkOptions['isReverse'])) {
+            $divClass .= ' ' . 'form-check-reverse';
+        }
         return <<<"HTML"
 <div class="{$divClass}">
     {$parts['control']}
