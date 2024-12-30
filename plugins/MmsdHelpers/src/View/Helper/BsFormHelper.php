@@ -112,7 +112,7 @@ class BsFormHelper extends Helper
         return $this->getConfig('entity');
     }
     
-    public function control(string $name, array $options = [], array $config = []): ?string
+    public function control(string $name, array $options = []): ?string
     {
         $type = 'text';
         $inline = false;
@@ -130,7 +130,6 @@ class BsFormHelper extends Helper
         }
         $options += [
             'id' => Inflector::dasherize($name),
-            'class' => '',
             'label' => Inflector::humanize(Inflector::underscore($name)),
         ];
         $parts = [];
