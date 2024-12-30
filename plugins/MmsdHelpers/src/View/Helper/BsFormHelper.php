@@ -142,13 +142,19 @@ class BsFormHelper extends Helper
             or (!empty($options['helpMessage']))
         ) {
             $helpText = $options['helpText'] ?? $options['helpMessage'];
-            $parts['help'] = $this->makeHelp($helpText);
+            $parts['help'] = $this->makeExtraDiv('help', $helpText);
         }
-        // return strings
+        if ((!empty($options['invalidText']))
+            or (!empty($options['invalidMessage']))
+        ) {
+            $invalidText = $options['invalidText'] ?? $options['invalidMessage'];
+            $parts['invalid'] = $this->makeExtraDiv('invalid', $invalidText);
+        }
+        // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
             return $this->checkboxDefault($parts);
         } elseif ($type === 'switch') {
-            return $this->switchDefault($parts);
+            return $this->checkboxDefault($parts, true);
         } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
         } elseif ($inline) {
@@ -157,21 +163,22 @@ class BsFormHelper extends Helper
             return $this->inputDefault($parts);
         }
     }
-    
     public function inputDefault(array $parts): string
     {
+        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
         {$parts['label']}
         {$parts['control']}
+        {$invalid}
         {$help}
 
 HTML;
     
     }
-    
     public function inputInline(array $parts): string
     {
+        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = null;
         if (!empty($parts['help'])) {
             $help = <<<"HELP"
@@ -189,6 +196,7 @@ HELP;
     </div>
     <div class="col-auto">
         {$parts['control']}
+        {$invalid}
     </div>
     {$help}
 </div>
@@ -196,46 +204,34 @@ HELP;
 HTML;
     
     }
-    
-    public function checkboxDefault(array $parts): string
+    public function checkboxDefault(array $parts, bool $isSwitch = false): string
     {
+        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
+        $divClass = 'form-check' . ($isSwitch ? ' form-switch' : '');
         return <<<"HTML"
-<div class="form-check">
+<div class="{$divClass}">
     {$parts['control']}
     {$parts['label']}
     {$help}
+    {$invalid}
 </div>
 
 HTML;
     
     }
-    
     public function radioDefault(array $parts): string
     {
+        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
 {$parts['control']}
 {$help}
+{$invalid}
 
 HTML;
     
     }
-    
-    public function switchDefault(array $parts): string
-    {
-        $help = (!empty($parts['help'])) ? $parts['help'] : null;
-        return <<<"HTML"
-<div class="form-check form-switch">
-    {$parts['control']}
-    {$parts['label']}
-    {$help}
-</div>
-
-HTML;
-    
-    }
-    
     public function makeControl(string $type, string $name, array $options): string
     {
         $class = 'form-control';
@@ -323,19 +319,21 @@ HTML;
             'class' => $class,
         ]);
     }
-    
-    public function makeHelp(string|array $helpText): string
+    public function makeExtraDiv(string $type, string|array $text): string
     {
-        $helpInfo = (is_array($helpText)) ? $helpText : ['contents' => $helpText];
+        $info = (is_array($text)) ? $text : ['contents' => $text];
         $class = 'form-text';
-        if (!empty($helpInfo['class'])) {
-            $class .= ' ' . $helpInfo['class'];
+        if ($type === 'invalid') {
+            $class = 'invalid-feedback';
+        }
+        if (!empty($info['class'])) {
+            $class .= ' ' . $info['class'];
         }
         return <<<"HTML"
-<div class="{$class}">{$helpInfo['contents']}</div>
+<div class="{$class}">{$info['contents']}</div>
 
 HTML;
-
+    
     }
     public function getOptionValue(array $options, string $key): string
     {
