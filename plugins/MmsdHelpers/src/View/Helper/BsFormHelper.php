@@ -256,7 +256,9 @@ HTML;
             }
         }
         // "Autocomplete" attribute
-        if (!empty($this->autocompleteMap[strtolower($name)])) {
+        if ((empty($cleanOptions['autocomplete']))
+            and (!empty($this->autocompleteMap[strtolower($name)]))
+        ) {
             $cleanOptions['autocomplete'] = $this->autocompleteMap[strtolower($name)];
         }
         if ($type === 'radio') {
