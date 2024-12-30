@@ -197,7 +197,7 @@ HTML;
         $labelCol = (!empty($options['labelCol'])) ? $options['labelCol'] : 'auto';
         $controlCol = (!empty($options['controlCol'])) ? $options['controlCol'] : 'auto';
         return <<<"HTML"
-<div class="row g-3 align-items-center">
+<div class="row g-3 align-items-start">
     <div class="col-{$labelCol}">
         {$parts['label']}
     </div>
