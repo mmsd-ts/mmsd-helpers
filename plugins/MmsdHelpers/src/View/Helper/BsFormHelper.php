@@ -326,20 +326,13 @@ HTML;
     
     public function makeHelp(string|array $helpText): string
     {
-        if (is_array($helpText)) {
-            $helpInfo = $helpText;
-        } else {
-            $helpInfo = [
-                'contents' => $helpText,
-                'class' => null,
-            ];
-        }
+        $helpInfo = (is_array($helpText)) ? $helpText : ['contents' => $helpText];
         $class = 'form-text';
         if (!empty($helpInfo['class'])) {
             $class .= ' ' . $helpInfo['class'];
         }
         return <<<"HTML"
-<div class="{$class}">{$helpText['contents']}</div>
+<div class="{$class}">{$helpInfo['contents']}</div>
 
 HTML;
 
