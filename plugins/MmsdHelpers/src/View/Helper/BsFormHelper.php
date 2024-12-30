@@ -193,12 +193,9 @@ HTML;
     public function inputInline(array $parts, array $options): string
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
-        $help = null;
+        $help = (!empty($parts['help'])) ? $parts['help'] : null;
         $labelCol = (!empty($options['labelCol'])) ? $options['labelCol'] : 'auto';
         $controlCol = (!empty($options['controlCol'])) ? $options['controlCol'] : 'auto';
-        if (!empty($parts['help'])) {
-            $help = "<div class=\"col-auto\">{$parts['help']}</div>";
-        }
         return <<<"HTML"
 <div class="row g-3 align-items-center">
     <div class="col-{$labelCol}">
@@ -207,8 +204,8 @@ HTML;
     <div class="col-{$controlCol}">
         {$parts['control']}
         {$invalid}
+        {$help}
     </div>
-    {$help}
 </div>
 
 HTML;
