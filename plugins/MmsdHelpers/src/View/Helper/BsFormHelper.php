@@ -171,7 +171,7 @@ class BsFormHelper extends Helper
         } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
         } elseif (!empty($options['inline'])) {
-            return $this->inputInline($parts);
+            return $this->inputInline($parts, $options);
         } else {
             return $this->inputDefault($parts);
         }
@@ -189,7 +189,7 @@ class BsFormHelper extends Helper
 HTML;
     
     }
-    public function inputInline(array $parts): string
+    public function inputInline(array $parts, array $options): string
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = null;
