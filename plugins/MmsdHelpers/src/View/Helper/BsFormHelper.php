@@ -10,15 +10,26 @@ use Cake\Utility\Hash;
 class BsFormHelper extends Helper
 {
     use IdGeneratorTrait;
+    
     protected array $helpers = ['Form'];
     private $nonControlOptions = [
-        'label','labelClass',
-        'helpText','validMessage','invalidMessage',
-        'helpMessage','validText','invalidText',
-        'optionsClass','selectOptionString',
-        'rowClass','labelAppend','labelAppendChar',
-        'requiredChar','requiredClass',
-        'errorClass','labelClassOverride',
+        'label',
+        'labelClass',
+        'helpText',
+        'validMessage',
+        'invalidMessage',
+        'helpMessage',
+        'validText',
+        'invalidText',
+        'optionsClass',
+        'selectOptionString',
+        'rowClass',
+        'labelAppend',
+        'labelAppendChar',
+        'requiredChar',
+        'requiredClass',
+        'errorClass',
+        'labelClassOverride',
     ];
     /**
      * See https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute
@@ -49,6 +60,7 @@ class BsFormHelper extends Helper
         'email' => 'email',
         'phone' => 'tel',
     ];
+    
     /**
      *
      * {@inheritDoc}
@@ -91,14 +103,15 @@ class BsFormHelper extends Helper
      */
     public function setEntity(Entity $formEntity = null): ?Entity
     {
-        $this->setConfig('entity',$formEntity);
+        $this->setConfig('entity', $formEntity);
         if (!empty($formEntity)) {
             if ($formEntity->getErrors()) {
-                $this->setConfig('errors',$formEntity->getErrors());
+                $this->setConfig('errors', $formEntity->getErrors());
             }
         }
         return $this->getConfig('entity');
     }
+    
     public function control(string $name, array $options = [], array $config = []): ?string
     {
         $type = 'text';
@@ -128,35 +141,47 @@ class BsFormHelper extends Helper
         if ((!empty($options['helpText']))
             or (!empty($options['helpMessage']))
         ) {
-            $parts['help'] = $this->makeHelp();
+            $helpText = $options['helpText'] ?? $options['helpMessage'];
+            $parts['help'] = $this->makeHelp($helpText);
         }
         // return strings
         if ($type === 'checkbox') {
             return $this->checkboxDefault($parts);
-        }
-        elseif ($type === 'switch') {
+        } elseif ($type === 'switch') {
             return $this->switchDefault($parts);
-        }
-        elseif ($type === 'radio') {
+        } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
-        }
-        elseif ($inline) {
+        } elseif ($inline) {
             return $this->inputInline($parts);
         } else {
             return $this->inputDefault($parts);
         }
     }
+    
     public function inputDefault(array $parts): string
     {
+        $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
         {$parts['label']}
         {$parts['control']}
+        {$help}
 
 HTML;
     
     }
+    
     public function inputInline(array $parts): string
     {
+        $help = null;
+        if (!empty($parts['help'])) {
+            $help = <<<"HELP"
+    <div class="col-auto">
+        {$parts['help']}
+    </div>
+
+HELP;
+
+        }
         return <<<"HTML"
 <div class="row g-3 align-items-center">
     <div class="col-auto">
@@ -165,41 +190,52 @@ HTML;
     <div class="col-auto">
         {$parts['control']}
     </div>
+    {$help}
 </div>
 
 HTML;
     
     }
+    
     public function checkboxDefault(array $parts): string
     {
+        $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
 <div class="form-check">
     {$parts['control']}
     {$parts['label']}
+    {$help}
 </div>
 
 HTML;
-
+    
     }
+    
     public function radioDefault(array $parts): string
     {
+        $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
 {$parts['control']}
+{$help}
 
 HTML;
-
+    
     }
+    
     public function switchDefault(array $parts): string
     {
+        $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
 <div class="form-check form-switch">
     {$parts['control']}
     {$parts['label']}
+    {$help}
 </div>
 
 HTML;
-
+    
     }
+    
     public function makeControl(string $type, string $name, array $options): string
     {
         $class = 'form-control';
@@ -249,8 +285,9 @@ HTML;
             }
             return $this->Form->$type($name, $options['options'], $cleanOptions);
         }
-        return $this->Form->$type($name,$cleanOptions);
+        return $this->Form->$type($name, $cleanOptions);
     }
+    
     public function makeLabel(string $type, array $options, bool $inline): string
     {
         $label = $options['label'];
@@ -281,10 +318,24 @@ HTML;
         if (!empty($labelAppendChar)) {
             $label .= $labelAppendChar;
         }
-        return $this->Form->label($options['id'], $label,[
+        return $this->Form->label($options['id'], $label, [
             'id' => "label-{$options['id']}",
             'class' => $class,
         ]);
+    }
+    
+    public function makeHelp(string|array $helpText): string
+    {
+        $helpInfo = (is_array($helpText)) ? $helpText : ['contents' => $helpText];
+        $class = 'form-text';
+        if (!empty($helpInfo['class'])) {
+            $class .= ' ' . $helpInfo['class'];
+        }
+        return <<<"HTML"
+<div class="{$class}">{$helpText['contents']}</div>
+
+HTML;
+
     }
     public function getOptionValue(array $options, string $key): string
     {
