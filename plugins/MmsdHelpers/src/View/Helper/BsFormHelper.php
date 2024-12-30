@@ -26,6 +26,8 @@ class BsFormHelper extends Helper
         'inline',
         'reverse',
         'plaintext',
+        'controlCol',
+        'labelCol',
         // old ones that may be used in the future?
         'optionsClass',
         'selectOptionString',
@@ -191,6 +193,8 @@ HTML;
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = null;
+        $labelCol = (!empty($options['labelCol'])) ? $options['labelCol'] : 'auto';
+        $controlCol = (!empty($options['controlCol'])) ? $options['controlCol'] : 'auto';
         if (!empty($parts['help'])) {
             $help = <<<"HELP"
     <div class="col-auto">
@@ -202,10 +206,10 @@ HELP;
         }
         return <<<"HTML"
 <div class="row g-3 align-items-center">
-    <div class="col-auto">
+    <div class="col-{$labelCol}">
         {$parts['label']}
     </div>
-    <div class="col-auto">
+    <div class="col-{$controlCol}">
         {$parts['control']}
         {$invalid}
     </div>
