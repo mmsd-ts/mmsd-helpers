@@ -14,6 +14,7 @@ class BsFormHelper extends Helper
     private $nonControlOptions = [
         'label','labelClass',
         'helpText','validMessage','invalidMessage',
+        'helpMessage','validText','invalidText',
         'optionsClass','selectOptionString',
         'rowClass','labelAppend','labelAppendChar',
         'requiredChar','requiredClass',
@@ -204,7 +205,7 @@ HTML;
                 $options['role'] = 'switch';
             }
         }
-        $options['class'] = $class . ' ' . $this->getValue($options, 'class');
+        $options['class'] = $class . ' ' . $this->getOptionValue($options, 'class');
         $cleanOptions = [];
         foreach ($options as $key => $value) {
             if (!in_array($key, $this->nonControlOptions)) {
@@ -212,7 +213,7 @@ HTML;
             }
         }
         if ($type === 'radio') {
-            $labelClass = $this->getValue($options, 'labelClass');
+            $labelClass = $this->getOptionValue($options, 'labelClass');
             $labelClass .= ' form-check-label';
             $cleanOptions['label'] = [
                 'class' => $labelClass,
@@ -230,6 +231,7 @@ HTML;
     }
     public function makeLabel(string $type, array $options, bool $inline): string
     {
+        $label = $options['label'];
         $class = 'form-label';
         if ($inline) {
             $class = 'col-form-label';
@@ -237,13 +239,30 @@ HTML;
         if (in_array($type, ['checkbox', 'switch'])) {
             $class = 'form-check-label';
         }
-        $class .= ' ' . $this->getValue($options, 'labelClass');
-        return $this->Form->label($options['id'], $options['label'],[
+        if (!empty($options['required'])) {
+            $requiredClass = $this->getOptionValue($options, 'requiredClass');
+            if (!empty($requiredClass)) {
+                $class .= ' ' . $requiredClass;
+            }
+            $requiredChar = $this->getOptionValue($options, 'requiredChar');
+            if (!empty($requiredChar)) {
+                $label .= $requiredChar;
+            }
+        }
+        $labelClass = $this->getOptionValue($options, 'labelClass');
+        if (!empty($labelClass)) {
+            $class .= ' ' . $labelClass;
+        }
+        $labelAppendChar = $this->getOptionValue($options, 'labelAppendChar');
+        if (!empty($labelAppendChar)) {
+            $label .= $labelAppendChar;
+        }
+        return $this->Form->label($options['id'], $label,[
             'id' => "label-{$options['id']}",
             'class' => $class,
         ]);
     }
-    public function getValue(array $options, string $key): string
+    public function getOptionValue(array $options, string $key): string
     {
         if (isset($options[$key])
             and ($options[$key] === false)
