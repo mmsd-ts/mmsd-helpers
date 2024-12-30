@@ -15,6 +15,9 @@ class BsFormHelper extends Helper
     private $nonControlOptions = [
         'label',
         'labelClass',
+        'help',
+        'valid',
+        'invalid',
         'helpText',
         'validMessage',
         'invalidMessage',
@@ -138,17 +141,19 @@ class BsFormHelper extends Helper
         if ($type !== 'radio') {
             $parts['label'] = $this->makeLabel($type, $options, $inline);
         }
-        if ((!empty($options['helpText']))
+        if ((!empty($options['help']))
+            or (!empty($options['helpText']))
             or (!empty($options['helpMessage']))
         ) {
-            $helpText = $options['helpText'] ?? $options['helpMessage'];
-            $parts['help'] = $this->makeExtraDiv('help', $helpText);
+            $help = $options['help'] ?? $options['helpText'] ?? $options['helpMessage'];
+            $parts['help'] = $this->makeExtraDiv('help', $help);
         }
-        if ((!empty($options['invalidText']))
+        if ((!empty($options['invalid']))
+            or (!empty($options['invalidText']))
             or (!empty($options['invalidMessage']))
         ) {
-            $invalidText = $options['invalidText'] ?? $options['invalidMessage'];
-            $parts['invalid'] = $this->makeExtraDiv('invalid', $invalidText);
+            $invalid = $options['invalid'] ?? $options['invalidText'] ?? $options['invalidMessage'];
+            $parts['invalid'] = $this->makeExtraDiv('invalid', $invalid);
         }
         // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
