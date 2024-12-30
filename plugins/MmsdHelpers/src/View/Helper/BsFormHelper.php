@@ -11,6 +11,9 @@ class BsFormHelper extends Helper
     private $nonControlOptions = [
         'label',
         'labelClass',
+        'labelAppendChar',
+        'requiredChar',
+        'requiredClass',
         'help',
         'valid',
         'invalid',
@@ -20,14 +23,15 @@ class BsFormHelper extends Helper
         'helpMessage',
         'validText',
         'invalidText',
+        'inline',
+        'reverse',
+        'plaintext',
+        // old ones that may be used in the future?
         'optionsClass',
         'selectOptionString',
         'rowClass',
-        'labelAppend',
-        'labelAppendChar',
-        'requiredChar',
-        'requiredClass',
         'errorClass',
+        'labelAppend',
         'labelClassOverride',
     ];
     /**
@@ -115,26 +119,22 @@ class BsFormHelper extends Helper
     public function control(string $name, array $options = []): ?string
     {
         $type = 'text';
-        $inline = false;
-        $reverse = false;
         if (!empty($options['type'])) {
             $type = strtolower($options['type']);
             unset($options['type']);
-            $inline_pos = stripos($type, '-inline');
-            if ($inline_pos !== false) {
-                $type = substr($type, 0, $inline_pos);
+            if (!empty($options['inline'])) {
                 // these types are always inline-ish
-                if (!in_array($type, ['checkbox', 'radio', 'switch'])) {
-                    $inline = true;
-                }
+                $options['inline'] = (!in_array($type, ['checkbox', 'radio', 'switch']));
             }
-            $reverse_pos = stripos($type, '-reverse');
-            if ($reverse_pos !== false) {
-                $type = substr($type, 0, $reverse_pos);
+            if (!empty($options['reverse'])) {
                 // reverse only works on these types:
-                if (in_array($type, ['checkbox', 'switch'])) {
-                    $reverse = true;
-                }
+                $options['reverse'] = (in_array($type, ['checkbox', 'switch']));
+            }
+            if (!empty($options['plaintext'])) {
+                // plaintext doesn't work on these types, and readonly must be true
+                $options['plaintext'] = ((!in_array($type, ['checkbox', 'switch', 'radio', 'select']))
+                    and (!empty($options['readonly']))
+                );
             }
         }
         $options += [
@@ -144,7 +144,7 @@ class BsFormHelper extends Helper
         $parts = [];
         $parts['control'] = $this->makeControl($type, $name, $options);
         if ($type !== 'radio') {
-            $parts['label'] = $this->makeLabel($type, $options, $inline);
+            $parts['label'] = $this->makeLabel($type, $options);
         }
         if ((!empty($options['help']))
             or (!empty($options['helpText']))
@@ -162,20 +162,13 @@ class BsFormHelper extends Helper
         }
         // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
-            $checkOptions = [
-                'isSwitch' => false,
-                'isReverse' => $reverse,
-            ];
-            return $this->checkboxDefault($parts, $checkOptions);
+            return $this->checkboxDefault($parts, $options);
         } elseif ($type === 'switch') {
-            $checkOptions = [
-                'isSwitch' => true,
-                'isReverse' => $reverse,
-            ];
-            return $this->checkboxDefault($parts, $checkOptions);
+            $options['switch'] =  true;
+            return $this->checkboxDefault($parts, $options);
         } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
-        } elseif ($inline) {
+        } elseif (!empty($options['inline'])) {
             return $this->inputInline($parts);
         } else {
             return $this->inputDefault($parts);
@@ -222,15 +215,15 @@ HELP;
 HTML;
     
     }
-    public function checkboxDefault(array $parts, array $checkOptions = []): string
+    public function checkboxDefault(array $parts, array $options): string
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
         $divClass = 'form-check';
-        if (!empty($checkOptions['isSwitch'])) {
+        if (!empty($options['switch'])) {
             $divClass .= ' ' . 'form-switch';
         }
-        if (!empty($checkOptions['isReverse'])) {
+        if (!empty($options['reverse'])) {
             $divClass .= ' ' . 'form-check-reverse';
         }
         return <<<"HTML"
@@ -265,6 +258,8 @@ HTML;
             if ($type === 'switch') {
                 $options['role'] = 'switch';
             }
+        } elseif (!empty($options['plaintext'])) {
+            $class = 'form-control-plaintext';
         }
         $controlClass = $this->getOptionValue($options, 'class');
         if (!empty($controlClass)) {
@@ -314,11 +309,11 @@ HTML;
         return $this->Form->$type($name, $cleanOptions);
     }
     
-    public function makeLabel(string $type, array $options, bool $inline): string
+    public function makeLabel(string $type, array $options): string
     {
         $label = $options['label'];
         $class = 'form-label';
-        if ($inline) {
+        if (!empty($options['inline'])) {
             $class = 'col-form-label';
         }
         if (in_array($type, ['checkbox', 'switch'])) {
