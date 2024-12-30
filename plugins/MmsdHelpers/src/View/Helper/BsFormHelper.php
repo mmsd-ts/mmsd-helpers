@@ -80,10 +80,11 @@ class BsFormHelper extends Helper
                 'requiredChar' => null,
                 'requiredClass' => null,
                 'labelAppendChar' => null,
-                'errorClass' => 'text-danger',
-                'useBrowserAutocomplete' => true,
-                'inputLayout' => 'Default',
-                'checkIdHasHyphen' => false,
+                // removed:
+//                'errorClass' => 'text-danger',
+//                'useBrowserAutocomplete' => true,
+//                'inputLayout' => 'Default',
+//                'checkIdHasHyphen' => false,
             ],
         ]);
         if (!empty($config['defaults'])) {
@@ -101,7 +102,7 @@ class BsFormHelper extends Helper
     }
     
     /**
-     *
+     * This function is not used or necessary any longer but it's here so you don't get errors
      * @param \Cake\ORM\Entity $formEntity
      */
     public function setEntity(Entity $formEntity = null): ?Entity
@@ -252,11 +253,16 @@ HTML;
             $class .= ' ' . $controlClass;
         }
         $options['class'] = $class;
+        // Clean options array:
         $cleanOptions = [];
         foreach ($options as $key => $value) {
             if (!in_array($key, $this->nonControlOptions)) {
                 $cleanOptions[$key] = $value;
             }
+        }
+        // "Autocomplete" attribute
+        if (!empty($this->autocompleteMap[strtolower($name)])) {
+            $cleanOptions['autocomplete'] = $this->autocompleteMap[strtolower($name)];
         }
         if ($type === 'radio') {
             $radioLabelClass = 'form-check-label';
