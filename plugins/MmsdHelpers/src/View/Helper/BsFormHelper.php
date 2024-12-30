@@ -176,6 +176,7 @@ class BsFormHelper extends Helper
             return $this->inputDefault($parts);
         }
     }
+    // Generating HTML
     public function inputDefault(array $parts): string
     {
         $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
@@ -196,13 +197,7 @@ HTML;
         $labelCol = (!empty($options['labelCol'])) ? $options['labelCol'] : 'auto';
         $controlCol = (!empty($options['controlCol'])) ? $options['controlCol'] : 'auto';
         if (!empty($parts['help'])) {
-            $help = <<<"HELP"
-    <div class="col-auto">
-        {$parts['help']}
-    </div>
-
-HELP;
-
+            $help = "<div class=\"col-auto\">{$parts['help']}</div>";
         }
         return <<<"HTML"
 <div class="row g-3 align-items-center">
@@ -252,6 +247,7 @@ HTML;
 HTML;
     
     }
+    // Making parts
     public function makeControl(string $type, string $name, array $options): string
     {
         $class = 'form-control';
@@ -277,7 +273,6 @@ HTML;
                 $cleanOptions[$key] = $value;
             }
         }
-        // "Autocomplete" attribute
         if ((empty($cleanOptions['autocomplete']))
             and (!empty($this->autocompleteMap[strtolower($name)]))
         ) {
@@ -364,6 +359,7 @@ HTML;
 HTML;
     
     }
+    // Utility
     public function getOptionValue(array $options, string $key): string
     {
         if (isset($options[$key])
