@@ -238,6 +238,9 @@ HTML;
                 'class' => $radioLabelClass,
             ];
         }
+        if ($type === 'switch') {
+            $type = 'checkbox';
+        }
         if (in_array($type, ['radio', 'select'])) {
             if (empty($options['options'])) {
                 $options['options'] = [
