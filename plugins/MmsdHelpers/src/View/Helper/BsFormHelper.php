@@ -125,6 +125,12 @@ class BsFormHelper extends Helper
         if ($type !== 'radio') {
             $parts['label'] = $this->makeLabel($type, $options, $inline);
         }
+        if ((!empty($options['helpText']))
+            or (!empty($options['helpMessage']))
+        ) {
+            $parts['help'] = $this->makeHelp();
+        }
+        // return strings
         if ($type === 'checkbox') {
             return $this->checkboxDefault($parts);
         }
@@ -251,6 +257,8 @@ HTML;
         }
         if (in_array($type, ['checkbox', 'switch'])) {
             $class = 'form-check-label';
+            // override labelAppendChar since label appears after form control
+            $options['labelAppendChar'] = false;
         }
         if (!empty($options['required'])) {
             $requiredClass = $this->getOptionValue($options, 'requiredClass');
