@@ -205,7 +205,11 @@ HTML;
                 $options['role'] = 'switch';
             }
         }
-        $options['class'] = $class . ' ' . $this->getOptionValue($options, 'class');
+        $controlClass = $this->getOptionValue($options, 'class');
+        if (!empty($controlClass)) {
+            $class .= ' ' . $controlClass;
+        }
+        $options['class'] = $class;
         $cleanOptions = [];
         foreach ($options as $key => $value) {
             if (!in_array($key, $this->nonControlOptions)) {
@@ -213,8 +217,17 @@ HTML;
             }
         }
         if ($type === 'radio') {
+            $radioLabelClass = 'form-check-label';
             $labelClass = $this->getOptionValue($options, 'labelClass');
-            $labelClass .= ' form-check-label';
+            if (!empty($labelClass)) {
+                $radioLabelClass .= ' ' . $labelClass;
+            }
+            if (!empty($options['required'])) {
+                $requiredClass = $this->getOptionValue($options, 'requiredClass');
+                if (!empty($requiredClass)) {
+                    $radioLabelClass .= ' ' . $requiredClass;
+                }
+            }
             $cleanOptions['label'] = [
                 'class' => $labelClass,
             ];
