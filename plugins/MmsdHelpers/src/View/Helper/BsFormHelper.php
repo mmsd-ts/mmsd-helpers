@@ -229,7 +229,7 @@ HTML;
                 }
             }
             $cleanOptions['label'] = [
-                'class' => $labelClass,
+                'class' => $radioLabelClass,
             ];
         }
         if (in_array($type, ['radio', 'select'])) {
