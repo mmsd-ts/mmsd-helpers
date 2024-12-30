@@ -218,8 +218,8 @@ HTML;
 <div class="{$divClass}">
     {$parts['control']}
     {$parts['label']}
-    {$help}
     {$invalid}
+    {$help}
 </div>
 
 HTML;
@@ -227,12 +227,11 @@ HTML;
     }
     public function radioDefault(array $parts): string
     {
-        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
+        // invalid doesn't work, it works on each radio option but that is dumb
         $help = (!empty($parts['help'])) ? $parts['help'] : null;
         return <<<"HTML"
 {$parts['control']}
 {$help}
-{$invalid}
 
 HTML;
     
