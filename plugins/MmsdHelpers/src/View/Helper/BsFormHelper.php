@@ -117,7 +117,16 @@ class BsFormHelper extends Helper
         }
         return $this->getConfig('entity');
     }
-    
+    // Two functions to help upgrading from older versions:
+    public function input(string $name, array $options = [], array $config = []): ?string
+    {
+        return $this->control($name, $options);
+    }
+    public function check(string $name, array $options = [], array $config = []): ?string
+    {
+        $options['type'] = $options['type'] ?? 'checkbox';
+        return $this->control($name, $options);
+    }
     public function control(string $name, array $options = []): ?string
     {
         $type = 'text';
