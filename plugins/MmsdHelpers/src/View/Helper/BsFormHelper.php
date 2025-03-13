@@ -120,11 +120,13 @@ class BsFormHelper extends Helper
     // Two functions to help upgrading from older versions:
     public function input(string $name, array $options = [], array $config = []): ?string
     {
+        $options['needsUpgrade'] = true;
         return $this->control($name, $options);
     }
     public function check(string $name, array $options = [], array $config = []): ?string
     {
         $options['type'] = $options['type'] ?? 'checkbox';
+        $options['needsUpgrade'] = true;
         return $this->control($name, $options);
     }
     public function control(string $name, array $options = []): ?string
@@ -270,6 +272,9 @@ HTML;
         $controlClass = $this->getOptionValue($options, 'class');
         if (!empty($controlClass)) {
             $class .= ' ' . $controlClass;
+        }
+        if (!empty($options['needsUpgrade'])) {
+            $class .= ' ' . 'needsUpgrade';
         }
         $options['class'] = $class;
         // Clean options array:
