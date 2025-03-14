@@ -65,7 +65,11 @@ class BsFormHelper extends Helper
         'email' => 'email',
         'phone' => 'tel',
     ];
-    
+    private $extraDivTypes = [
+        'valid' => ['class' => 'valid-feedback'],
+        'invalid' => ['class' => 'invalid-feedback'],
+        'help' => [],
+    ];
     /**
      *
      * {@inheritDoc}
@@ -159,26 +163,19 @@ class BsFormHelper extends Helper
         if ($type !== 'radio') {
             $parts['label'] = $this->makeLabel($type, $options);
         }
-        if ((!empty($options['help']))
-            or (!empty($options['helpText']))
-            or (!empty($options['helpMessage']))
-        ) {
-            $help = $options['help'] ?? $options['helpText'] ?? $options['helpMessage'];
-            $parts['help'] = $this->makeExtraDiv('help', $help);
-        }
-        if ((!empty($options['invalid']))
-            or (!empty($options['invalidText']))
-            or (!empty($options['invalidMessage']))
-        ) {
-            $invalid = $options['invalid'] ?? $options['invalidText'] ?? $options['invalidMessage'];
-            $parts['invalid'] = $this->makeExtraDiv('invalid', $invalid);
-        }
-        if ((!empty($options['valid']))
-            or (!empty($options['validText']))
-            or (!empty($options['validMessage']))
-        ) {
-            $valid = $options['valid'] ?? $options['validText'] ?? $options['validMessage'];
-            $parts['valid'] = $this->makeExtraDiv('valid', $valid);
+        // extra div options
+        $parts['extraDivs'] = [];
+        foreach (array_keys($this->extraDivTypes) as $extraDivType) {
+            if ((!empty($options[$extraDivType]))
+                or (!empty($options["{$extraDivType}Text"]))
+                or (!empty($options["{$extraDivType}Message"]))
+            ) {
+                $extraDivInfo = $options[$extraDivType]
+                    ?? $options["{$extraDivType}Text"]
+                    ?? $options["{$extraDivType}Message"]
+                ;
+                $parts['extraDivs'][$extraDivType] = $this->makeExtraDiv($extraDivType, $extraDivInfo);
+            }
         }
         // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
@@ -197,21 +194,18 @@ class BsFormHelper extends Helper
     // Generating HTML
     public function inputDefault(array $parts): string
     {
-        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
-        $help = (!empty($parts['help'])) ? $parts['help'] : null;
+        $extraDivsString = $this->getExtraDivsString($parts['extraDivs']);
         return <<<"HTML"
         {$parts['label']}
         {$parts['control']}
-        {$invalid}
-        {$help}
+        {$extraDivsString}
 
 HTML;
     
     }
     public function inputInline(array $parts, array $options): string
     {
-        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
-        $help = (!empty($parts['help'])) ? $parts['help'] : null;
+        $extraDivsString = $this->getExtraDivsString($parts['extraDivs']);
         $labelCol = (!empty($options['labelCol'])) ? $options['labelCol'] : 'auto';
         $controlCol = (!empty($options['controlCol'])) ? $options['controlCol'] : 'auto';
         return <<<"HTML"
@@ -221,8 +215,7 @@ HTML;
     </div>
     <div class="col-{$controlCol}">
         {$parts['control']}
-        {$invalid}
-        {$help}
+        {$extraDivsString}
     </div>
 </div>
 
@@ -231,8 +224,7 @@ HTML;
     }
     public function checkboxDefault(array $parts, array $options): string
     {
-        $invalid = (!empty($parts['invalid'])) ? $parts['invalid'] : null;
-        $help = (!empty($parts['help'])) ? $parts['help'] : null;
+        $extraDivsString = $this->getExtraDivsString($parts['extraDivs']);
         $divClass = 'form-check';
         if (!empty($options['switch'])) {
             $divClass .= ' ' . 'form-switch';
@@ -244,8 +236,7 @@ HTML;
 <div class="{$divClass}">
     {$parts['control']}
     {$parts['label']}
-    {$invalid}
-    {$help}
+    {$extraDivsString}
 </div>
 
 HTML;
@@ -253,8 +244,8 @@ HTML;
     }
     public function radioDefault(array $parts): string
     {
-        // invalid doesn't work, it works on each radio option but that is dumb
-        $help = (!empty($parts['help'])) ? $parts['help'] : null;
+        // valid/invalid do not work, they work on each radio option but that is dumb
+        $help = (!empty($parts['extraDivs']['help'])) ? $parts['extraDivs']['help'] : null;
         return <<<"HTML"
 {$parts['control']}
 {$help}
@@ -365,11 +356,8 @@ HTML;
     {
         $info = (is_array($text)) ? $text : ['contents' => $text];
         $class = 'form-text';
-        if ($type === 'invalid') {
-            $class = 'invalid-feedback';
-        }
-        if ($type === 'valid') {
-            $class = 'valid-feedback';
+        if (!empty($this->extraDivTypes[$type]['class'])) {
+            $class = $this->extraDivTypes[$type]['class'];
         }
         if (!empty($info['class'])) {
             $class .= ' ' . $info['class'];
@@ -379,6 +367,16 @@ HTML;
 
 HTML;
     
+    }
+    public function getExtraDivsString(array $extraDivs = []): string
+    {
+        $extraDivString = '';
+        if (!empty($extraDivs)) {
+            foreach ($extraDivs as $extraDivType => $extraDivInfo) {
+                $extraDivString .= "{$extraDivType}\r\n";
+            }
+        }
+        return $extraDivString;
     }
     // Utility
     public function getOptionValue(array $options, string $key): string
