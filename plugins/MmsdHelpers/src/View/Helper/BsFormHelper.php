@@ -104,7 +104,7 @@ class BsFormHelper extends Helper
     }
     
     /**
-     * This function is not used or necessary any longer but it's here so you don't get errors
+     * This function is not used or necessary any longer, it's here so you don't get errors
      * @param \Cake\ORM\Entity $formEntity
      */
     public function setEntity(Entity $formEntity = null): ?Entity
@@ -172,6 +172,13 @@ class BsFormHelper extends Helper
         ) {
             $invalid = $options['invalid'] ?? $options['invalidText'] ?? $options['invalidMessage'];
             $parts['invalid'] = $this->makeExtraDiv('invalid', $invalid);
+        }
+        if ((!empty($options['valid']))
+            or (!empty($options['validText']))
+            or (!empty($options['validMessage']))
+        ) {
+            $valid = $options['valid'] ?? $options['validText'] ?? $options['validMessage'];
+            $parts['valid'] = $this->makeExtraDiv('valid', $valid);
         }
         // take all the parts and return HTML/Form strings
         if ($type === 'checkbox') {
@@ -360,6 +367,9 @@ HTML;
         $class = 'form-text';
         if ($type === 'invalid') {
             $class = 'invalid-feedback';
+        }
+        if ($type === 'valid') {
+            $class = 'valid-feedback';
         }
         if (!empty($info['class'])) {
             $class .= ' ' . $info['class'];
