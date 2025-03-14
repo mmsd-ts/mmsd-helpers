@@ -141,7 +141,7 @@ class BsFormHelper extends Helper
             unset($options['type']);
             if (!empty($options['inline'])) {
                 // these types are always inline-ish
-                $options['inline'] = (!in_array($type, ['checkbox', 'radio', 'switch']));
+                $options['inline'] = (!in_array($type, ['checkbox', 'switch']));
             }
             if (!empty($options['reverse'])) {
                 // reverse only works on these types:
@@ -183,10 +183,13 @@ class BsFormHelper extends Helper
         } elseif ($type === 'switch') {
             $options['switch'] =  true;
             return $this->checkboxDefault($parts, $options);
+        } elseif (!empty($options['inline'])) {
+            if ($type === 'radio') {
+                return $this->radioInline($parts);
+            }
+            return $this->inputInline($parts, $options);
         } elseif ($type === 'radio') {
             return $this->radioDefault($parts);
-        } elseif (!empty($options['inline'])) {
-            return $this->inputInline($parts, $options);
         } else {
             return $this->inputDefault($parts);
         }
@@ -248,6 +251,21 @@ HTML;
         $help = (!empty($parts['extraDivs']['help'])) ? $parts['extraDivs']['help'] : null;
         return <<<"HTML"
 {$parts['control']}
+{$help}
+
+HTML;
+    
+    }
+    public function radioInline(array $parts): string
+    {
+        // valid/invalid do not work, they work on each radio option but that is dumb
+        $help = (!empty($parts['extraDivs']['help'])) ? $parts['extraDivs']['help'] : null;
+        return <<<"HTML"
+<div class="container-fluid">
+    <div class="row"></div>
+{$parts['control']}
+    </div>
+</div>
 {$help}
 
 HTML;
