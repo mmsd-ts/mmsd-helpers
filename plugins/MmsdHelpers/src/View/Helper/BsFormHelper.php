@@ -262,7 +262,7 @@ HTML;
         $help = (!empty($parts['extraDivs']['help'])) ? $parts['extraDivs']['help'] : null;
         return <<<"HTML"
 <div class="container-fluid">
-    <div class="row"></div>
+    <div class="row">
 {$parts['control']}
     </div>
 </div>
