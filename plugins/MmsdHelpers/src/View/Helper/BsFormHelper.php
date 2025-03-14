@@ -352,9 +352,9 @@ HTML;
             'class' => $class,
         ]);
     }
-    public function makeExtraDiv(string $type, string|array $text): string
+    public function makeExtraDiv(string $type, string|array $contents): string
     {
-        $info = (is_array($text)) ? $text : ['contents' => $text];
+        $info = (is_array($contents)) ? $contents : ['contents' => $contents];
         $class = 'form-text';
         if (!empty($this->extraDivTypes[$type]['class'])) {
             $class = $this->extraDivTypes[$type]['class'];
@@ -373,7 +373,7 @@ HTML;
         $extraDivString = '';
         if (!empty($extraDivs)) {
             foreach ($extraDivs as $extraDivType => $extraDivInfo) {
-                $extraDivString .= "{$extraDivType}\r\n";
+                $extraDivString .= "{$extraDivInfo}\r\n";
             }
         }
         return $extraDivString;
