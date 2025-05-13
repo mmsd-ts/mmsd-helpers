@@ -111,15 +111,10 @@ class BsFormHelper extends Helper
      * This function is not used or necessary any longer, it's here so you don't get errors
      * @param \Cake\ORM\Entity $formEntity
      */
+    #[\Deprecated(message: "it is now unnecessary", since: "5.0")]
     public function setEntity(Entity $formEntity = null): ?Entity
     {
-        $this->setConfig('entity', $formEntity);
-        if (!empty($formEntity)) {
-            if ($formEntity->getErrors()) {
-                $this->setConfig('errors', $formEntity->getErrors());
-            }
-        }
-        return $this->getConfig('entity');
+        return $formEntity;
     }
     // Two functions to help upgrading from older versions:
     public function input(string $name, array $options = [], array $config = []): ?string
