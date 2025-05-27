@@ -9,5 +9,6 @@ class DbSsoRowsTable extends Table
     public function initialize(array $config): void
     {
         $this->setTable('app_manager.DbSSO');
+        $this->setPrimaryKey('tag');
     }
 }
