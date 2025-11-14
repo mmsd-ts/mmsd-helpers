@@ -229,9 +229,6 @@ HTML;
         if (!empty($options['reverse'])) {
             $divClass .= ' ' . 'form-check-reverse';
         }
-        if (!empty($options['inline'])) {
-            $divClass .= ' ' . 'form-check-inline';
-        }
         return <<<"HTML"
 <div class="{$divClass}">
     {$parts['control']}
