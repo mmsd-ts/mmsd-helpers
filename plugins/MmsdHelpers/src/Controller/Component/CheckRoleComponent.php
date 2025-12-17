@@ -85,6 +85,11 @@ class CheckRoleComponent extends Component
         if (!is_array($roles)) {
             $roles = [$roles];
         }
+        if ((!empty($this->elevatedRoles))
+            and ($this->getController()->Authentication->isImpersonating())
+        ) {
+            $roles = array_diff($roles, $this->elevatedRoles);
+        }
         $allRoles = [];
         foreach ($roles as $role) {
             $allRoles[] = $role;
