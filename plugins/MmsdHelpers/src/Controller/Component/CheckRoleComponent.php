@@ -8,8 +8,7 @@ use RuntimeException;
 
 class CheckRoleComponent extends Component
 {
-
-    // Do not ever change this. (See Application->middleware()->$cookies)
+    // This variable is discontinued. Use DbSso instead.
     private string $cookiePrefix = 'SSO_MMSD';
     private array $allAccessRoles = ['Administrator'];
     private array $elevatedRoles = ['Administrator'];
