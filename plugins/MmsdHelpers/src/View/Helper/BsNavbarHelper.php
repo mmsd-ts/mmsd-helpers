@@ -8,204 +8,85 @@ use RuntimeException;
 
 class BsNavbarHelper extends Helper
 {
-    protected $links = [];
-    protected $linkMap = [];
-    protected $params = [];
-    protected $identity;
-    protected $helpers = ['Html','Url'];
-    private $allAccessRoles = ['Administrator'];
+    protected array $links = [];
+    protected array $linkMap = [];
+    protected array $params = [];
+    protected IdentityInterface $identity;
+    protected array $helpers = ['Html','Url'];
+    private array $allAccessRoles = ['Administrator'];
     
-    /**
-     * 
-     * {@inheritDoc}
-     * @see \Cake\View\Helper::initialize()
-     */
     public function initialize(array $config): void
     {
         parent::initialize($config);
-
         $this->links = $config['links'];
         $this->linkMap = $config['linkMap'];
         $this->params = $this->getView()->getRequest()->getAttribute('params');
-        $this->identity = $this->getView()->getRequest()->getAttribute('identity');
-        
+        if (!empty($this->getView()->getRequest()->getAttribute('identity'))) {
+            $this->identity = $this->getView()->getRequest()->getAttribute('identity');
+        }
         if (empty($this->params)) {
             return;
         }
-        
         if ((!empty($this->identity)) and (!$this->identity instanceof IdentityInterface)) {
             throw new RuntimeException(sprintf('Identity found in request does not implement %s', IdentityInterface::class));
         }
-
         if (isset($config['allAccessRoles'])) {
             if ($config['allAccessRoles'] === false) {
                 $this->allAccessRoles = [];
-            } elseif (is_array($config['allAccessRoles'])) {
-                $this->allAccessRoles = $config['allAccessRoles'];
             } else {
-                $this->allAccessRoles = [$config['allAccessRoles']];
+                $this->allAccessRoles = (is_array($config['allAccessRoles']))
+                    ? $config['allAccessRoles']
+                    : [$config['allAccessRoles']];
             }
         }
     }
-    
-    /**
-     * 
-     * Parameters are only kept for backwards compatibility
-     * 
-     * @param array $requestAttributes
-     * @param int $authLevel
-     * @return NULL|string
-     */
-    public function navbarLinks(array $requestAttributes = [], int $authLevel = 0)
+    public function navbarLinks(): string
     {
-        
-        $navbarLinks = null;
-        
-        $currentKey = null;
-        if (empty($this->params['prefix'])) {
-            $this->params['prefix'] = false;
-        }
-        $currentUrlParams = [
-            'prefix' => $this->params['prefix'],
-            'controller' => $this->params['controller'],
-            'action' => $this->params['action'],
-            '_ext' => $this->params['_ext'],
-            '_base' => false,
-        ];
-        foreach ($this->params['pass'] as $pass) {
-            $currentUrlParams[] = $pass;
-        }
-        $currentUrl = $this->Url->build($currentUrlParams);
-        
+        $navbarListItems = '';
+        $currentKey = '';
+        $currentUrl = $this->Url->build($this->createUrlArray($this->params, false));
+        // Find current key from pattern matching current URL
         foreach ($this->linkMap as $rawPattern => $key) {
-            $pattern = $this->_patternize($rawPattern);
+            $pattern = $this->patternize($rawPattern);
             if (preg_match($pattern, $currentUrl) === 1) {
                 $currentKey = $key;
                 break;
             }
         }
-        
         foreach ($this->links as $key => $link) {
-            
-            $link += [
-                'linkText' => Inflector::humanize(Inflector::underscore($key)),
-                'authLevel' => 0,
-                'prefix' => false,
-                'controller' => 'Users',
-                'action' => 'index',
-                'roles' => [],
-                'params' => [],
-                'children' => [],
-                'link_id' => null,
-                'item_id' => null,
-            ];
-            
-            if ($authLevel < $link['authLevel']) { continue; }
-            
-            if (!empty($this->identity)) {
-                if (!empty($link['roles'])) {
-                    if (!$this->checkRole($link['roles'])) {
-                        continue;
-                    }
-                }
+            $link = $this->initItemArray($link, $key);
+            if (!$this->userCanAccessLink($link['roles'])) {
+                continue;
             }
-            
-            $navbarLink = null;
-            
-            $active = ($key == $currentKey);
-            $itemActiveCssClass = ($active) ? 'active' : null;
-            $activeSrMarker = ($active) ? '<span class="sr-only">(' . __('current page') . ')</span>' : null;
-            $itemID = (!empty($link['item_id'])) ? $link['item_id'] : "navbar-item-{$key}";
-            
-            $itemDropdownCssClass = (!empty($link['children'])) ? 'dropdown' : null;
-            
-            $parentUrlParams = [
-                'prefix' => $link['prefix'],
-                'controller' => $link['controller'],
-                'action' => $link['action'],
-            ];
-            if (!empty($link['params'])) {
-                foreach ($link['params'] as $param) {
-                    $parentUrlParams[] = $param;
-                }
+            $classes['li'] = ['nav-item',];
+            $classes['a'] = ['nav-link',];
+            $attributes['li']['id'] = (!empty($link['item_id'])) ?  $link['item_id'] : "navbar-item-{$key}";
+            $attributes['a']['id'] = (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}";
+            if ($key == $currentKey) {
+                $classes['a'][] = 'active rounded';
+                $attributes['a']['aria-current'] = 'page';
             }
-            $parentOptionsParams = [
-                'class' => 'nav-link',
-                'id' => (!empty($link['link_id'])) ? $link['link_id'] : "navbar-link-{$key}",
-            ];
-            
             if (!empty($link['children'])) {
-                $parentOptionsParams = [
-                    'class' => 'nav-link dropdown-toggle',
-                    'id' => 'navbar-' . $key . '-dropdown-toggle',
-                    'data-toggle' => 'dropdown',
-                    'aria-haspopup' => 'true',
-                    'aria-expanded' => 'false',
-                ];
+                $classes['li'][] = 'dropdown';
+                $attributes['li']['data-bs-theme'] = 'light';
+                $classes['a'][] = 'dropdown-toggle';
+                $attributes['a']['role'] = 'button';
+                $attributes['a']['data-bs-toggle'] = 'dropdown';
+                $attributes['a']['aria-expanded'] = 'false';
             }
-            
-            $parentLink = $this->Html->link(__($link['linkText']),$parentUrlParams,$parentOptionsParams);
-            
-            $navbarLink = <<<LI
-<li class="nav-item $itemActiveCssClass $itemDropdownCssClass" id="$itemID">$parentLink $activeSrMarker
-LI;
-            if (!empty($link['children'])) {
-                $navbarLink .= <<<DIV
-<div class="dropdown-menu" aria-labelledby="navbar-$key-dropdown-toggle">
-DIV;
-                foreach ($link['children'] as $childKey => $childLink) {
-                    
-                    $childLink += [
-                        'linkText' => Inflector::humanize(Inflector::underscore($childKey)),
-                        'prefix' => false,
-                        'controller' => 'Users',
-                        'action' => 'index',
-                        'params' => [],
-                        'roles' => [],
-                    ];
-                    if (!empty($this->identity)) {
-                        if (!empty($childLink['roles'])) {
-                            if (!$this->checkRole($childLink['roles'])) {
-                                continue;
-                            }
-                        }
-                    }
-                    
-                    $childUrlParams = [
-                        'prefix' => $childLink['prefix'],
-                        'controller' => $childLink['controller'],
-                        'action' => $childLink['action'],
-                    ];
-                    if (!empty($childLink['params'])) {
-                        foreach ($childLink['params'] as $param) {
-                            $childUrlParams[] = $param;
-                        }
-                    }
-                    $childOptionsParams = [
-                        'class' => 'dropdown-item text-primary',
-                    ];
-                    $navbarLink .= $this->Html->link(__($childLink['linkText']),$childUrlParams,$childOptionsParams);
-                }
-                $navbarLink .= '</div>';
-            }
-            $navbarLink .= '</li>';
-            $navbarLinks .= $navbarLink;
+            $attributes['li']['class'] = implode(' ',$classes['li']);
+            $attributes['a']['class'] = implode(' ',$classes['a']);
+            $navbarListItem = "<li {$this->keyedArrayToString($attributes['li'])}>";
+            $navbarListItem .= $this->Html->link($link['linkText'], $this->createUrlArray($link), $attributes['a']);
+            $navbarListItem .= (!empty($link['children'])) ? $this->childrenUl($link['children'], $key) : '';
+            $navbarListItem .= '</li>';
+            $navbarListItems .= $navbarListItem;
+            unset($classes);
+            unset($attributes);
         }
-        
-        return $navbarLinks;
+        return $navbarListItems;
     }
-    
-    private function _patternize($rawPattern) : string
-    {
-        $pattern = $rawPattern;
-        
-        $pattern = str_replace('/', '\\/', $pattern);
-        $pattern = "/^{$pattern}/";
-        
-        return $pattern;
-    }
-
-    public function checkRole($roles = '') : bool
+    public function checkRole($roles = []) : bool
     {
         if (!is_array($roles)) {
             $roles = [$roles];
@@ -213,19 +94,93 @@ DIV;
         if (!empty($this->allAccessRoles)) {
             $roles = array_merge($roles,$this->allAccessRoles);
         }
-        $identityHasRole = false;
         foreach ($roles as $role) {
             $isRole = "is{$role}";
-            if (
-                (!empty($this->identity->$role))
-                or
-                (!empty($this->identity->$isRole))
+            if ((!empty($this->identity))
+                and (
+                    (!empty($this->identity->$role))
+                    or (!empty($this->identity->$isRole))
+                )
             ){
-                $identityHasRole = true;
-                break;
+                return true;
             }
         }
-        return $identityHasRole;
+        return false;
     }
-    
+    private function initItemArray(array $item, string $key): array
+    {
+        $item += [
+            'linkText' => Inflector::humanize(Inflector::underscore($key)),
+            'prefix' => false,
+            'controller' => 'Users',
+            'action' => 'index',
+            'params' => [],
+            '_ext' => null,
+            'roles' => [],
+            'children' => [],
+            'item_id' => null,
+            'link_id' => null,
+        ];
+        return $item;
+    }
+    private function userCanAccessLink(array $roles): bool
+    {
+        if ((!empty($this->identity))
+            and (!empty($roles))
+        ) {
+            return $this->checkRole($roles);
+        }
+        return true;
+    }
+    private function createUrlArray(array $item, bool $base = true): array
+    {
+        $urlArray = [
+            'prefix' => (!empty($item['prefix'])) ? $item['prefix'] : false,
+            'controller' => $item['controller'],
+            'action' => $item['action'],
+            '_ext' => (!empty($item['_ext'])) ? $item['_ext'] : null,
+        ];
+        if (!empty($item['params'])) {
+            foreach ($item['params'] as $param) {
+                $urlArray[] = $param;
+            }
+        }
+        if ($base === false) {
+            $urlArray['_base'] = false;
+        }
+        return $urlArray;
+    }
+    private function childrenUl(array $children, string $parentKey): string
+    {
+        $ul = '<ul class="dropdown-menu">';
+        foreach ($children as $childKey => $child) {
+            $child = $this->initItemArray($child, $childKey);
+            if (!$this->userCanAccessLink($child['roles'])) {
+                continue;
+            }
+            $urlArray = $this->createUrlArray($child);
+            $item_id = (!empty($child['item_id'])) ? $child['item_id'] : "navbar-item-{$parentKey}-{$childKey}";
+            $link_id = (!empty($child['link_id'])) ? $child['link_id'] : "navbar-link-{$parentKey}-{$childKey}";
+            $ul .= "<li class='dropdown-item' id='{$item_id}'>";
+            $ul .= $this->Html->link($child['linkText'],$urlArray,[
+                'id' => $link_id,
+            ]);
+            $ul .= '</li>';
+        }
+        $ul .= '</ul>';
+        return $ul;
+    }
+    private function keyedArrayToString(array $items): string
+    {
+        return implode(' ', array_map(
+            function(string $k, string $v): string { return "{$k}='{$v}'"; },
+            array_keys($items), array_values($items))
+        );
+    }
+    private function patternize($rawPattern) : string
+    {
+        $pattern = $rawPattern;
+        $pattern = str_replace('/', '\\/', $pattern);
+        return "/^{$pattern}/";
+    }
 }

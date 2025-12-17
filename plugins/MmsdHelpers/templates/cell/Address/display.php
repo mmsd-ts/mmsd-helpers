@@ -1,10 +1,9 @@
-
 <div class="modal fade" id="modal-address-search" tabindex="-1" role="dialog" aria-labelledby="Address-Search-ModalLabel">
     <div class="modal-dialog modal-lg  modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="Address-Search-ModalLabel"><?= __d('mmsd_helpers','Address Finder'); ?></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
 
@@ -13,10 +12,6 @@
     'class' => 'needs-validation',
     'novalidate' => true,
 ]); ?>
-<?php $this->BsForm->setDefaults([
-    'labelClass' => 'font-weight-bold',
-    'labelAppendChar' => ':',
-]); ?>
 
 <p><b><?= __d('mmsd_helpers','It is very important to use accurate addresses.'); ?></b></p>
 
@@ -24,64 +19,100 @@
 
 	<div class="row align-items-start">
 		<div class="col-2">
-<?= $this->BsForm->input('AddressSearch.number',[
-    'label' => __d('mmsd_helpers','Number'),
-    'placeholder' => '1234',
-]); ?>
+            <?= $this->Form->label('address-search-number',__d('mmsd_helpers','Number'),[
+                'id' => 'label-address-search-number',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->text('AddressSearch.number',[
+                'id' => 'address-search-number',
+                'class' => 'form-control',
+                'placeholder' => '1234',
+            ]); ?>
 		</div>
 		<div class="col-2">
-<?= $this->BsForm->input('AddressSearch.prefix',[
-    'label' => __d('mmsd_helpers','Direction'),
-    'type' => 'select',
-    'options' => ['E' => 'E', 'N' => 'N', 'S' => 'S', 'W' => 'W',],
-    'empty' => true,
-]); ?>
+            <?= $this->Form->label('address-search-prefix',__d('mmsd_helpers','Direction'),[
+                'id' => 'label-address-search-prefix',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->select('AddressSearch.prefix',
+                ['E' => 'E', 'N' => 'N', 'S' => 'S', 'W' => 'W',],
+                [
+                    'id' => 'address-search-prefix',
+                    'class' => 'form-select',
+                    'empty' => true,
+                ]
+            ); ?>
 		</div>
 		<div class="col-4">
-<?= $this->BsForm->input('AddressSearch.street',[
-    'label' => __d('mmsd_helpers','Street'),
-    'placeholder' => 'Main',
-]); ?>
+            <?= $this->Form->label('address-search-street',__d('mmsd_helpers','Street'),[
+                'id' => 'label-address-search-street',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->text('AddressSearch.street',[
+                'id' => 'address-search-street',
+                'class' => 'form-control',
+                'placeholder' => 'Main',
+            ]); ?>
 		</div>
 		<div class="col-2">
-<?= $this->BsForm->input('AddressSearch.tag',[
-    'label' => __d('mmsd_helpers','Type'),
-    'type' => 'select',
-    'options' => $tagList,
-    'empty' => true,
-]); ?>
+            <?= $this->Form->label('address-tag',__d('mmsd_helpers','Type'),[
+                'id' => 'label-address-tag',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->select('Address.tag',$tagList,[
+                'id' => 'address-tag',
+                'class' => 'form-select',
+                'empty' => true,
+            ]); ?>
 		</div>
 		<div class="col-2">
-<?= $this->BsForm->input('AddressSearch.apt',[
-    'label' => __d('mmsd_helpers','Apt'),
-]); ?>
+            <?= $this->Form->label('address-search-apt',__d('mmsd_helpers','Apt'),[
+                'id' => 'label-address-search-apt',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->text('AddressSearch.apt',[
+                'id' => 'address-search-apt',
+                'class' => 'form-control',
+            ]); ?>
 		</div>
 	</div>
-	<div class="row align-items-center">
+	<div class="row align-items-center mb-3">
 		<div class="col-4">
-<?= $this->BsForm->input('AddressSearch.city',[
-    'label' => __d('mmsd_helpers','City'),
-    'value' => 'Madison',
-]); ?>
+            <?= $this->Form->label('address-search-city',__d('mmsd_helpers','City'),[
+                'id' => 'label-address-search-city',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->text('AddressSearch.city',[
+                'id' => 'address-search-city',
+                'class' => 'form-control',
+                'value' => 'Madison',
+            ]); ?>
 		</div>
 		<div class="col-3">
-<?= $this->BsForm->input('AddressSearch.state',[
-    'label' => __d('mmsd_helpers','State'),
-    'type' => 'select',
-    'options' => $stateList,
-    'selected' => 'WI',
-    'empty' => true,
-]); ?>
+            <?= $this->Form->label('address-search-state',__d('mmsd_helpers','State'),[
+                'id' => 'label-address-search-state',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->select('AddressSearch.state',$stateList,[
+                'id' => 'address-search-state',
+                'class' => 'form-select',
+                'value' => 'WI',
+                'empty' => true,
+            ]); ?>
 		</div>
 		<div class="col-2">
-<?= $this->BsForm->input('AddressSearch.zip',[
-    'label' => __d('mmsd_helpers','Zip code'),
-    'invalidMessage' => [
-        'contents' => __d('mmsd_helpers','Required field'),
-    ],
-]); ?>
+            <?= $this->Form->label('address-search-zip',__d('mmsd_helpers','Zip code'),[
+                'id' => 'label-address-search-zip',
+                'class' => 'form-label fw-bold',
+            ]); ?>
+            <?= $this->Form->text('AddressSearch.zip',[
+                'id' => 'address-search-zip',
+                'class' => 'form-control',
+                'required' => true,
+            ]); ?>
+            <div class="invalid-feedback"><?= __d('mmsd_helpers','Required field') ?></div>
 		</div>
-		<div class="col-sm-3">
+		<div class="col-sm-3 align-self-end">
 <button type="button" class="btn btn-primary" id="address-search-button">
 	<?= __d('mmsd_helpers','Find Address'); ?>
 	<span class="fas fa-search" title="" aria-hidden="true"></span>

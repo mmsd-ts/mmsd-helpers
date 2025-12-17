@@ -20,7 +20,6 @@ class KeyStringComponent extends Component
                 $chars[] = $char;
             }
         }
-        $charStr = implode('',$chars);
-        return substr(str_shuffle($charStr),0,$length);
+        return substr(str_shuffle(implode('',$chars)),0,$length);
     }
 }

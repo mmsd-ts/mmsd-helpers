@@ -16,7 +16,6 @@ class StoredProcedureBehavior extends Behavior
         ];
         parent::__construct($table, $config);
     }
-    
     /**
      * Executes a stored procedure with the given name and parameters.
      *
@@ -55,7 +54,6 @@ class StoredProcedureBehavior extends Behavior
             ,$parameterTypes
         );
     }
-    
     /**
      * Runs a stored procedure with the given name and parameters.
      *
@@ -69,13 +67,16 @@ class StoredProcedureBehavior extends Behavior
             'success' => true,
             'error' => null,
         ];
-        $procedureResult = $this->executeProcedure($procedureName,$parameters)->fetch('assoc');
+        $procedureResult = $this->executeProcedure($procedureName,$parameters)->fetchAssoc();
         if (
             (empty($procedureResult[$this->getConfig('resultField')]))
             or ($procedureResult[$this->getConfig('resultField')] != $this->getConfig('resultValueSuccess'))
         ) {
             $result['success'] = false;
-            $result['error'] = $procedureResult[$this->getConfig('msgField')] ?? null;
+            $result['error'] = (!empty($procedureResult[$this->getConfig('msgField')]))
+                ? $procedureResult[$this->getConfig('msgField')]
+                : null
+            ;
         }
         return $result;
     }

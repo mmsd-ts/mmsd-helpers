@@ -8,91 +8,43 @@ use RuntimeException;
 
 class CheckRoleComponent extends Component
 {
-
-    // Do not ever change this. (See Application->middleware()->$cookies)
-    private $cookiePrefix = 'SSO_MMSD';
-    private $allAccessRoles = ['Administrator'];
+    // This variable is discontinued. Use DbSso instead.
+    private string $cookiePrefix = 'SSO_MMSD';
+    private array $allAccessRoles = ['Administrator'];
+    private array $elevatedRoles = ['Administrator'];
 
     public function initialize(array $config): void
     {
         parent::initialize($config);
-        if (isset($config['allAccessRoles'])) {
-            if ($config['allAccessRoles'] === false) {
-                $this->allAccessRoles = [];
-            } elseif (is_array($config['allAccessRoles'])) {
-                $this->allAccessRoles = $config['allAccessRoles'];
-            } else {
-                $this->allAccessRoles = [$config['allAccessRoles']];
-            }
-        }
-    }
-
-    public function ssoCheck(string $appName): bool
-    {
-        $ssoCookie = $this->getController()->getRequest()->getCookie($this->cookiePrefix);
-        $appCookie = $this->getController()->getRequest()->getCookie("{$this->cookiePrefix}_{$appName}") ?? '1';
-        if (!empty($ssoCookie)) {
-            if (($appCookie == '1') and ($this->getController()->getRequest()->getAttribute('authentication')->getResult()->isValid())) {
-                if (!empty($this->getController()->Authentication->getIdentityData('id'))) {
-                    return true;
-                }
-            }
-            if ($appCookie == '1') {
-                $usersTable = $this->getController()->fetchTable('Users');
-                $username = $ssoCookie;
-                $user = $usersTable->find('byUsername',['username' => $username])->first();
-                if (!empty($user)) {
-                    $this->getController()->getRequest()->getSession()->write('App.impersonatorID',$user->id);
-                    $this->getController()->Authentication->setIdentity($user);
-                    $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
-                        ->withValue('1')
-                        ->withPath('/')
-                        ->withExpiry(new \DateTime('+8 hour'))
+        foreach (['allAccessRoles','elevatedRoles'] as $group) {
+            if (isset($config[$group])) {
+                if ($config[$group] === false) {
+                    $this->$group = [];
+                } else {
+                    $this->$group = (is_array($config[$group]))
+                        ? $config[$group]
+                        : [$config[$group]]
                     ;
-                    $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
-                    return true;
                 }
             }
         }
-        return false;
     }
 
-    public function ssoRegister(string $username, string $appName): void
+    public function ssoCheck(string $appName)
     {
-        $ssoCookie = $this->getController()->getRequest()->getCookie($this->cookiePrefix);
-        if (empty($ssoCookie)) {
-            $ssoCookie = (new Cookie($this->cookiePrefix))
-                ->withValue($username)
-                ->withPath('/')
-                ->withExpiry(new \DateTime('+8 hour'))
-            ;
-            $this->getController()->setResponse($this->getController()->getResponse()->withCookie($ssoCookie));
-        }
-        $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
-            ->withValue('1')
-            ->withPath('/')
-            ->withExpiry(new \DateTime('+8 hour'))
-        ;
-        $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
+        throw new \RuntimeException("CheckRole::ssoCheck() has been discontinued. Use DbSso instead.");
     }
 
-    public function ssoRemove(string $appName, bool $forceOut = false): void
+    public function ssoRegister(string $username, string $appName)
     {
-        $appCookie = (new Cookie("{$this->cookiePrefix}_{$appName}"))
-            ->withValue('0')
-            ->withPath('/')
-            ->withExpiry(new \DateTime('+3 second'))
-        ;
-        $this->getController()->setResponse($this->getController()->getResponse()->withCookie($appCookie));
-        if ($forceOut) {
-            $ssoCookie = (new Cookie($this->cookiePrefix))
-                ->withPath('/')
-            ;
-            $this->getController()->setResponse($this->getController()->getResponse()->withExpiredCookie($ssoCookie));
-        }
+        throw new \RuntimeException("CheckRole::ssoRegister() has been discontinued. Use DbSso instead.");
     }
 
-    public function check($roles = ''): bool
+    public function ssoRemove(string $appName, bool $forceOut = false)
+    {
+        throw new \RuntimeException("CheckRole::ssoRemove() has been discontinued. Use DbSso instead.");
+    }
+    public function check($roles = []): bool
     {
         if (!is_array($roles)) {
             $roles = [$roles];
@@ -100,30 +52,36 @@ class CheckRoleComponent extends Component
         if (!empty($this->allAccessRoles)) {
             $roles = array_merge($roles,$this->allAccessRoles);
         }
-        $identityHasRole = false;
+        if ((!empty($this->elevatedRoles))
+            and ($this->getController()->Authentication->isImpersonating())
+        ) {
+            $roles = array_diff($roles, $this->elevatedRoles);
+        }
         if (!empty($roles)) {
             foreach ($roles as $role) {
                 try {
-                    $this->getController()->Authentication->getIdentityData($role);
+                    $this->getController()->Authentication->getIdentityData('username');
                 } catch (RuntimeException $e) {
                     break;
                 }
                 $isRole = "is{$role}";
                 if (
                     (!empty($this->getController()->Authentication->getIdentityData($role)))
-                    or
-                    (!empty($this->getController()->Authentication->getIdentityData($isRole)))
+                    or (!empty($this->getController()->Authentication->getIdentityData($isRole)))
                 ){
-                    $identityHasRole = true;
-                    break;
+                    return true;
                 }
             }
         }
-        return $identityHasRole;
+        return false;
     }
-
-    public function isOnly($roles = ''): bool
+    public function isOnly($roles = []): bool
     {
+        try {
+            $this->getController()->Authentication->getIdentityData('username');
+        } catch (RuntimeException $e) {
+            return false;
+        }
         if (!is_array($roles)) {
             $roles = [$roles];
         }
@@ -132,18 +90,15 @@ class CheckRoleComponent extends Component
             $allRoles[] = $role;
             $allRoles[] = "is{$role}";
         }
-        $noOthers = true;
         $identity = $this->getController()->Authentication->getIdentity()->getOriginalData()->toArray();
         foreach ($identity as $key => $value) {
             if (is_array($value)) { continue; }
             if (strpos($key,'is') !== 0) { continue; }
             if (in_array($key,$allRoles)) { continue; }
             if (!empty($value)) {
-                $noOthers = false;
-                break;
+                return false;
             }
         }
-        return $noOthers;
+        return true;
     }
-
 }

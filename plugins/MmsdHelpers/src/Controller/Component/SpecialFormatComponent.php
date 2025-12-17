@@ -6,7 +6,7 @@ use Cake\Controller\Component;
 
 class SpecialFormatComponent extends Component
 {
-    private $result = [];
+    private array $result = [];
 
     public function telephoneNumber(string $originalNumber)
     {
@@ -17,15 +17,15 @@ class SpecialFormatComponent extends Component
             array_shift($numberArray);
         }
 
-        if ((substr($originalNumber,0,1) == '+') or (count($numberArray) > 4)) {
+        if ((substr($originalNumber,0,1) === '+') or (count($numberArray) > 4)) {
             $this->setMessage(__d('mmsd_helpers','International phone numbers are not supported'));
             return $this->result;
         }
         $newNumber = '';
         if (count($numberArray) > 2) {
             $badAreaCodes = ['555','800','833','844','855','866','877','880','881','882','888',
-                            '211','311','411','511','611','711','811','900','911'];
-            $badExchanges = ['555','211','311','411','511','611','711','811','911'];
+                            '211','311','411','511','611','711','811','900','911','950','988'];
+            $badExchanges = ['555','211','311','411','511','611','711','811','911','988'];
             if ((in_array($numberArray[0],$badAreaCodes)) or (in_array($numberArray[1],$badExchanges))) {
                 $this->setMessage(__d('mmsd_helpers','Phone number invalid'));
                 return $this->result;
