@@ -12,18 +12,21 @@ class CheckRoleComponent extends Component
     // Do not ever change this. (See Application->middleware()->$cookies)
     private string $cookiePrefix = 'SSO_MMSD';
     private array $allAccessRoles = ['Administrator'];
+    private array $elevatedRoles = ['Administrator'];
 
     public function initialize(array $config): void
     {
         parent::initialize($config);
-        if (isset($config['allAccessRoles'])) {
-            if ($config['allAccessRoles'] === false) {
-                $this->allAccessRoles = [];
-            } else {
-                $this->allAccessRoles = (is_array($config['allAccessRoles']))
-                    ? $config['allAccessRoles']
-                    : [$config['allAccessRoles']]
-                ;
+        foreach (['allAccessRoles','elevatedRoles'] as $group) {
+            if (isset($config[$group])) {
+                if ($config[$group] === false) {
+                    $this->$group = [];
+                } else {
+                    $this->$group = (is_array($config[$group]))
+                        ? $config[$group]
+                        : [$config[$group]]
+                    ;
+                }
             }
         }
     }
@@ -49,6 +52,11 @@ class CheckRoleComponent extends Component
         }
         if (!empty($this->allAccessRoles)) {
             $roles = array_merge($roles,$this->allAccessRoles);
+        }
+        if ((!empty($this->elevatedRoles))
+            and ($this->getController()->Authentication->isImpersonating())
+        ) {
+            $roles = array_diff($roles, $this->elevatedRoles);
         }
         if (!empty($roles)) {
             foreach ($roles as $role) {
