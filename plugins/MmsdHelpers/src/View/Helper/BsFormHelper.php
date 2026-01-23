@@ -363,6 +363,7 @@ HTML;
         return $this->Form->label($options['id'], $label, [
             'id' => "label-{$options['id']}",
             'class' => $class,
+            'for' => $options['id'],
         ]);
     }
     public function makeExtraDiv(string $type, string|array $contents): string
