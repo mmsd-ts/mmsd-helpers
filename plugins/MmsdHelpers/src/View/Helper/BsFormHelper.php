@@ -8,7 +8,7 @@ use Cake\Utility\Inflector;
 class BsFormHelper extends Helper
 {
     protected array $helpers = ['Form'];
-    private $nonControlOptions = [
+    private array $nonControlOptions = [
         'label',
         'labelClass',
         'labelAppendChar',
@@ -41,7 +41,7 @@ class BsFormHelper extends Helper
      *
      * @var array
      */
-    private $autocompleteMap = [
+    private array $autocompleteMap = [
         'username' => 'username',
         'password' => 'current-password',
         'fullname' => 'name',
@@ -65,7 +65,7 @@ class BsFormHelper extends Helper
         'email' => 'email',
         'phone' => 'tel',
     ];
-    private $extraDivTypes = [
+    private array $extraDivTypes = [
         'valid' => ['class' => 'valid-feedback'],
         'invalid' => ['class' => 'invalid-feedback'],
         'help' => [],
@@ -151,6 +151,7 @@ class BsFormHelper extends Helper
         $options += [
             'id' => Inflector::dasherize($name),
             'label' => Inflector::humanize(Inflector::underscore($name)),
+            'escape' => false,
         ];
         $parts = [];
         $parts['control'] = $this->makeControl($type, $name, $options);
