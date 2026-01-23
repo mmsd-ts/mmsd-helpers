@@ -2,11 +2,13 @@
 namespace MmsdHelpers\View\Helper;
 
 use Cake\View\Helper;
+use Cake\View\Helper\IdGeneratorTrait;
 use \Cake\ORM\Entity;
 use Cake\Utility\Inflector;
 
 class BsFormHelper extends Helper
 {
+    use IdGeneratorTrait;
     protected array $helpers = ['Form'];
     private array $nonControlOptions = [
         'label',
@@ -149,14 +151,14 @@ class BsFormHelper extends Helper
             }
         }
         $options += [
-            'id' => Inflector::dasherize($name),
+            'id' => $this->_domID($name),
             'label' => Inflector::humanize(Inflector::underscore($name)),
             'escape' => false,
         ];
         $parts = [];
         $parts['control'] = $this->makeControl($type, $name, $options);
         if ($type !== 'radio') {
-            $parts['label'] = $this->makeLabel($type, $options);
+            $parts['label'] = $this->makeLabel($type, $name, $options);
         }
         // extra div options
         $parts['extraDivs'] = [];
@@ -330,7 +332,7 @@ HTML;
         return $this->Form->$type($name, $cleanOptions);
     }
     
-    public function makeLabel(string $type, array $options): string
+    public function makeLabel(string $type, string $name, array $options): string
     {
         $label = $options['label'];
         $class = 'form-label';
@@ -339,8 +341,10 @@ HTML;
         }
         if (in_array($type, ['checkbox', 'switch'])) {
             $class = 'form-check-label';
-            // override labelAppendChar since label appears after form control
-            $options['labelAppendChar'] = false;
+            // override labelAppendChar since label appears after form control (unless reversed)
+            if (empty($options['reverse'])) {
+                $options['labelAppendChar'] = false;
+            }
         }
         if (!empty($options['required'])) {
             $requiredClass = $this->getOptionValue($options, 'requiredClass');
@@ -360,7 +364,7 @@ HTML;
         if (!empty($labelAppendChar)) {
             $label .= $labelAppendChar;
         }
-        return $this->Form->label($options['id'], $label, [
+        return $this->Form->label($name, $label, [
             'id' => "label-{$options['id']}",
             'class' => $class,
             'for' => $options['id'],
