@@ -368,6 +368,7 @@ HTML;
             'id' => "label-{$options['id']}",
             'class' => $class,
             'for' => $options['id'],
+            'escape' => false,
         ]);
     }
     public function makeExtraDiv(string $type, string|array $contents): string
