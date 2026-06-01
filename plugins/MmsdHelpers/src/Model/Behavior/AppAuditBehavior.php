@@ -15,6 +15,7 @@ class AppAuditBehavior extends Behavior
         $dump['Table'] = $this->table()->getTable();
         $dump['Class'] = $entity->getSource();
         $dump['Action'] = ($entity->isNew()) ? 'Insert' : 'Update';
+        $dump['PrimaryKey'] = $entity->id;
         $originalValues = $entity->getOriginalValues();
         $auditedData = [
             'old' => [],
