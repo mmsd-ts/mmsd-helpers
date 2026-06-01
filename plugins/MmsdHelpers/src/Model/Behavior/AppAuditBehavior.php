@@ -21,13 +21,12 @@ class AppAuditBehavior extends Behavior
             'new' => [],
         ];
         if ($entity->isNew()) {
-//            foreach ($entity->toArray() as $key) {
-//                if (in_array($key, ['created', 'modified',])) {
-//                    continue;
-//                }
-//                $auditedData['new'][$key] = $entity->key;
-//            }
-            $dump['ToArray'] = $entity->toArray();
+            foreach ($entity->toArray() as $key => $value) {
+                if (in_array($key, ['created', 'modified',])) {
+                    continue;
+                }
+                $auditedData['new'][$key] = $value;
+            }
         } else {
             foreach ($entity->getOriginalValues() as $key => $originalValue) {
                 if (in_array($key, ['created', 'modified',])) {
