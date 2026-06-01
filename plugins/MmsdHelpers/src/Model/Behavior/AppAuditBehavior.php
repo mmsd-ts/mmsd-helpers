@@ -16,18 +16,23 @@ class AppAuditBehavior extends Behavior
         $dump['Class'] = $entity->getSource();
         $dump['Action'] = ($entity->isNew()) ? 'Insert' : 'Update';
         $dump['PrimaryKey'] = $entity->id;
-        $originalValues = $entity->getOriginalValues();
         $auditedData = [
             'old' => [],
             'new' => [],
         ];
-        foreach ($originalValues as $key => $originalValue) {
-            if (in_array($key,['created','modified',])) {
-                continue;
+        if ($entity->isNew()) {
+            foreach ($entity->getAccessible() as $key => $value) {
+                $auditedData['new'][$key] = $value;
             }
-            if ($originalValue != $entity->$key) {
-                $auditedData['old'][$key] = $originalValue;
-                $auditedData['new'][$key] = $entity->$key;
+        } else {
+            foreach ($entity->getOriginalValues() as $key => $originalValue) {
+                if (in_array($key, ['created', 'modified',])) {
+                    continue;
+                }
+                if ($originalValue != $entity->$key) {
+                    $auditedData['old'][$key] = $originalValue;
+                    $auditedData['new'][$key] = $entity->$key;
+                }
             }
         }
         $dump['AuditedData'] = json_encode($auditedData);
