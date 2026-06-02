@@ -20,16 +20,17 @@ class AppAuditBehavior extends Behavior
             'old' => [],
             'new' => [],
         ];
+        $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
         if ($entity->isNew()) {
             foreach ($entity->toArray() as $key => $value) {
-                if (in_array($key, ['created', 'modified',])) {
+                if (in_array($key, $ignoredKeys)) {
                     continue;
                 }
                 $auditedData['new'][$key] = $value;
             }
         } else {
             foreach ($entity->getOriginalValues() as $key => $originalValue) {
-                if (in_array($key, ['created', 'modified',])) {
+                if (in_array($key, $ignoredKeys)) {
                     continue;
                 }
                 if ($originalValue != $entity->$key) {
@@ -39,8 +40,8 @@ class AppAuditBehavior extends Behavior
             }
         }
         $dump['AuditedData'] = json_encode($auditedData);
-        $dump['User'] = $entity->user;
-        $dump['Impersonator'] = $entity->impersonator;
+        $dump['User'] = $entity->audit_user;
+        $dump['Impersonator'] = $entity->audit_impersonator;
         Log::debug(print_r($dump,true));
     }
 }

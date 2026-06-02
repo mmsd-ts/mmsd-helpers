@@ -11,16 +11,16 @@ class AppAuditComponent extends Component
     public function userData(): array
     {
         $patchData = [
-            'user' => null,
-            'impersonator' => null,
+            'audit_user' => null,
+            'audit_impersonator' => null,
         ];
         if ($this->getController()->getRequest()->getSession()->check('Auth')) {
-            $patchData['user'] = $this->makeValue(
+            $patchData['audit_user'] = $this->makeValue(
                 $this->getController()->getRequest()->getSession()->read('Auth')
             );
         }
         if ($this->getController()->getRequest()->getSession()->check('AuthImpersonate')) {
-            $patchData['impersonator'] = $this->makeValue(
+            $patchData['audit_impersonator'] = $this->makeValue(
                 $this->getController()->getRequest()->getSession()->read('AuthImpersonate')
             );
         }
