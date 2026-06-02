@@ -32,16 +32,15 @@ class AppAuditBehavior extends Behavior
                 if (in_array($key, ['created', 'modified',])) {
                     continue;
                 }
-                if (($originalValue != $entity->$key)
-                    or ($originalValue === 'user')
-                    or ($originalValue === 'impersonator')
-                ) {
+                if ($originalValue != $entity->$key) {
                     $auditedData['old'][$key] = $originalValue;
                     $auditedData['new'][$key] = $entity->$key;
                 }
             }
         }
         $dump['AuditedData'] = json_encode($auditedData);
+        $dump['User'] = $entity->user;
+        $dump['Impersonator'] = $entity->impersonator;
         Log::debug(print_r($dump,true));
     }
 }
