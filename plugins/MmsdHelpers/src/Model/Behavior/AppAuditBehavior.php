@@ -6,24 +6,20 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\Entity;
 use Cake\Log\Log;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 class AppAuditBehavior extends Behavior
 {
-    public function afterSave(EventInterface $event, EntityInterface $entity)
+    private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
+    public function afterSave(EventInterface $event, EntityInterface $entity): void
     {
-        $dump = [];
-        $dump['Table'] = $this->table()->getTable();
-        $dump['Class'] = $entity->getSource();
-        $dump['Action'] = ($entity->isNew()) ? 'Insert' : 'Update';
-        $dump['PrimaryKey'] = $entity->id;
         $auditedData = [
             'old' => [],
             'new' => [],
         ];
-        $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
         if ($entity->isNew()) {
             foreach ($entity->toArray() as $key => $value) {
-                if (in_array($key, $ignoredKeys)) {
+                if (in_array($key, $this->ignoredKeys)) {
                     continue;
                 }
                 $auditedData['new'][$key] = $value;
@@ -39,32 +35,40 @@ class AppAuditBehavior extends Behavior
                 }
             }
         }
-        $dump['AuditedData'] = json_encode($auditedData);
-        $dump['User'] = $entity->audit_user;
-        $dump['Impersonator'] = $entity->audit_impersonator;
-        Log::debug(print_r($dump,true));
+        $appAuditRecordsTable = $this->fetchTable('AppAuditRecords');
+        $appAuditRecord = $appAuditRecordsTable->newEntity([
+            'user' => $entity->audit_user,
+            'impersonator' => $entity->audit_impersonator,
+            'className' => $entity->getSource(),
+            'tableName' => $this->table()->getTable(),
+            'recordAction' => ($entity->isNew()) ? 'Insert' : 'Update',
+            'primaryKey' => $entity->id,
+            'auditedData' => json_encode($auditedData),
+        ]);
+        $appAuditRecordsTable->save($appAuditRecord);
     }
-    public function afterDelete(EventInterface $event, EntityInterface $entity)
+    public function afterDelete(EventInterface $event, EntityInterface $entity): void
     {
-        $dump = [];
-        $dump['Table'] = $this->table()->getTable();
-        $dump['Class'] = $entity->getSource();
-        $dump['Action'] = 'Delete';
-        $dump['PrimaryKey'] = $entity->id;
         $auditedData = [
             'old' => [],
             'new' => [],
         ];
-        $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
         foreach ($entity->toArray() as $key => $value) {
-            if (in_array($key, $ignoredKeys)) {
+            if (in_array($key, $this->ignoredKeys)) {
                 continue;
             }
             $auditedData['old'][$key] = $value;
         }
-        $dump['AuditedData'] = json_encode($auditedData);
-        $dump['User'] = $entity->audit_user;
-        $dump['Impersonator'] = $entity->audit_impersonator;
-        Log::debug(print_r($dump,true));
+        $appAuditRecordsTable = $this->fetchTable('AppAuditRecords');
+        $appAuditRecord = $appAuditRecordsTable->newEntity([
+            'user' => $entity->audit_user,
+            'impersonator' => $entity->audit_impersonator,
+            'className' => $entity->getSource(),
+            'tableName' => $this->table()->getTable(),
+            'recordAction' => 'Delete',
+            'primaryKey' => $entity->id,
+            'auditedData' => json_encode($auditedData),
+        ]);
+        $appAuditRecordsTable->save($appAuditRecord);
     }
 }
