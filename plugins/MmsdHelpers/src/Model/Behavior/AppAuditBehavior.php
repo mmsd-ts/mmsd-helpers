@@ -6,11 +6,9 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\Entity;
 use Cake\Log\Log;
-use Cake\ORM\Locator\LocatorAwareTrait;
 
 class AppAuditBehavior extends Behavior
 {
-    use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
     public function afterSave(EventInterface $event, EntityInterface $entity): void
     {
@@ -36,7 +34,7 @@ class AppAuditBehavior extends Behavior
                 }
             }
         }
-        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
+        $appAuditRecordsTable = $this->getController()->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'user' => $entity->audit_user,
             'impersonator' => $entity->audit_impersonator,
@@ -60,7 +58,7 @@ class AppAuditBehavior extends Behavior
             }
             $auditedData['old'][$key] = $value;
         }
-        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
+        $appAuditRecordsTable = $this->getController()->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'user' => $entity->audit_user,
             'impersonator' => $entity->audit_impersonator,
