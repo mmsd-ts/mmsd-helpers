@@ -5,7 +5,6 @@ use Cake\Event\EventInterface;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\Entity;
-use Cake\Log\Log;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Core\Configure;
 
