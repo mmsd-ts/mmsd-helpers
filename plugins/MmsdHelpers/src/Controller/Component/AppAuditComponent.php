@@ -3,7 +3,6 @@
 namespace MmsdHelpers\Controller\Component;
 
 use Cake\Controller\Component;
-use Cake\Core\Configure;
 use Cake\ORM\Entity;
 
 class AppAuditComponent extends Component
