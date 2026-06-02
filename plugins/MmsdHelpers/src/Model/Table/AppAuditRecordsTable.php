@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Table;
+namespace MmsdHelpers\Model\Table;
 
 use Cake\ORM\Table;
 

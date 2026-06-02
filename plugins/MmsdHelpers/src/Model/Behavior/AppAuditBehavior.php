@@ -6,9 +6,11 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\Entity;
 use Cake\Log\Log;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 class AppAuditBehavior extends Behavior
 {
+    use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
     public function afterSave(EventInterface $event, EntityInterface $entity): void
     {
@@ -25,7 +27,7 @@ class AppAuditBehavior extends Behavior
             }
         } else {
             foreach ($entity->getOriginalValues() as $key => $originalValue) {
-                if (in_array($key, $ignoredKeys)) {
+                if (in_array($key, $this->ignoredKeys)) {
                     continue;
                 }
                 if ($originalValue != $entity->$key) {
@@ -34,10 +36,10 @@ class AppAuditBehavior extends Behavior
                 }
             }
         }
-        $appAuditRecordsTable = $this->getController()->fetchTable('MmsdHelpers.AppAuditRecords');
+        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'user' => $entity->audit_user,
-            'impersonator' => $entity->audit_impersonator,
+            'audit_user' => $entity->audit_user,
+            'audit_impersonator' => $entity->audit_impersonator,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => ($entity->isNew()) ? 'Insert' : 'Update',
@@ -58,10 +60,10 @@ class AppAuditBehavior extends Behavior
             }
             $auditedData['old'][$key] = $value;
         }
-        $appAuditRecordsTable = $this->getController()->fetchTable('MmsdHelpers.AppAuditRecords');
+        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'user' => $entity->audit_user,
-            'impersonator' => $entity->audit_impersonator,
+            'audit_user' => $entity->audit_user,
+            'audit_impersonator' => $entity->audit_impersonator,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => 'Delete',
