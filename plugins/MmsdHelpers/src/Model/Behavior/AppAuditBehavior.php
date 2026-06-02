@@ -44,4 +44,27 @@ class AppAuditBehavior extends Behavior
         $dump['Impersonator'] = $entity->audit_impersonator;
         Log::debug(print_r($dump,true));
     }
+    public function afterDelete(EventInterface $event, EntityInterface $entity)
+    {
+        $dump = [];
+        $dump['Table'] = $this->table()->getTable();
+        $dump['Class'] = $entity->getSource();
+        $dump['Action'] = 'Delete';
+        $dump['PrimaryKey'] = $entity->id;
+        $auditedData = [
+            'old' => [],
+            'new' => [],
+        ];
+        $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
+        foreach ($entity->toArray() as $key => $value) {
+            if (in_array($key, $ignoredKeys)) {
+                continue;
+            }
+            $auditedData['old'][$key] = $value;
+        }
+        $dump['AuditedData'] = json_encode($auditedData);
+        $dump['User'] = $entity->audit_user;
+        $dump['Impersonator'] = $entity->audit_impersonator;
+        Log::debug(print_r($dump,true));
+    }
 }
