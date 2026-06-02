@@ -36,7 +36,7 @@ class AppAuditBehavior extends Behavior
                 }
             }
         }
-        $appAuditRecordsTable = $this->fetchTable('AppAuditRecords');
+        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'user' => $entity->audit_user,
             'impersonator' => $entity->audit_impersonator,
@@ -60,7 +60,7 @@ class AppAuditBehavior extends Behavior
             }
             $auditedData['old'][$key] = $value;
         }
-        $appAuditRecordsTable = $this->fetchTable('AppAuditRecords');
+        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'user' => $entity->audit_user,
             'impersonator' => $entity->audit_impersonator,
