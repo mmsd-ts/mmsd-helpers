@@ -10,6 +10,7 @@ use Cake\ORM\Locator\LocatorAwareTrait;
 
 class AppAuditBehavior extends Behavior
 {
+    use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
     public function afterSave(EventInterface $event, EntityInterface $entity): void
     {
