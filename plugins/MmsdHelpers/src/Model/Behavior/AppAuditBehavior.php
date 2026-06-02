@@ -38,8 +38,8 @@ class AppAuditBehavior extends Behavior
         }
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'audit_user' => $entity->audit_user,
-            'audit_impersonator' => $entity->audit_impersonator,
+            'appUser' => $entity->audit_user,
+            'appImpersonator' => $entity->audit_impersonator,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => ($entity->isNew()) ? 'Insert' : 'Update',
@@ -62,8 +62,8 @@ class AppAuditBehavior extends Behavior
         }
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'audit_user' => $entity->audit_user,
-            'audit_impersonator' => $entity->audit_impersonator,
+            'appUser' => $entity->audit_user,
+            'appImpersonator' => $entity->audit_impersonator,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => 'Delete',
