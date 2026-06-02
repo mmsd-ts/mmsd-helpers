@@ -32,7 +32,10 @@ class AppAuditBehavior extends Behavior
                 if (in_array($key, ['created', 'modified',])) {
                     continue;
                 }
-                if ($originalValue != $entity->$key) {
+                if (($originalValue != $entity->$key)
+                    or ($originalValue === 'user')
+                    or ($originalValue === 'impersonator')
+                ) {
                     $auditedData['old'][$key] = $originalValue;
                     $auditedData['new'][$key] = $entity->$key;
                 }
