@@ -7,11 +7,20 @@ use Cake\ORM\Table;
 use Cake\ORM\Entity;
 use Cake\Log\Log;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\Core\Configure;
 
 class AppAuditBehavior extends Behavior
 {
     use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
+    private ?string $auditAppName;
+    public function initialize(array $options): void
+    {
+        $this->auditAppName = null;
+        if (!empty(Configure::read('App.auditAppName'))) {
+            $this->auditAppName = Configure::read('App.auditAppName');
+        }
+    }
     public function afterSave(EventInterface $event, EntityInterface $entity): void
     {
         $auditedData = [
@@ -40,6 +49,7 @@ class AppAuditBehavior extends Behavior
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'appUser' => $entity->audit_user,
             'appImpersonator' => $entity->audit_impersonator,
+            'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => ($entity->isNew()) ? 'Insert' : 'Update',
@@ -64,6 +74,7 @@ class AppAuditBehavior extends Behavior
         $appAuditRecord = $appAuditRecordsTable->newEntity([
             'appUser' => $entity->audit_user,
             'appImpersonator' => $entity->audit_impersonator,
+            'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => 'Delete',
