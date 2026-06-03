@@ -70,7 +70,7 @@ class AppAuditBehavior extends Behavior
     {
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => (!empty($this->userData['audit_user'])) ? $this->userData['audit_user'] : 'Missing UserData',
+            'appUser' => (!empty($this->userData['audit_user'])) ? $this->userData['audit_user'] : 'Missing UserData, set App.Audit.UserData in AppController',
             'appImpersonator' => (!empty($this->userData['audit_impersonator'])) ? $this->userData['audit_impersonator'] : null,
             'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
