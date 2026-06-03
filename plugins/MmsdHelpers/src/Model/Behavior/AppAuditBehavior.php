@@ -12,12 +12,16 @@ class AppAuditBehavior extends Behavior
 {
     use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
+    private array $userData = [];
     private ?string $auditAppName;
     public function initialize(array $options): void
     {
         $this->auditAppName = null;
         if (!empty(Configure::read('App.auditAppName'))) {
             $this->auditAppName = Configure::read('App.auditAppName');
+        }
+        if (!empty(Configure::read('App.Audit.UserData'))) {
+            $this->userData = Configure::read('App.Audit.UserData');
         }
     }
     public function afterSave(EventInterface $event, EntityInterface $entity): void
@@ -46,8 +50,8 @@ class AppAuditBehavior extends Behavior
         }
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => $entity->audit_user,
-            'appImpersonator' => $entity->audit_impersonator,
+            'appUser' => $this->userData['audit_user'],
+            'appImpersonator' => $this->userData['audit_impersonator'],
             'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
@@ -71,8 +75,8 @@ class AppAuditBehavior extends Behavior
         }
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => $entity->audit_user,
-            'appImpersonator' => $entity->audit_impersonator,
+            'appUser' => $this->userData['audit_user'],
+            'appImpersonator' => $this->userData['audit_impersonator'],
             'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
