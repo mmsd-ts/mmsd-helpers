@@ -14,6 +14,7 @@ class AppAuditBehavior extends Behavior
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
     private array $userData = [];
     private ?string $auditAppName;
+    
     public function initialize(array $options): void
     {
         $this->auditAppName = null;
@@ -48,18 +49,8 @@ class AppAuditBehavior extends Behavior
                 }
             }
         }
-        $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
-        $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => $this->userData['audit_user'],
-            'appImpersonator' => $this->userData['audit_impersonator'],
-            'appName' => $this->auditAppName,
-            'className' => $entity->getSource(),
-            'tableName' => $this->table()->getTable(),
-            'recordAction' => ($entity->isNew()) ? 'Insert' : 'Update',
-            'primaryKey' => $entity->id,
-            'auditedData' => json_encode($auditedData),
-        ]);
-        $appAuditRecordsTable->save($appAuditRecord);
+        $action = ($entity->isNew()) ? 'Insert' : 'Update';
+        $this->writeAppAuditRecord($entity, $auditedData, $action);
     }
     public function afterDelete(EventInterface $event, EntityInterface $entity): void
     {
@@ -73,14 +64,18 @@ class AppAuditBehavior extends Behavior
             }
             $auditedData['old'][$key] = $value;
         }
+        $this->writeAppAuditRecord($entity, $auditedData, 'Delete');
+    }
+    private function writeAppAuditRecord(EntityInterface $entity, array $auditedData, string $action): void
+    {
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => $this->userData['audit_user'],
-            'appImpersonator' => $this->userData['audit_impersonator'],
+            'appUser' => (!empty($this->userData['audit_user'])) ? $this->userData['audit_user'] : 'Missing UserData',
+            'appImpersonator' => (!empty($this->userData['audit_impersonator'])) ? $this->userData['audit_impersonator'] : null,
             'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
-            'recordAction' => 'Delete',
+            'recordAction' => $action,
             'primaryKey' => $entity->id,
             'auditedData' => json_encode($auditedData),
         ]);
