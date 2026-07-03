@@ -7,7 +7,6 @@ use Cake\Core\Configure;
 use Cake\Http\Response;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
-use Cake\Log\Log;
 
 class FilestoreComponent extends Component
 {
@@ -64,24 +63,19 @@ class FilestoreComponent extends Component
                 $filenameInfo = $this->sanitizeFilename($filename);
                 $filepath = "{$directories}{$filenameInfo['filesystemName']}{$filenameInfo['ext']}";
             }
-            $moveResult = $fileObject->moveTo($this->baseFilePath . $filepath);
-            Log::debug(print_r($moveResult,true));
-            if (true) {
-                return [
-                    'filepath' => $this->baseFilePath . $filepath,
-                    'url' => $this->virtualFilePath . $filepath,
-                    'directories' => $directories,
-                    'displayFile' => $filenameInfo['displayName'],
-                    'filesystemFile' => $filenameInfo['filesystemName'],
-                    'ext' => $filenameInfo['ext'],
-                    'displayFilename' => "{$filenameInfo['displayName']}{$filenameInfo['ext']}",
-                    'filesystemFilename' => "{$filenameInfo['filesystemName']}{$filenameInfo['ext']}",
-                    'filesize' => $fileObject->getSize(),
-                    'uploadedFilename' => $fileObject->getClientFilename(),
-                ];
-            } else {
-                throw new Exception("Unable to move uploaded file to {$filepath}");
-            }
+            $fileObject->moveTo($this->baseFilePath . $filepath);
+            return [
+                'filepath' => $this->baseFilePath . $filepath,
+                'url' => $this->virtualFilePath . $filepath,
+                'directories' => $directories,
+                'displayFile' => $filenameInfo['displayName'],
+                'filesystemFile' => $filenameInfo['filesystemName'],
+                'ext' => $filenameInfo['ext'],
+                'displayFilename' => "{$filenameInfo['displayName']}{$filenameInfo['ext']}",
+                'filesystemFilename' => "{$filenameInfo['filesystemName']}{$filenameInfo['ext']}",
+                'filesize' => $fileObject->getSize(),
+                'uploadedFilename' => $fileObject->getClientFilename(),
+            ];
         } else {
             if ($fileObject->getSize() === 0) {
                 throw new Exception("File size is zero");
