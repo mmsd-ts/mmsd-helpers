@@ -11,15 +11,22 @@ class AppAuditComponent extends Component
     public function initialize(array $config): void
     {
         parent::initialize($config);
-        $makeValue = function (Entity $user): string|int {
+        $config += [
+            'sessionVariable' => 'Auth',
+            'identifier' => 'username',
+            'fullName' => 'fullName',
+            'primaryKey' => 'id',
+            'impersonateSessionVariable' => 'AuthImpersonate', // just in case Cake Authentication changes this name
+        ];
+        $makeValue = function (Entity $user) use ($config): string|int {
             $value = '';
-            if (!empty($user->username)) {
-                $value = $user->username;
-                if (!empty($user->fullName)) {
-                    $value .= " - {$user->fullName}";
+            if (!empty($user->{$config['identifier']})) {
+                $value = $user->{$config['identifier']};
+                if (!empty($user->{$config['fullName']})) {
+                    $value .= ' - ' . $user->{$config['fullName']};
                 }
             } else {
-                $value = $user->id;
+                $value = $user->{$config['primaryKey']};
             }
             return $value;
         };
@@ -27,14 +34,14 @@ class AppAuditComponent extends Component
             'audit_user' => null,
             'audit_impersonator' => null,
         ];
-        if ($this->getController()->getRequest()->getSession()->check('Auth')) {
+        if ($this->getController()->getRequest()->getSession()->check($config['sessionVariable'])) {
             $userData['audit_user'] = $makeValue(
-                $this->getController()->getRequest()->getSession()->read('Auth')
+                $this->getController()->getRequest()->getSession()->read($config['sessionVariable'])
             );
         }
-        if ($this->getController()->getRequest()->getSession()->check('AuthImpersonate')) {
+        if ($this->getController()->getRequest()->getSession()->check($config['impersonateSessionVariable'])) {
             $userData['audit_impersonator'] = $makeValue(
-                $this->getController()->getRequest()->getSession()->read('AuthImpersonate')
+                $this->getController()->getRequest()->getSession()->read($config['impersonateSessionVariable'])
             );
         }
         Configure::write('App.Audit.UserData',$userData);
