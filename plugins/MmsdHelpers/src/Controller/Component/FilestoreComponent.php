@@ -67,7 +67,7 @@ class FilestoreComponent extends Component
             return [
                 'filepath' => $this->baseFilePath . $filepath,
                 'url' => $this->virtualFilePath . $filepath,
-                'directories' => $directories,
+                'directories' => "{$this->appFolder}/{$directories}",
                 'displayFile' => $filenameInfo['displayName'],
                 'filesystemFile' => $filenameInfo['filesystemName'],
                 'ext' => $filenameInfo['ext'],
