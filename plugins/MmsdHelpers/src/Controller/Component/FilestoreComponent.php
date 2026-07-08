@@ -42,7 +42,7 @@ class FilestoreComponent extends Component
     /**
      * @throws Exception
      */
-    public function save(UploadedFileInterface $fileObject, ?string $directoryPath = null, ?string $filename = null): array
+    public function saveFile(UploadedFileInterface $fileObject, ?string $directoryPath = null, ?string $filename = null): array
     {
         if ((empty($fileObject->getError()))
             and ($fileObject->getSize() > 0)
@@ -67,7 +67,7 @@ class FilestoreComponent extends Component
             return [
                 'filepath' => $this->baseFilePath . $filepath,
                 'url' => $this->virtualFilePath . $filepath,
-                'directories' => $directories,
+                'directories' => "{$this->appFolder}/{$directories}",
                 'displayFile' => $filenameInfo['displayName'],
                 'filesystemFile' => $filenameInfo['filesystemName'],
                 'ext' => $filenameInfo['ext'],
@@ -84,19 +84,19 @@ class FilestoreComponent extends Component
             }
         }
     }
-    public function delete(string $filepath): bool
+    public function deleteFile(string $filepath): bool
     {
         return unlink($filepath);
     }
-    public function download(string $filepath, string $displayFilename): bool|Response
+    public function downloadFile(string $filepath, ?string $displayFilename = null): bool|Response
     {
         if (file_exists($filepath)) {
             $response = $this->getController()->getResponse()->withFile(
                 $filepath,
                 [
-                    'name' => $displayFilename,
                     'download' => true,
-                ],
+                    'name' => $displayFilename,
+                ]
             );
             return $response;
         }
