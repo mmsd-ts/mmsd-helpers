@@ -113,7 +113,7 @@ class BsFormHelper extends Helper
      * This function is not used or necessary any longer, it's here so you don't get errors
      * @param \Cake\ORM\Entity $formEntity
      */
-    public function setEntity(Entity $formEntity = null): ?Entity
+    public function setEntity(?Entity $formEntity = null): ?Entity
     {
         return $formEntity;
     }
