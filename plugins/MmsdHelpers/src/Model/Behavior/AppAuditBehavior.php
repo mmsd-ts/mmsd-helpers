@@ -12,7 +12,10 @@ class AppAuditBehavior extends Behavior
 {
     use LocatorAwareTrait;
     private array $ignoredKeys = ['created','modified','audit_user','audit_impersonator'];
-    private array $userData = [];
+    private array $userData = [
+        'audit_user' => null,
+        'audit_impersonator' => null,
+    ];
     private ?string $auditAppName;
     
     public function initialize(array $options): void
@@ -50,7 +53,11 @@ class AppAuditBehavior extends Behavior
             }
         }
         $action = ($entity->isNew()) ? 'Insert' : 'Update';
-        $this->writeAppAuditRecord($entity, $auditedData, $action);
+        if ((!empty($auditedData['old']))
+            or (!empty($auditedData['new']))
+        ) {
+            $this->writeAppAuditRecord($entity, $auditedData, $action);
+        }
     }
     public function afterDelete(EventInterface $event, EntityInterface $entity): void
     {
@@ -69,14 +76,16 @@ class AppAuditBehavior extends Behavior
     private function writeAppAuditRecord(EntityInterface $entity, array $auditedData, string $action): void
     {
         $appAuditRecordsTable = $this->fetchTable('MmsdHelpers.AppAuditRecords');
+        $recordTable = $this->fetchTable($entity->getSource());
+        $primaryKeyField = $recordTable->getPrimaryKey() ?? 'id';
         $appAuditRecord = $appAuditRecordsTable->newEntity([
-            'appUser' => (!empty($this->userData['audit_user'])) ? $this->userData['audit_user'] : 'Missing UserData, set App.Audit.UserData in AppController',
-            'appImpersonator' => (!empty($this->userData['audit_impersonator'])) ? $this->userData['audit_impersonator'] : null,
+            'appUser' => $this->userData['audit_user'],
+            'appImpersonator' => $this->userData['audit_impersonator'],
             'appName' => $this->auditAppName,
             'className' => $entity->getSource(),
             'tableName' => $this->table()->getTable(),
             'recordAction' => $action,
-            'primaryKey' => $entity->id,
+            'primaryKey' => $entity->$primaryKeyField,
             'auditedData' => json_encode($auditedData),
         ]);
         $appAuditRecordsTable->save($appAuditRecord);
