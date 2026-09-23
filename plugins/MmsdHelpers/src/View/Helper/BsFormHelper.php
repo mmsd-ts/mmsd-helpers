@@ -335,7 +335,7 @@ HTML;
     public function makeLabel(string $type, string $name, array $options): string
     {
         $label = $options['label'];
-        $class = 'form-label';
+        $class = 'form-label mt-2';
         if (!empty($options['inline'])) {
             $class = 'col-form-label';
         }
