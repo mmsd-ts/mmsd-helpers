@@ -83,7 +83,7 @@ class FilestoreComponent extends Component
                 'ext' => $fileExtension,
                 'displayFilename' => "{$filenameInfo['displayFilename']}",
                 'filesystemFilename' => "{$filenameInfo['filesystemFilename']}",
-                'filesize' => $fileObject->getSize(),
+                'filesize' => $this->formatSize($fileObject->getSize()),
                 'uploadedFilename' => $fileObject->getClientFilename(),
             ];
         } else {
@@ -139,5 +139,11 @@ class FilestoreComponent extends Component
             'displayName' => preg_replace('/\W+/','-',trim($filename)),
             'filesystemName' => $this->KeyString->makeKey(),
         ];
+    }
+    public function formatSize(int $bytes, int $decimals = 2): string
+    {
+        $factor = floor((strlen($bytes) - 1) / 3);
+        $sz = ' KMGT';
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . str_split($sz)[$factor] . 'B';
     }
 }
