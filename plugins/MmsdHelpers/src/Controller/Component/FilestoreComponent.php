@@ -47,10 +47,10 @@ class FilestoreComponent extends Component
         if ((empty($fileObject->getError()))
             and ($fileObject->getSize() > 0)
         ) {
-            $clientFilenameInfo = pathinfo($this->cleanFilename($fileObject->getClientFilename()));
+            $clientFilenameInfo = pathinfo($fileObject->getClientFilename());
             $fileExtension = $clientFilenameInfo['extension'] ?? '';
             if (empty($filename)) {
-                $filename = $clientFilenameInfo['filename'];
+                $filename = $this->cleanFilename($clientFilenameInfo['filename']);
             } else {
                 $filename = pathinfo($this->cleanFilename($filename))['filename'];
             }
