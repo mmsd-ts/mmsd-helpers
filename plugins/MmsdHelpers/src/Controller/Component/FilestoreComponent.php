@@ -47,12 +47,12 @@ class FilestoreComponent extends Component
         if ((empty($fileObject->getError()))
             and ($fileObject->getSize() > 0)
         ) {
-            $clientFilenameInfo = pathinfo($fileObject->getClientFilename());
+            $clientFilenameInfo = pathinfo($this->cleanFilename($fileObject->getClientFilename()));
             $fileExtension = $clientFilenameInfo['extension'] ?? '';
             if (empty($filename)) {
                 $filename = $clientFilenameInfo['filename'];
             } else {
-                $filename = pathinfo($filename)['filename'];
+                $filename = pathinfo($this->cleanFilename($filename))['filename'];
             }
             $directories = '';
             if (!empty($directoryPath)) {
@@ -64,9 +64,10 @@ class FilestoreComponent extends Component
                 // on the VERY off chance that a file has the same name as an existing file
                 or (file_exists($this->baseFilePath . $filepath))
             ) {
-                $filenameInfo = $this->sanitizeFilename($filename);
-                $filenameInfo['displayFilename'] = "{$filenameInfo['displayName']}";
-                $filenameInfo['filesystemFilename'] = "{$filenameInfo['filesystemName']}";
+                $filenameInfo['displayFile'] = $filename;
+                $filenameInfo['filesystemFile'] = $this->KeyString->makeKey();
+                $filenameInfo['displayFilename'] = "{$filenameInfo['displayFile']}";
+                $filenameInfo['filesystemFilename'] = "{$filenameInfo['filesystemFile']}";
                 if (!empty($fileExtension)) {
                     $filenameInfo['displayFilename'] .= ".{$fileExtension}";
                     $filenameInfo['filesystemFilename'] .= ".{$fileExtension}";
@@ -78,8 +79,8 @@ class FilestoreComponent extends Component
                 'filepath' => $this->baseFilePath . $filepath,
                 'url' => $this->virtualFilePath . $filepath,
                 'directories' => "{$this->appFolder}/{$directories}",
-                'displayFile' => $filenameInfo['displayName'],
-                'filesystemFile' => $filenameInfo['filesystemName'],
+                'displayFile' => $filenameInfo['displayFile'],
+                'filesystemFile' => $filenameInfo['filesystemFile'],
                 'ext' => $fileExtension,
                 'displayFilename' => "{$filenameInfo['displayFilename']}",
                 'filesystemFilename' => "{$filenameInfo['filesystemFilename']}",
@@ -133,12 +134,15 @@ class FilestoreComponent extends Component
             throw new Exception("Unable to parse {$directoryPath}");
         }
     }
-    public function sanitizeFilename(string $filename): array
+    public function cleanFilename(string $filename): string
     {
-        return [
-            'displayName' => preg_replace('/\W+/','-',trim($filename)),
-            'filesystemName' => $this->KeyString->makeKey(),
-        ];
+        return preg_replace('/\W+/','-',trim($filename));
+    }
+    public function formatSize(int $bytes, int $decimals = 2): string
+    {
+        $factor = floor((strlen($bytes) - 1) / 3);
+        $sz = ' KMGT';
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . str_split($sz)[$factor] . 'B';
     }
     public function formatSize(int $bytes, int $decimals = 2): string
     {
