@@ -7,7 +7,6 @@ use Cake\Core\Configure;
 use Cake\Http\Response;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
-use Cake\Log\Log;
 
 class FilestoreComponent extends Component
 {
@@ -49,15 +48,13 @@ class FilestoreComponent extends Component
             and ($fileObject->getSize() > 0)
         ) {
             $clientFilenameInfo = pathinfo($fileObject->getClientFilename());
-            Log::debug(print_r($clientFilenameInfo,true));
             $fileExtension = $clientFilenameInfo['extension'] ?? '';
-            Log::debug(print_r($fileExtension,true));
-            if (empty($filename)) {
-                $filename = $this->cleanFilename($clientFilenameInfo['filename']);
+            $filename = $this->cleanFilename($filename);
+            if (!empty($filename)) {
+                $filename = pathinfo($filename)['filename'];
             } else {
-                $filename = pathinfo($this->cleanFilename($filename))['filename'];
+                $filename = $clientFilenameInfo['filename'];
             }
-            Log::debug(print_r($filename,true));
             $directories = '';
             if (!empty($directoryPath)) {
                 $directories = $this->verifyDirectories($directoryPath);
@@ -138,14 +135,14 @@ class FilestoreComponent extends Component
             throw new Exception("Unable to parse {$directoryPath}");
         }
     }
-    public function cleanFilename(string $filename): string
+    public function cleanFilename(?string $filename): ?string
     {
-        return preg_replace('/\W+/','-',trim($filename));
+        return preg_replace('#[/\\\\]#','_',trim($filename));
     }
     public function formatSize(int $bytes, int $decimals = 2): string
     {
         $factor = floor((strlen($bytes) - 1) / 3);
-        $sz = ' KMGT';
+        $sz = ' KMGT'; // Hopefully we never see G or T lol :|
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . str_split($sz)[$factor] . 'B';
     }
 }
