@@ -7,6 +7,7 @@ use Cake\Core\Configure;
 use Cake\Http\Response;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
+use Cake\Log\Log;
 
 class FilestoreComponent extends Component
 {
@@ -48,12 +49,15 @@ class FilestoreComponent extends Component
             and ($fileObject->getSize() > 0)
         ) {
             $clientFilenameInfo = pathinfo($fileObject->getClientFilename());
+            Log::debug(print_r($clientFilenameInfo,true));
             $fileExtension = $clientFilenameInfo['extension'] ?? '';
+            Log::debug(print_r($fileExtension,true));
             if (empty($filename)) {
                 $filename = $this->cleanFilename($clientFilenameInfo['filename']);
             } else {
                 $filename = pathinfo($this->cleanFilename($filename))['filename'];
             }
+            Log::debug(print_r($filename,true));
             $directories = '';
             if (!empty($directoryPath)) {
                 $directories = $this->verifyDirectories($directoryPath);
