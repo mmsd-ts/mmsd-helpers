@@ -3,7 +3,8 @@
     "description": "CakePHP 5.x Utility Helper and Component Classes for MMSD",
     "type": "library",
     "require": {
-        "cakephp/authentication": "^3.0"
+        "cakephp/authentication": "3.*",
+        "ext-fileinfo": "*"
     },
     "authors": [
         {
